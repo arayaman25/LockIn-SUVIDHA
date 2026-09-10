@@ -8,6 +8,7 @@ import SuvidhaVoiceCompanion from "@/components/SuvidhaVoiceCompanion";
 import CitizenLoginModal from "@/components/CitizenLoginModal";
 import NotificationToast from "@/components/NotificationToast";
 import GoogleTranslate from "@/components/GoogleTranslate";
+import QueryProvider from "@/src/providers/QueryProvider";
 
 const merriweather = Merriweather({
   variable: "--font-merriweather",
@@ -48,17 +49,19 @@ export default function RootLayout({
       className={`${merriweather.variable} ${plusJakartaSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-on-surface">
-        <AppProvider>
-          <GoogleTranslate />
-          <Header />
-          <main id="main-content" className="flex-grow">
-            {children}
-          </main>
-          <Footer />
-          <SuvidhaVoiceCompanion />
-          <CitizenLoginModal />
-          <NotificationToast />
-        </AppProvider>
+        <QueryProvider>
+          <AppProvider>
+            <GoogleTranslate />
+            <Header />
+            <main id="main-content" className="flex-grow">
+              {children}
+            </main>
+            <Footer />
+            <SuvidhaVoiceCompanion />
+            <CitizenLoginModal />
+            <NotificationToast />
+          </AppProvider>
+        </QueryProvider>
       </body>
     </html>
   );
