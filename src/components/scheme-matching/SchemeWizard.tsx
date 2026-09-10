@@ -54,6 +54,15 @@ export default function SchemeWizard({
 
   const recommendationMutation = useSchemeRecommendations();
 
+  // Step navigation gate: cannot access steps 3-6 if isScheduledCaste is false
+  const canNavigateToStep = (targetStep: number): boolean => {
+    const isSC = getValues('isScheduledCaste');
+    if (!isSC && targetStep > 2) {
+      return false;
+    }
+    return targetStep <= currentStep || targetStep === currentStep + 1;
+  };
+
   // Validate step fields before proceeding
   const handleNext = async () => {
     setSubmitError(null);
@@ -62,6 +71,10 @@ export default function SchemeWizard({
     if (currentStep === 1) {
       isValid = await trigger(['intent']);
     } else if (currentStep === 2) {
+      const isSC = getValues('isScheduledCaste');
+      if (!isSC) {
+        return;
+      }
       isValid = await trigger([
         'isScheduledCaste',
         'age',
@@ -96,6 +109,10 @@ export default function SchemeWizard({
   };
 
   const handleJumpToStep = (step: number) => {
+    const isSC = getValues('isScheduledCaste');
+    if (!isSC && step > 2) {
+      return;
+    }
     setSubmitError(null);
     setCurrentStep(step);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -103,6 +120,15 @@ export default function SchemeWizard({
 
   // Submission from Step 5 -> Call Backend API & Advance to Step 6
   const onSubmitReview = async (formData: CitizenProfileFormValues) => {
+    // Gate check: do not submit if not SC
+    if (!formData.isScheduledCaste) {
+      setSubmitError(
+        "SUVIDHA's current scheme-matching service is designed for Scheduled Caste beneficiaries. Based on your selection, this service cannot continue with the current eligibility flow."
+      );
+      setCurrentStep(2);
+      return;
+    }
+
     console.log('[SchemeWizard] Submit triggered with valid formData:', formData);
     setSubmitError(null);
     setCurrentStep(6);
@@ -195,7 +221,11 @@ export default function SchemeWizard({
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       {/* Step Progress Bar */}
-      <WizardProgress currentStep={currentStep} onStepClick={handleJumpToStep} />
+      <WizardProgress
+        currentStep={currentStep}
+        onStepClick={handleJumpToStep}
+        canNavigateToStep={canNavigateToStep}
+      />
 
       {/* React Hook Form Context Provider */}
       <FormProvider {...methods}>
