@@ -3,8 +3,8 @@
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import Icon from '@/components/Icon';
-import { useNearbyPartners } from '@/src/lib/query/scheme-matching';
-import { ScoredPartner } from '@/src/types/scheme-matching';
+import { useNearbyPartners } from '@/src/lib/query';
+import { ScoredPartner } from '@/src/types';
 
 // Dynamically import Leaflet Map to avoid SSR errors
 const PartnerMap = dynamic(() => import('@/components/PartnerMap'), {

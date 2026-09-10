@@ -156,3 +156,37 @@ export interface IntakeResponse {
   success: boolean;
   data: IntakeResponseData;
 }
+
+export interface PartnerStatusReport {
+  acceptingApplications: boolean;
+  utilizedAmount?: number;
+}
+
+export interface PartnerStatusResponse {
+  success: boolean;
+  data: unknown;
+}
+
+export interface AssignSchemeInput {
+  partnerId: string;
+  schemeId: string;
+  totalQuotaAmount: number;
+}
+
+export interface AssignSchemeResponse {
+  success: boolean;
+  data: unknown;
+}
+
+export interface ReportOutcomeInput {
+  partnerId: string;
+  schemeId: string;
+  applicationId?: string;
+  userId?: string;
+  outcome: 'received_loan' | 'not_received' | 'still_pending';
+}
+
+export interface ReportOutcomeResponse {
+  success: boolean;
+  data: unknown;
+}

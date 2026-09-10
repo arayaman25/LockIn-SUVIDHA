@@ -3,9 +3,9 @@
 import React, { useState } from 'react';
 import { useForm, FormProvider, FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { schemeMatchingFormSchema, CitizenProfileFormValues } from '../../lib/schemas/scheme-matching';
-import { useSchemeRecommendations } from '../../lib/query/scheme-matching';
-import { SchemeRecommendationResponse, RecommendationRequest } from '../../types/scheme-matching';
+import { schemeMatchingFormSchema, CitizenProfileFormValues } from '@/src/lib/schemas/scheme-matching';
+import { useSchemeRecommendations } from '@/src/lib/query';
+import { SchemeRecommendationResponse, RecommendationRequest } from '@/src/types';
 
 import WizardProgress from './WizardProgress';
 import PurposeStep from './PurposeStep';
