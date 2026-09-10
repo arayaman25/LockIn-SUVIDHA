@@ -1,0 +1,128 @@
+'use client';
+
+import React from 'react';
+import {
+  Landmark,
+  CheckCircle2,
+  Check,
+  BadgeCheck,
+  Mic,
+  Calculator,
+  ListChecks,
+  MapPin,
+  MapPinOff,
+  Map,
+  Target,
+  Compass,
+  Search,
+  LogIn,
+  LogOut,
+  Menu,
+  X,
+  ChevronDown,
+  ChevronUp,
+  ArrowRight,
+  User,
+  BookOpen,
+  ShieldCheck,
+  Languages,
+  Store,
+  Eye,
+  Home,
+  HelpCircle,
+  Headset,
+  ExternalLink,
+  Volume2,
+  Send,
+  Lock,
+  FileText,
+  ScanLine,
+  Folder,
+  FileEdit,
+  GraduationCap,
+  Wrench,
+  Paintbrush,
+  Wheat,
+  Users,
+  RefreshCw,
+  Calendar,
+  Phone,
+  Info,
+  AlertCircle,
+  Badge,
+  Heart
+} from 'lucide-react';
+
+const iconMap: Record<string, React.ComponentType<{ className?: string; size?: number }>> = {
+  account_balance: Landmark,
+  verified: BadgeCheck,
+  check_circle: CheckCircle2,
+  check: Check,
+  task_alt: CheckCircle2,
+  record_voice_over: Mic,
+  calculate: Calculator,
+  checklist: ListChecks,
+  pin_drop: MapPin,
+  location_off: MapPinOff,
+  map: Map,
+  track_changes: Target,
+  travel_explore: Compass,
+  search: Search,
+  login: LogIn,
+  logout: LogOut,
+  menu: Menu,
+  close: X,
+  expand_more: ChevronDown,
+  expand_less: ChevronUp,
+  arrow_forward: ArrowRight,
+  person: User,
+  badge: Badge,
+  library_books: BookOpen,
+  policy: ShieldCheck,
+  shield: ShieldCheck,
+  shield_person: ShieldCheck,
+  translate: Languages,
+  storefront: Store,
+  store: Store,
+  accessibility_new: Eye,
+  home: Home,
+  help_outline: HelpCircle,
+  support_agent: Headset,
+  open_in_new: ExternalLink,
+  volume_up: Volume2,
+  volume_down: Volume2,
+  send: Send,
+  lock: Lock,
+  description: FileText,
+  document_scanner: ScanLine,
+  folder_open: Folder,
+  edit_document: FileEdit,
+  school: GraduationCap,
+  handyman: Wrench,
+  brush: Paintbrush,
+  agriculture: Wheat,
+  pets: Heart,
+  women: Users,
+  female: Users,
+  diversity_3: Users,
+  sc_st: Users,
+  sync: RefreshCw,
+  event_available: Calendar,
+  call: Phone,
+  info: Info,
+  error: AlertCircle
+};
+
+interface IconProps {
+  name: string;
+  className?: string;
+  size?: number;
+}
+
+export default function Icon({ name, className = 'w-5 h-5', size }: IconProps) {
+  const Component = iconMap[name];
+  if (!Component) {
+    return <span className={`inline-block ${className}`} />;
+  }
+  return <Component className={`inline-block shrink-0 ${className}`} size={size} />;
+}

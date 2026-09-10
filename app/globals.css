@@ -1,26 +1,188 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary: #1b4332;
+  --color-primary-container: #1b4332;
+  --color-on-primary: #ffffff;
+  --color-primary-fixed: #c1ecd4;
+  --color-primary-fixed-dim: #a5d0b9;
+  --color-on-primary-fixed: #002114;
+  --color-on-primary-fixed-variant: #274e3d;
+
+  --color-secondary: #3f665c;
+  --color-secondary-container: #bee8dc;
+  --color-on-secondary-container: #436a60;
+  --color-secondary-fixed: #c1ebdf;
+  --color-secondary-fixed-dim: #a6cfc3;
+  --color-on-secondary-fixed: #00201a;
+  --color-on-secondary-fixed-variant: #274e3d;
+
+  --color-tertiary: #421c00;
+  --color-tertiary-accent: #c25e00;
+  --color-tertiary-container: #632d00;
+  --color-on-tertiary-container: #fa8934;
+  --color-tertiary-fixed: #ffdbc7;
+  --color-tertiary-fixed-dim: #ffb689;
+  --color-on-tertiary-fixed: #311300;
+  --color-on-tertiary-fixed-variant: #733500;
+
+  --color-background: #fcf9f2;
+  --color-on-background: #1c1c18;
+
+  --color-surface: #fcf9f2;
+  --color-surface-dim: #dcdad3;
+  --color-surface-bright: #fcf9f2;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f6f3ec;
+  --color-surface-container: #f1eee7;
+  --color-surface-container-high: #ebe8e1;
+  --color-surface-container-highest: #e5e2db;
+
+  --color-on-surface: #1c1c18;
+  --color-on-surface-variant: #414844;
+  --color-outline: #717973;
+  --color-outline-variant: #c1c8c2;
+
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+  --color-on-error: #ffffff;
+  --color-on-error-container: #93000a;
+
+  --font-serif: var(--font-merriweather), Georgia, serif;
+  --font-sans: var(--font-plus-jakarta-sans), system-ui, -apple-system, sans-serif;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --font-scale: 1rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
+  font-size: var(--font-scale);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #fcf9f2;
+  color: #1c1c18;
+  font-family: var(--font-plus-jakarta-sans), system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
 }
+
+/* Warm Civic Shadows & Tactile Paper borders */
+.shadow-civic {
+  box-shadow: 0px 2px 6px -1px rgba(31, 41, 55, 0.04), 0px 4px 16px -2px rgba(82, 121, 111, 0.06);
+}
+
+.shadow-civic-hover {
+  box-shadow: 0px 6px 20px -3px rgba(27, 67, 50, 0.08), 0px 2px 6px -1px rgba(27, 67, 50, 0.04);
+}
+
+/* High-contrast accessible focus ring */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 2px solid #c25e00;
+  outline-offset: 2px;
+}
+
+/* SUVIDHA Custom Slider Styles */
+.suvidha-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 9999px;
+  outline: none;
+  cursor: pointer;
+  background-color: #e5e2db;
+}
+
+.suvidha-slider::-webkit-slider-runnable-track {
+  height: 8px;
+  border-radius: 9999px;
+  background: transparent;
+}
+
+.suvidha-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background-color: #1b4332;
+  border: 3px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(27, 67, 50, 0.35);
+  cursor: pointer;
+  margin-top: -7px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.suvidha-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 3px 8px rgba(27, 67, 50, 0.45);
+}
+
+.suvidha-slider::-webkit-slider-thumb:active {
+  transform: scale(1.22);
+  box-shadow: 0 0 0 8px rgba(27, 67, 50, 0.18);
+}
+
+.suvidha-slider::-moz-range-track {
+  height: 8px;
+  border-radius: 9999px;
+  background: transparent;
+}
+
+.suvidha-slider::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background-color: #1b4332;
+  border: 3px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(27, 67, 50, 0.35);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.suvidha-slider::-moz-range-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 3px 8px rgba(27, 67, 50, 0.45);
+}
+
+.suvidha-slider::-moz-range-thumb:active {
+  transform: scale(1.22);
+  box-shadow: 0 0 0 8px rgba(27, 67, 50, 0.18);
+}
+
+.suvidha-slider:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 6px rgba(194, 94, 0, 0.35);
+}
+
+.suvidha-slider:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 6px rgba(194, 94, 0, 0.35);
+}
+
+/* Standard Leaflet Marker & Popup Resets for Google Maps Style */
+.clean-partner-pin,
+.google-style-user-marker {
+  background: transparent !important;
+  border: none !important;
+}
+
+.standard-clean-popup .leaflet-popup-content-wrapper {
+  border-radius: 12px;
+  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.2);
+  padding: 2px 4px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.standard-clean-popup .leaflet-popup-content {
+  margin: 10px 12px 8px 12px;
+  line-height: 1.4;
+}
+
+.standard-clean-popup .leaflet-popup-tip {
+  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.15);
+}
+
+

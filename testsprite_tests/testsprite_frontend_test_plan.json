@@ -1,0 +1,697 @@
+[
+  {
+    "id": "TC001",
+    "title": "Submit a complete application and receive a tracking reference",
+    "description": "This verifies that a citizen can complete the application form end to end and receive a tracking reference after submission.",
+    "category": "Online Application Submission",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /apply"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the personal details required to continue"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the bank account details required to continue"
+      },
+      {
+        "type": "action",
+        "description": "Provide the required document proof details"
+      },
+      {
+        "type": "action",
+        "description": "Submit the application"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a tracking reference is generated"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a submission confirmation is visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC002",
+    "title": "Open a scheme from the homepage",
+    "description": "This verifies that a user can start on the homepage, use a hero quick action, and continue into scheme discovery.",
+    "category": "Homepage Hero and Navigation",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click a quick action to explore schemes"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the schemes directory is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify scheme cards are visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC003",
+    "title": "Track an application using a reference number",
+    "description": "This verifies that a citizen can look up application progress by reference number and view the current status timeline.",
+    "category": "Application Tracking",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /tracking"
+      },
+      {
+        "type": "action",
+        "description": "Enter a valid application reference number"
+      },
+      {
+        "type": "action",
+        "description": "Submit the tracking request"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the current application status is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the verification timeline is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC004",
+    "title": "Start eligibility checking from the homepage",
+    "description": "This verifies that a user can begin the eligibility journey from the homepage hero area and reach the questionnaire.",
+    "category": "Homepage Hero and Navigation",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click the eligibility check shortcut"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the eligibility questionnaire is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the first set of questions is visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC005",
+    "title": "Track an application using a mobile number",
+    "description": "This verifies that a citizen can use a mobile number to find an application and view its progress timeline.",
+    "category": "Application Tracking",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /tracking"
+      },
+      {
+        "type": "action",
+        "description": "Enter a valid mobile number"
+      },
+      {
+        "type": "action",
+        "description": "Submit the tracking request"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the application status is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the stage badges are displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC006",
+    "title": "Search for a scheme and open its details",
+    "description": "This verifies that a user can search the scheme directory, review matches, and open a scheme details page.",
+    "category": "Scheme Discovery and Search",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /schemes"
+      },
+      {
+        "type": "action",
+        "description": "Enter a relevant search term"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify matching scheme results are displayed"
+      },
+      {
+        "type": "action",
+        "description": "Open a scheme card"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the scheme details page is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC007",
+    "title": "Find eligible schemes from the questionnaire",
+    "description": "This test verifies that a citizen can complete the eligibility questionnaire and see matched schemes when their profile qualifies.",
+    "category": "Eligibility Wizard",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /wizard"
+      },
+      {
+        "type": "action",
+        "description": "Select an age value"
+      },
+      {
+        "type": "action",
+        "description": "Select a category value"
+      },
+      {
+        "type": "action",
+        "description": "Select a state value"
+      },
+      {
+        "type": "action",
+        "description": "Select an employment value"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid annual income into the income field"
+      },
+      {
+        "type": "action",
+        "description": "Continue to the results step"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify matched eligible schemes are displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC008",
+    "title": "Open the calculator from the homepage",
+    "description": "This verifies that a user can access the benefit calculator from the homepage and reach the calculator tool.",
+    "category": "Homepage Hero and Navigation",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click the calculator shortcut"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the calculator tool is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify loan benefit inputs are visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC009",
+    "title": "Estimate loan repayment from calculator inputs",
+    "description": "This test verifies that changing loan amount, tenure, and scheme updates the repayment estimate values shown to the user.",
+    "category": "Loan and Subsidy Calculator",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /calculator"
+      },
+      {
+        "type": "action",
+        "description": "Adjust the loan amount"
+      },
+      {
+        "type": "action",
+        "description": "Adjust the repayment tenure"
+      },
+      {
+        "type": "action",
+        "description": "Select a scheme or interest rate"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify EMI, total interest, and subsidy savings are displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC010",
+    "title": "Filter schemes by category and open a result",
+    "description": "This verifies that a user can narrow the scheme list by category and open one of the filtered schemes.",
+    "category": "Scheme Discovery and Search",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /schemes"
+      },
+      {
+        "type": "action",
+        "description": "Select a category filter"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the scheme list updates to the selected category"
+      },
+      {
+        "type": "action",
+        "description": "Open a scheme card from the filtered results"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the scheme details page is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC011",
+    "title": "Search service centers by location",
+    "description": "This test verifies that entering a PIN code or district on the locator page shows nearby center results on the map and list.",
+    "category": "Service Center Locator",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /locator"
+      },
+      {
+        "type": "action",
+        "description": "Enter a PIN code or district in the search box"
+      },
+      {
+        "type": "action",
+        "description": "Submit the location search"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify nearby center results are displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC012",
+    "title": "Review scheme details before starting an application",
+    "description": "This verifies that a user can inspect a scheme's benefits, documents, and eligibility information before entering the application journey.",
+    "category": "Scheme Details and Application Entry",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /schemes"
+      },
+      {
+        "type": "action",
+        "description": "Open a scheme card"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify scheme benefits are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify required documents and eligibility rules are displayed"
+      },
+      {
+        "type": "action",
+        "description": "Start the application journey from the scheme details page"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the application form is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC013",
+    "title": "Review calculated values after changing scheme inputs",
+    "description": "This test verifies that the calculator continues to show updated principal, interest, and subsidy information after multiple input adjustments.",
+    "category": "Loan and Subsidy Calculator",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /calculator"
+      },
+      {
+        "type": "action",
+        "description": "Select a scheme or interest rate"
+      },
+      {
+        "type": "action",
+        "description": "Adjust the loan amount"
+      },
+      {
+        "type": "action",
+        "description": "Adjust the repayment tenure"
+      },
+      {
+        "type": "action",
+        "description": "Adjust the loan amount again"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify principal, interest, and subsidy breakdown values are displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC014",
+    "title": "Show required-field validation before submission",
+    "description": "This verifies that incomplete required application details prevent progress and surface validation messages.",
+    "category": "Online Application Submission",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /apply"
+      },
+      {
+        "type": "action",
+        "description": "Attempt to continue without entering the required personal details"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify required-field validation messages are visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the application is not submitted"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC015",
+    "title": "Refine locator results by partner type",
+    "description": "This test verifies that applying a partner filter narrows the locator results and keeps relevant center listings visible.",
+    "category": "Service Center Locator",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /locator"
+      },
+      {
+        "type": "action",
+        "description": "Enter a PIN code or district in the search box"
+      },
+      {
+        "type": "action",
+        "description": "Submit the location search"
+      },
+      {
+        "type": "action",
+        "description": "Apply a partner type filter"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the filtered center list is displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC016",
+    "title": "Open a service center card for details",
+    "description": "This test verifies that a user can open a locator result card and view the center's contact and address details.",
+    "category": "Service Center Locator",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /locator"
+      },
+      {
+        "type": "action",
+        "description": "Enter a PIN code or district in the search box"
+      },
+      {
+        "type": "action",
+        "description": "Submit the location search"
+      },
+      {
+        "type": "action",
+        "description": "Open a center card"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify center contact and address details are displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC017",
+    "title": "Change the portal language from the homepage",
+    "description": "This verifies that a user can choose an available language in the header and continue browsing the portal in the selected language.",
+    "category": "Homepage Hero and Navigation",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Open the language selector"
+      },
+      {
+        "type": "action",
+        "description": "Choose an available language"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the page content updates to the selected language"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify portal navigation remains available"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC018",
+    "title": "Compare calculator estimates after changing inputs",
+    "description": "This test verifies that repeated input changes in the calculator update the repayment breakdown consistently for comparison.",
+    "category": "Loan and Subsidy Calculator",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /calculator"
+      },
+      {
+        "type": "action",
+        "description": "Adjust the loan amount"
+      },
+      {
+        "type": "action",
+        "description": "Adjust the repayment tenure"
+      },
+      {
+        "type": "action",
+        "description": "Observe the repayment estimate"
+      },
+      {
+        "type": "action",
+        "description": "Adjust the loan amount again"
+      },
+      {
+        "type": "action",
+        "description": "Adjust the repayment tenure again"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the repayment estimate updates after the input changes"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC019",
+    "title": "Correct invalid application details and continue",
+    "description": "This verifies that a user can fix invalid or incomplete application details and proceed successfully.",
+    "category": "Online Application Submission",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /apply"
+      },
+      {
+        "type": "action",
+        "description": "Enter invalid or incomplete personal details"
+      },
+      {
+        "type": "action",
+        "description": "Attempt to continue the form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify validation messages are visible"
+      },
+      {
+        "type": "action",
+        "description": "Correct the entered personal details"
+      },
+      {
+        "type": "action",
+        "description": "Continue the application form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the next application step is displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC020",
+    "title": "Handle missing tracking input with validation",
+    "description": "This verifies that the tracking page prompts for required input when the user tries to submit without a reference number or mobile number.",
+    "category": "Application Tracking",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /tracking"
+      },
+      {
+        "type": "action",
+        "description": "Attempt to submit the tracking request without entering any value"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a validation message is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify no application status is displayed"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC021",
+    "title": "Handle no matching schemes in the questionnaire",
+    "description": "This test verifies that completing the questionnaire with an ineligible profile shows a no-match state instead of scheme results.",
+    "category": "Eligibility Wizard",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /wizard"
+      },
+      {
+        "type": "action",
+        "description": "Select an age value"
+      },
+      {
+        "type": "action",
+        "description": "Select a category value"
+      },
+      {
+        "type": "action",
+        "description": "Select a state value"
+      },
+      {
+        "type": "action",
+        "description": "Select an employment value"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid annual income into the income field"
+      },
+      {
+        "type": "action",
+        "description": "Continue to the results step"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an empty state message is visible"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC022",
+    "title": "Handle invalid tracking input with validation",
+    "description": "This verifies that an invalid tracking entry is rejected with a visible validation message instead of showing application progress.",
+    "category": "Application Tracking",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /tracking"
+      },
+      {
+        "type": "action",
+        "description": "Enter an invalid tracking reference or mobile number"
+      },
+      {
+        "type": "action",
+        "description": "Submit the tracking request"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a validation message is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the status timeline is not displayed"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC023",
+    "title": "Find no matching schemes with a narrow search",
+    "description": "This verifies that a user sees an empty state when a search term returns no matching schemes.",
+    "category": "Scheme Discovery and Search",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /schemes"
+      },
+      {
+        "type": "action",
+        "description": "Enter an unlikely search term"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an empty state message is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify no scheme cards are shown"
+      }
+    ],
+    "priority": "Low"
+  }
+]
