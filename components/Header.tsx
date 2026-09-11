@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
@@ -25,25 +25,9 @@ export default function Header() {
     logout
   } = useApp();
 
-  const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const servicesDropdownRef = useRef<HTMLDivElement>(null);
-
-  // Close dropdown on outside click
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        servicesDropdownRef.current &&
-        !servicesDropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsServicesOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -143,9 +127,6 @@ export default function Header() {
         </div>
       </aside>
 
-      {/* ========================================================================= */}
-      {/* 2. MAIN HEADER & BRAND NAVIGATION BAR                                     */}
-      {/* ========================================================================= */}
       <header className="bg-surface border-b border-outline-variant/60 shadow-sm sticky top-0 z-40">
         <div className="max-w-[1240px] mx-auto px-4 md:px-8 w-full flex justify-between items-center py-3">
           {/* Brand Logo */}
@@ -183,7 +164,6 @@ export default function Header() {
             >
               Home
             </Link>
-
             <Link
               href="/schemes"
               className={`transition-colors pb-1 text-sm font-semibold ${
@@ -194,120 +174,35 @@ export default function Header() {
             >
               Schemes
             </Link>
-
             <Link
-              href="/wizard"
+              href="/find-scheme"
               className={`transition-colors pb-1 text-sm font-semibold ${
-                isNavActive('/wizard')
+                isNavActive('/find-scheme')
                   ? 'border-b-2 border-primary text-primary'
                   : 'text-on-surface-variant hover:text-primary'
               }`}
             >
               Find My Scheme
             </Link>
-
-            {/* Services Dropdown */}
-            <div className="relative" ref={servicesDropdownRef}>
-              <button
-                onClick={() => setIsServicesOpen((prev) => !prev)}
-                className={`pb-1 flex items-center gap-1 transition-colors text-sm font-semibold ${
-                  pathname.startsWith('/tracking') ||
-                  pathname.startsWith('/calculator') ||
-                  pathname.startsWith('/locator') ||
-                  pathname.startsWith('/dashboard') ||
-                  pathname.startsWith('/partner-desk')
-                    ? 'border-b-2 border-primary text-primary'
-                    : 'text-on-surface-variant hover:text-primary'
-                }`}
-                aria-expanded={isServicesOpen}
-                aria-haspopup="true"
-              >
-                <span>Services</span>
-                <Icon
-                  name="expand_more"
-                  className={`w-4 h-4 transition-transform duration-200 ${
-                    isServicesOpen ? 'rotate-180' : ''
-                  }`}
-                />
-              </button>
-
-              {isServicesOpen && (
-                <div className="absolute left-0 top-full w-64 pt-2 z-50 animate-in fade-in zoom-in-95 duration-150">
-                  <div className="bg-surface-container-lowest border border-outline-variant/60 rounded-xl shadow-lg p-2 space-y-1">
-                    <Link
-                      href="/tracking"
-                      onClick={() => setIsServicesOpen(false)}
-                      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-on-surface hover:bg-surface-container hover:text-primary transition-colors text-left"
-                    >
-                      <Icon name="track_changes" className="w-4 h-4 text-secondary" />
-                      <span>Track Application</span>
-                    </Link>
-
-                    <Link
-                      href="/calculator"
-                      onClick={() => setIsServicesOpen(false)}
-                      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-on-surface hover:bg-surface-container hover:text-primary transition-colors text-left"
-                    >
-                      <Icon name="calculate" className="w-4 h-4 text-secondary" />
-                      <span>EMI Calculator</span>
-                    </Link>
-
-                    <Link
-                      href="/locator"
-                      onClick={() => setIsServicesOpen(false)}
-                      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-on-surface hover:bg-surface-container hover:text-primary transition-colors text-left"
-                    >
-                      <Icon name="pin_drop" className="w-4 h-4 text-secondary" />
-                      <span>Find a Partner Center</span>
-                    </Link>
-
-                    <Link
-                      href="/dashboard"
-                      onClick={() => setIsServicesOpen(false)}
-                      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-on-surface hover:bg-surface-container hover:text-primary transition-colors text-left border-t border-outline-variant/30 mt-1 pt-1.5"
-                    >
-                      <Icon name="person" className="w-4 h-4 text-primary" />
-                      <span>Citizen Dashboard</span>
-                    </Link>
-
-                    <Link
-                      href={
-                        authUser
-                          ? authUser.role === 'admin'
-                            ? '/admin/dashboard'
-                            : authUser.role === 'partner'
-                            ? '/partner/dashboard'
-                            : '/official/login'
-                          : '/official/login'
-                      }
-                      onClick={() => setIsServicesOpen(false)}
-                      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-on-surface hover:bg-surface-container hover:text-primary transition-colors text-left"
-                    >
-                      <Icon name="badge" className="w-4 h-4 text-primary" />
-                      <span>
-                        {authUser
-                          ? authUser.role === 'admin'
-                            ? 'Administration Console'
-                            : authUser.role === 'partner'
-                            ? 'Channel Partner Portal'
-                            : 'Official Portal'
-                          : 'Official Portal Login'}
-                      </span>
-                    </Link>
-                  </div>
-                </div>
-              )}
-            </div>
-
             <Link
-              href="/help"
+              href="/calculator"
               className={`transition-colors pb-1 text-sm font-semibold ${
-                isNavActive('/help')
+                isNavActive('/calculator')
                   ? 'border-b-2 border-primary text-primary'
                   : 'text-on-surface-variant hover:text-primary'
               }`}
             >
-              Help
+              EMI Calculator
+            </Link>
+            <Link
+              href="/locator"
+              className={`transition-colors pb-1 text-sm font-semibold ${
+                isNavActive('/locator')
+                  ? 'border-b-2 border-primary text-primary'
+                  : 'text-on-surface-variant hover:text-primary'
+              }`}
+            >
+              Find Partner Center
             </Link>
           </nav>
 
@@ -480,56 +375,28 @@ export default function Header() {
               onClick={() => setIsMobileMenuOpen(false)}
               className="block py-2 text-sm text-on-surface hover:text-primary"
             >
-              All Schemes Directory
+              Schemes
             </Link>
             <Link
-              href="/wizard"
+              href="/find-scheme"
               onClick={() => setIsMobileMenuOpen(false)}
               className="block py-2 text-sm text-on-surface hover:text-primary"
             >
-              Find My Scheme Wizard
+              Find My Scheme
             </Link>
-
-            <div className="pl-3 py-2 border-l-2 border-outline-variant/60 space-y-2">
-              <p className="text-xs text-on-surface-variant font-bold">
-                Services &amp; Portals
-              </p>
-              <Link
-                href="/tracking"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="block py-1 text-xs text-on-surface hover:text-primary"
-              >
-                • Track Application
-              </Link>
-              <Link
-                href="/calculator"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="block py-1 text-xs text-on-surface hover:text-primary"
-              >
-                • EMI Calculator
-              </Link>
-              <Link
-                href="/locator"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="block py-1 text-xs text-on-surface hover:text-primary"
-              >
-                • Partner Bank Locator
-              </Link>
-              <Link
-                href="/dashboard"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="block py-1 text-xs text-on-surface hover:text-primary"
-              >
-                • Citizen Dashboard
-              </Link>
-            </div>
-
             <Link
-              href="/help"
+              href="/calculator"
               onClick={() => setIsMobileMenuOpen(false)}
               className="block py-2 text-sm text-on-surface hover:text-primary"
             >
-              Help &amp; FAQs
+              EMI Calculator
+            </Link>
+            <Link
+              href="/locator"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="block py-2 text-sm text-on-surface hover:text-primary"
+            >
+              Find Partner Center
             </Link>
 
             {/* Mobile Auth Drawer Actions */}

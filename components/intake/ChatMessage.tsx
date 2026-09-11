@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import Icon from '@/components/Icon';
 import { ChatMessageItem } from './intake.types';
 import { SchemeRecommendationItem } from '@/src/types/scheme-matching';
@@ -40,7 +41,13 @@ export default function ChatMessage({ message, onRetry }: ChatMessageProps) {
       <div className="flex items-start gap-3 max-w-[95%] sm:max-w-[85%]">
         {/* Assistant Emblem Avatar */}
         <div className="w-9 h-9 rounded-full bg-[#00472f] text-white flex items-center justify-center shrink-0 shadow-sm mt-0.5">
-          <Icon name="smart_toy" size={18} />
+          <Image
+            src="/images/suvidha-logo.png"
+            alt="SUVIDHA Assistant"
+            width={28}
+            height={28}
+            className="h-7 w-7 rounded-full bg-white p-0.5 object-contain"
+          />
         </div>
 
         <div className="space-y-3 flex-1">

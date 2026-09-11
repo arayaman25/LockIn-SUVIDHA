@@ -222,38 +222,22 @@ export default function HomePage() {
       {/* ========================================================================= */}
       <section className="bg-surface-container-low border-t border-outline-variant/30 py-16" id="help">
         <div className="max-w-[1240px] mx-auto px-4 md:px-8">
-          <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/50 p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
-            <div className="space-y-1 text-center md:text-left">
+          <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/50 p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-10 shadow-sm">
+            <div className="space-y-2 text-center md:text-left max-w-2xl">
               <h3 className="text-2xl font-serif font-bold text-primary">
-                Need help getting started?
+                Not sure which scheme is right for you?
               </h3>
               <p className="text-sm text-on-surface-variant">
-                Our citizen support network is available across web, voice assistance, and lead bank helpdesks.
+                Tell us about your needs, and we’ll help you find suitable government loan and assistance schemes.
               </p>
             </div>
-            <div className="flex flex-wrap items-center justify-center gap-3">
-              <Link
-                className="px-5 py-2.5 bg-primary text-surface hover:bg-primary-container rounded-xl text-xs font-bold transition-colors flex items-center gap-2 shadow-sm"
-                href="/assistant"
-              >
-                <Icon name="record_voice_over" className="w-4 h-4 text-white" />
-                <span>Ask for Help</span>
-              </Link>
-              <Link
-                className="px-5 py-2.5 bg-surface text-primary border border-outline-variant hover:bg-surface-container rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
-                href="/help"
-              >
-                <Icon name="help_outline" className="w-4 h-4 text-primary" />
-                <span>Frequently Asked Questions</span>
-              </Link>
-              <Link
-                className="px-5 py-2.5 bg-surface text-primary border border-outline-variant hover:bg-surface-container rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
-                href="/locator"
-              >
-                <Icon name="support_agent" className="w-4 h-4 text-primary" />
-                <span>Locate Nearest Desk</span>
-              </Link>
-            </div>
+            <Link
+              className="shrink-0 px-5 py-2.5 bg-primary text-surface hover:bg-primary-container rounded-xl text-xs font-bold transition-colors flex items-center gap-2 shadow-sm"
+              href="/assistant"
+            >
+              <Icon name="record_voice_over" className="w-4 h-4 text-white" />
+              <span>Ask for Help</span>
+            </Link>
           </div>
         </div>
       </section>

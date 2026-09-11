@@ -100,8 +100,24 @@ export default function RecommendationResults({
   if (matches.length === 0) {
     return (
       <div className="bg-surface rounded-2xl border border-outline/10 p-8 sm:p-12 shadow-sm text-center">
-        <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-secondary-container text-secondary flex items-center justify-center">
-          <Icon name="inbox" size={30} />
+        <div
+          className="w-16 h-16 mx-auto mb-5 flex items-center justify-center text-primary"
+          role="img"
+          aria-label="Scheme matching illustration"
+        >
+          <svg
+            viewBox="0 0 64 64"
+            className="w-14 h-14"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <rect x="13" y="9" width="34" height="44" rx="4" fill="#E2EFE8" stroke="#0B5D46" strokeWidth="2.5" />
+            <path d="M21 20H39M21 27H35M21 34H31" stroke="#5C8F7D" strokeWidth="2.5" strokeLinecap="round" />
+            <circle cx="41" cy="40" r="9" fill="#F8FAF7" stroke="#0B5D46" strokeWidth="2.5" />
+            <path d="M47.5 46.5L54 53" stroke="#0B5D46" strokeWidth="3" strokeLinecap="round" />
+            <path d="M36.5 40L39.5 43L45 36.5" stroke="#317B68" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
         </div>
         <h2 className="text-2xl font-serif font-bold text-on-surface mb-2">
           No suitable schemes were found based on the information provided.
