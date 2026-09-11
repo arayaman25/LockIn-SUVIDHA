@@ -275,10 +275,11 @@ export default function SchemeWizard({
           onProfileUpdate={handleProfileUpdateFromAI}
           onSwitchToForm={() => {
             setEntryMode('form');
-            setCurrentStep(5);
+            setCurrentStep(1);
           }}
-          onFindSchemes={(profile) => {
-            onSubmitReview(profile);
+          onFindSchemes={() => {
+            setEntryMode('form');
+            setCurrentStep(1);
           }}
           isMatchingSchemes={recommendationMutation.isPending}
         />

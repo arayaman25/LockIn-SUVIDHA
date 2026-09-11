@@ -30,7 +30,7 @@ function WizardContent() {
       </nav>
 
       <div className="py-2">
-        <SchemeWizard initialIntent={initialIntent} />
+        <SchemeWizard initialIntent={initialIntent} defaultMode="form" />
       </div>
     </div>
   );
