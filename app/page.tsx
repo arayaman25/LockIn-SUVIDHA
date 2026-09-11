@@ -232,13 +232,13 @@ export default function HomePage() {
               </p>
             </div>
             <div className="flex flex-wrap items-center justify-center gap-3">
-              <button
-                className="px-5 py-2.5 bg-primary text-surface hover:bg-primary-container rounded-xl text-xs font-bold transition-colors flex items-center gap-2"
-                onClick={() => setIsCompanionOpen(true)}
+              <Link
+                className="px-5 py-2.5 bg-primary text-surface hover:bg-primary-container rounded-xl text-xs font-bold transition-colors flex items-center gap-2 shadow-sm"
+                href="/assistant"
               >
                 <Icon name="record_voice_over" className="w-4 h-4 text-white" />
                 <span>Ask for Help</span>
-              </button>
+              </Link>
               <Link
                 className="px-5 py-2.5 bg-surface text-primary border border-outline-variant hover:bg-surface-container rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
                 href="/help"

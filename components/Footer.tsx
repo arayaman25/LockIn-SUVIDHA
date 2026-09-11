@@ -10,7 +10,7 @@ export default function Footer() {
     <footer className="bg-surface-container-high text-on-surface border-t border-outline-variant mt-auto" id="contact">
       <div className="max-w-[1240px] mx-auto px-4 md:px-8 py-12">
         {/* Top row: Organized columns */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 pb-10 border-b border-outline-variant/40">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pb-10 border-b border-outline-variant/40">
           {/* Col 1: Brand & Credentials */}
           <div className="col-span-2 space-y-3">
             <div className="flex items-center gap-3">
@@ -101,56 +101,6 @@ export default function Footer() {
                 <Link href="/partner-desk" className="hover:text-primary hover:underline">
                   Partner Portal Login
                 </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Col 4: Help & Contact */}
-          <div className="space-y-3">
-            <h4 className="text-sm font-bold text-primary">Help &amp; Contact</h4>
-            <ul className="space-y-2 text-xs text-on-surface-variant">
-              <li>
-                <Link href="/help" className="hover:text-primary hover:underline">
-                  Citizen FAQs
-                </Link>
-              </li>
-              <li>
-                <a
-                  href="https://pgportal.gov.in"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-primary hover:underline flex items-center gap-1"
-                >
-                  <span>Grievance (CPGRAMS)</span>
-                  <Icon name="open_in_new" className="w-3.5 h-3.5" />
-                </a>
-              </li>
-              <li>
-                <a
-                  href="tel:18001117788"
-                  className="text-primary font-bold hover:underline block text-xs"
-                >
-                  Toll Free: 1800-111-7788
-                </a>
-              </li>
-              <li>
-                <a
-                  href="mailto:support-suvidha@gov.in"
-                  className="hover:text-primary hover:underline block text-xs"
-                >
-                  support-suvidha@gov.in
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://www.india.gov.in"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-primary hover:underline flex items-center gap-1"
-                >
-                  <span>National Portal of India</span>
-                  <Icon name="open_in_new" className="w-3.5 h-3.5" />
-                </a>
               </li>
             </ul>
           </div>

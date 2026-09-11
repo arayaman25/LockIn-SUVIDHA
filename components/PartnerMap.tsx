@@ -88,10 +88,12 @@ export default function PartnerMap({
     userLocationRef.current = userLocation;
   }, [onViewDetails, onSelectPartner, onUseMyLocation, userLocation]);
 
-  // Initial geographic center
+  // Initial geographic center — neutral center of India.
+  // The map will pan to the user's actual location as soon as userLocation is set.
+  // Never default to Varanasi or any other specific city.
   const initialCenterRef = useRef({
-    lat: partners[0]?.latitude ?? 25.334,
-    lng: partners[0]?.longitude ?? 82.998,
+    lat: partners[0]?.latitude ?? 20.5937,
+    lng: partners[0]?.longitude ?? 78.9629,
   });
 
   // Initialize Map

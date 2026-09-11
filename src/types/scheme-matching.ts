@@ -126,24 +126,31 @@ export interface IntakeRequest {
   userId?: string;
 }
 
-export type IntakeResponseStatus = 'in_progress' | 'matched' | 'no_match';
+export type IntakeResponseStatus = 'in_progress' | 'needs_clarification' | 'matched' | 'no_match';
 
 export interface IntakeInProgressResponse {
-  status: 'in_progress';
-  language: string;
-  question: string | null;
-  partialProfile: Partial<CitizenProfile>;
+  status: 'in_progress' | 'needs_clarification';
+  language?: string;
+  detectedLanguage?: string;
+  question?: string | null;
+  clarifyingQuestion?: string | null;
+  partialProfile?: Partial<CitizenProfile> | Record<string, unknown>;
+  extractedProfile?: Partial<CitizenProfile> | Record<string, unknown>;
+  missingFields?: string[];
+  missingRequiredFields?: string[];
 }
 
 export interface IntakeMatchedResponse {
   status: 'matched';
-  language: string;
+  language?: string;
+  detectedLanguage?: string;
   matches: SchemeRecommendationItem[];
 }
 
 export interface IntakeNoMatchResponse {
   status: 'no_match';
-  language: string;
+  language?: string;
+  detectedLanguage?: string;
   message: string;
 }
 
