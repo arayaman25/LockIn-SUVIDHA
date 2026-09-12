@@ -157,17 +157,32 @@ export default function RecommendationResults({
             Schemes suitable for you
           </h2>
           <p className="text-on-surface-variant text-sm mt-1">
-            We found <strong className="text-primary font-semibold">{matches.length} scheme{matches.length > 1 ? 's' : ''}</strong> matching your personal and occupational profile.
+            We found <strong className="text-primary font-semibold">{matches.length} scheme{matches.length > 1 ? 's' : ''}</strong> matching your personal and business criteria.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={onReviewProfile}
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-outline/20 text-xs font-medium text-on-surface hover:bg-surface-variant/40 transition-colors self-start sm:self-auto"
-        >
-          <Icon name="edit-2" size={14} />
-          Edit Profile
-        </button>
+        <div className="flex items-center gap-2 self-start sm:self-auto">
+          <button
+            type="button"
+            onClick={onReviewProfile}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-outline-variant bg-surface text-xs font-semibold text-primary hover:bg-surface-container transition-colors"
+          >
+            <Icon name="edit-2" size={14} />
+            <span>Edit Profile</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              if (typeof window !== 'undefined') {
+                sessionStorage.removeItem('suvidha_preferred_schemes');
+                window.location.href = '/wizard?purpose=business';
+              }
+            }}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-outline-variant bg-surface text-xs font-semibold text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors"
+          >
+            <Icon name="refresh-cw" size={14} />
+            <span>Start New Check</span>
+          </button>
+        </div>
       </div>
 
       <div className="space-y-4">

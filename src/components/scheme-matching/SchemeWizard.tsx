@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useForm, FormProvider, FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { schemeMatchingFormSchema, CitizenProfileFormValues } from '@/src/lib/schemas/scheme-matching';
@@ -60,7 +60,36 @@ export default function SchemeWizard({
   const { trigger, getValues, handleSubmit, setValue } = methods;
   const recommendationMutation = useSchemeRecommendations();
 
-  // Step navigation gate: cannot access steps 3-6 if isScheduledCaste is false
+  // Occupation step is omitted for business purpose and when not needed for scheme recommendation
+  const hasOccupationStep = false;
+  const totalSteps = hasOccupationStep ? 6 : 5;
+  const resultsStep = totalSteps;
+  const reviewStep = hasOccupationStep ? 5 : 4;
+  const requirementStep = hasOccupationStep ? 4 : 3;
+
+  // Restore cached recommendation results if returning from option pages or ?step=results
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = sessionStorage.getItem('suvidha_preferred_schemes');
+        const urlParams = new URLSearchParams(window.location.search);
+        const stepParam = urlParams.get('step');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed?.results?.data?.matches?.length > 0) {
+            setResultsData(parsed.results);
+            if (stepParam === 'results' || urlParams.get('from') === 'options') {
+              setCurrentStep(resultsStep);
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to restore preferred schemes from sessionStorage', e);
+      }
+    }
+  }, [resultsStep]);
+
+  // Step navigation gate: cannot access subsequent steps if isScheduledCaste is false
   const canNavigateToStep = (targetStep: number): boolean => {
     const isSC = getValues('isScheduledCaste');
     if (!isSC && targetStep > 2) {
@@ -89,9 +118,9 @@ export default function SchemeWizard({
         'state',
         'district',
       ]);
-    } else if (currentStep === 3) {
+    } else if (hasOccupationStep && currentStep === 3) {
       isValid = await trigger(['occupationCategory', 'occupationType']);
-    } else if (currentStep === 4) {
+    } else if (currentStep === requirementStep) {
       const intent = getValues('intent');
       if (intent === 'business_loan') {
         isValid = await trigger(['projectType', 'requiredLoanAmount', 'estimatedProjectCost']);
@@ -103,7 +132,7 @@ export default function SchemeWizard({
     }
 
     if (isValid) {
-      setCurrentStep((prev) => Math.min(prev + 1, 6));
+      setCurrentStep((prev) => Math.min(prev + 1, resultsStep));
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
@@ -124,7 +153,7 @@ export default function SchemeWizard({
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Submission from Step 5 -> Call Backend API & Advance to Step 6
+  // Submission from Review Step -> Call Backend API & Advance to Results Step
   const onSubmitReview = async (formData: Partial<CitizenProfileFormValues>) => {
     // Gate check: do not submit if not SC
     if (formData.isScheduledCaste === false) {
@@ -137,7 +166,7 @@ export default function SchemeWizard({
     }
 
     setSubmitError(null);
-    setCurrentStep(6);
+    setCurrentStep(resultsStep);
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
     let payload: RecommendationRequest;
@@ -199,6 +228,20 @@ export default function SchemeWizard({
     recommendationMutation.mutate(payload, {
       onSuccess: (data) => {
         setResultsData(data);
+        if (typeof window !== 'undefined') {
+          try {
+            sessionStorage.setItem(
+              'suvidha_preferred_schemes',
+              JSON.stringify({
+                results: data,
+                profile: getValues(),
+                timestamp: Date.now(),
+              })
+            );
+          } catch (e) {
+            console.warn('Failed to save preferred schemes to sessionStorage', e);
+          }
+        }
       },
       onError: (err) => {
         console.error('[SchemeWizard] Recommendation mutation error:', err);
@@ -248,8 +291,8 @@ export default function SchemeWizard({
     [getValues, setValue]
   );
 
-  // Results View (Step 6)
-  if (currentStep === 6) {
+  // Results View
+  if (currentStep === resultsStep) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8">
         <RecommendationResults
@@ -259,7 +302,7 @@ export default function SchemeWizard({
           onRetry={handleRetry}
           onReviewProfile={() => {
             setEntryMode('form');
-            handleJumpToStep(5);
+            handleJumpToStep(reviewStep);
           }}
         />
       </div>
@@ -305,6 +348,12 @@ export default function SchemeWizard({
       {/* Step Progress Bar */}
       <WizardProgress
         currentStep={currentStep}
+        totalSteps={totalSteps}
+        stepLabels={
+          hasOccupationStep
+            ? ['Purpose', 'Personal', 'Occupation', 'Requirement', 'Review', 'Results']
+            : ['Purpose', 'Personal', 'Requirement', 'Review', 'Results']
+        }
         onStepClick={handleJumpToStep}
         canNavigateToStep={canNavigateToStep}
       />
@@ -318,17 +367,18 @@ export default function SchemeWizard({
             <PersonalDetailsStep onContinue={handleNext} onPrevious={handleBack} />
           )}
 
-          {currentStep === 3 && (
+          {hasOccupationStep && currentStep === 3 && (
             <OccupationStep onContinue={handleNext} onPrevious={handleBack} />
           )}
 
-          {currentStep === 4 && (
+          {currentStep === requirementStep && (
             <RequirementStep onContinue={handleNext} onPrevious={handleBack} />
           )}
 
-          {currentStep === 5 && (
+          {currentStep === reviewStep && (
             <ReviewStep
               onGoToStep={handleJumpToStep}
+              hasOccupationStep={hasOccupationStep}
               onSubmit={handleSubmit((data) => onSubmitReview(data), onInvalidSubmit)}
               isLoading={recommendationMutation.isPending}
               errorMessage={submitError || recommendationMutation.error?.message}

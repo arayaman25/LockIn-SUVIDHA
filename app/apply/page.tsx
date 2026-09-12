@@ -7,6 +7,7 @@ import confetti from 'canvas-confetti';
 import { useApp } from '@/context/AppContext';
 import { SUVIDHA_SCHEMES, SUVIDHA_PARTNERS } from '@/lib/data';
 import Icon from '@/components/Icon';
+import BackToPreferredSchemes from '@/components/BackToPreferredSchemes';
 
 function ApplyFlowContent() {
   const router = useRouter();
@@ -128,6 +129,8 @@ function ApplyFlowContent() {
         <span>/</span>
         <span className="font-bold text-primary">Direct Application</span>
       </nav>
+
+      <BackToPreferredSchemes currentSchemeTitle={selectedScheme.name} />
 
       <div className="max-w-3xl mx-auto bg-surface-container-lowest p-6 md:p-8 rounded-2xl border border-outline-variant/50 shadow-civic">
         {/* Step Header */}

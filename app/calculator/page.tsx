@@ -3,6 +3,7 @@
 import React, { Suspense } from 'react';
 import Link from 'next/link';
 import SchemeEmiCalculator from '@/components/calculator/SchemeEmiCalculator';
+import BackToPreferredSchemes from '@/components/BackToPreferredSchemes';
 import Icon from '@/components/Icon';
 
 export default function CalculatorPage() {
@@ -20,6 +21,7 @@ export default function CalculatorPage() {
 
       <div className="py-2">
         <Suspense fallback={<div className="p-12 text-center text-sm text-stone-500">Loading SUVIDHA EMI Calculator...</div>}>
+          <BackToPreferredSchemes />
           <SchemeEmiCalculator />
         </Suspense>
       </div>

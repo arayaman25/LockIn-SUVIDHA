@@ -188,7 +188,7 @@ export default function SchemeRecommendationCard({
         <div className="flex flex-wrap items-center gap-2">
           {/* View Details */}
           <Link
-            href={`/schemes/${scheme.schemeCode || scheme.schemeId}`}
+            href={`/schemes/${scheme.schemeCode || scheme.schemeId}?from=wizard&schemeName=${encodeURIComponent(scheme.schemeName)}`}
             className="px-3.5 py-2 rounded-xl border border-outline-variant bg-surface-container-lowest hover:bg-surface text-xs font-bold text-primary transition-all shadow-xs"
           >
             View Details
@@ -196,7 +196,7 @@ export default function SchemeRecommendationCard({
 
           {/* Calculate EMI */}
           <Link
-            href={`/calculator?scheme=${scheme.schemeCode || scheme.schemeId}`}
+            href={`/calculator?scheme=${scheme.schemeCode || scheme.schemeId}&from=wizard&schemeName=${encodeURIComponent(scheme.schemeName)}`}
             className="px-3.5 py-2 rounded-xl border border-outline-variant bg-surface-container-lowest hover:bg-surface text-xs font-bold text-secondary hover:text-primary transition-all shadow-xs flex items-center gap-1.5"
           >
             <Icon name="calculate" className="w-3.5 h-3.5" />
@@ -214,21 +214,22 @@ export default function SchemeRecommendationCard({
             }`}
           >
             <Icon name="pin_drop" className="w-3.5 h-3.5" />
-            <span>{showPartners ? 'Hide Partners' : 'Find Partner Desk'}</span>
+            <span>{showPartners ? 'Hide Desk' : 'Nodal Desk Info'}</span>
           </button>
 
+          {/* CA & Partner Desk Finder */}
           <Link
-            href={`/locator?scheme=${encodeURIComponent(scheme.schemeCode || scheme.schemeId)}`}
+            href={`/locator?scheme=${encodeURIComponent(scheme.schemeCode || scheme.schemeId)}&from=wizard&schemeName=${encodeURIComponent(scheme.schemeName)}`}
             className="px-3.5 py-2 rounded-xl border border-outline-variant bg-surface-container-lowest hover:bg-surface text-xs font-bold text-secondary hover:text-primary transition-all shadow-xs flex items-center gap-1.5"
           >
             <Icon name="location_on" className="w-3.5 h-3.5" />
-            <span>Use My Location</span>
+            <span>CA &amp; Partner Finder</span>
           </Link>
         </div>
 
         {/* Primary Apply Action */}
         <Link
-          href={`/apply?scheme=${scheme.schemeCode || scheme.schemeId}`}
+          href={`/apply?scheme=${scheme.schemeCode || scheme.schemeId}&from=wizard&schemeName=${encodeURIComponent(scheme.schemeName)}`}
           className="px-5 py-2.5 rounded-xl bg-primary text-white text-xs sm:text-sm font-bold hover:opacity-95 transition-all shadow-sm flex items-center gap-2 active:scale-[0.99]"
         >
           <span>Apply Now</span>

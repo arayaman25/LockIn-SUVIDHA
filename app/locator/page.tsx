@@ -3,6 +3,7 @@
 import React, { Suspense } from 'react';
 import Link from 'next/link';
 import PartnerLocator from '@/components/PartnerLocator';
+import BackToPreferredSchemes from '@/components/BackToPreferredSchemes';
 import Icon from '@/components/Icon';
 
 export default function LocatorPage() {
@@ -20,6 +21,7 @@ export default function LocatorPage() {
 
       <div className="py-2">
         <Suspense fallback={<div className="min-h-[460px]" />}>
+          <BackToPreferredSchemes />
           <PartnerLocator />
         </Suspense>
       </div>

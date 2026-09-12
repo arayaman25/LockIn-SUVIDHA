@@ -11,6 +11,7 @@ interface ReviewStepProps {
   onSubmit: () => void;
   isLoading: boolean;
   errorMessage?: string | null;
+  hasOccupationStep?: boolean;
 }
 
 export default function ReviewStep({
@@ -18,6 +19,7 @@ export default function ReviewStep({
   onSubmit,
   isLoading,
   errorMessage,
+  hasOccupationStep = false,
 }: ReviewStepProps) {
   const { watch } = useFormContext<CitizenProfileFormValues>();
   const values = watch();
@@ -171,31 +173,33 @@ export default function ReviewStep({
           </button>
         </div>
 
-        {/* Section 4: Occupation */}
-        <div className="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-5 shadow-xs flex justify-between items-start gap-4">
-          <div className="space-y-2">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-secondary">
-              Occupation &amp; Livelihood
-            </span>
-            <div className="text-xs pt-1">
-              <p className="text-on-surface">
-                <strong>{categoryObj?.name || values.occupationCategory}</strong>
-                {' → '}
-                <span className="text-secondary font-semibold">
-                  {values.customOccupation || subCategoryObj?.name || values.occupationType}
-                </span>
-              </p>
+        {/* Section 4: Occupation (Only if active in wizard) */}
+        {hasOccupationStep && (values.occupationCategory || values.occupationType) && (
+          <div className="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-5 shadow-xs flex justify-between items-start gap-4">
+            <div className="space-y-2">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-secondary">
+                Occupation &amp; Livelihood
+              </span>
+              <div className="text-xs pt-1">
+                <p className="text-on-surface">
+                  <strong>{categoryObj?.name || values.occupationCategory}</strong>
+                  {' → '}
+                  <span className="text-secondary font-semibold">
+                    {values.customOccupation || subCategoryObj?.name || values.occupationType}
+                  </span>
+                </p>
+              </div>
             </div>
+            <button
+              type="button"
+              onClick={() => onGoToStep(3)}
+              className="text-xs font-bold text-primary hover:underline flex items-center gap-1 shrink-0 py-1 px-2.5 rounded-lg hover:bg-surface-container"
+            >
+              <Icon name="edit_document" className="w-3.5 h-3.5" />
+              <span>Edit</span>
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => onGoToStep(3)}
-            className="text-xs font-bold text-primary hover:underline flex items-center gap-1 shrink-0 py-1 px-2.5 rounded-lg hover:bg-surface-container"
-          >
-            <Icon name="edit_document" className="w-3.5 h-3.5" />
-            <span>Edit</span>
-          </button>
-        </div>
+        )}
 
         {/* Section 5: Education (if applicable) */}
         {values.intent === 'education_loan' && (
@@ -219,7 +223,7 @@ export default function ReviewStep({
             </div>
             <button
               type="button"
-              onClick={() => onGoToStep(4)}
+              onClick={() => onGoToStep(hasOccupationStep ? 4 : 3)}
               className="text-xs font-bold text-primary hover:underline flex items-center gap-1 shrink-0 py-1 px-2.5 rounded-lg hover:bg-surface-container"
             >
               <Icon name="edit_document" className="w-3.5 h-3.5" />
@@ -235,7 +239,7 @@ export default function ReviewStep({
         <button
           type="button"
           disabled={isLoading}
-          onClick={() => onGoToStep(4)}
+          onClick={() => onGoToStep(hasOccupationStep ? 4 : 3)}
           className="px-6 py-2.5 border border-outline-variant rounded-xl text-xs sm:text-sm font-bold text-primary hover:bg-surface-container transition-colors"
         >
           Previous

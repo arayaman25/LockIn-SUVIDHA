@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { SUVIDHA_SCHEMES } from '@/lib/data';
 import Icon from '@/components/Icon';
+import BackToPreferredSchemes from '@/components/BackToPreferredSchemes';
 
 export function generateStaticParams() {
   return SUVIDHA_SCHEMES.map((scheme) => ({
@@ -37,6 +38,10 @@ export default async function SchemeDetailPage({
         <span>/</span>
         <span className="font-bold text-primary truncate max-w-xs">{scheme.name}</span>
       </nav>
+
+      <Suspense fallback={null}>
+        <BackToPreferredSchemes currentSchemeTitle={scheme.name} />
+      </Suspense>
 
       {/* Main Header Container */}
       <div className="bg-surface-container-lowest p-6 md:p-8 rounded-2xl border border-outline-variant/50 shadow-civic mb-8">

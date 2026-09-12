@@ -6,14 +6,14 @@ import Icon from '@/components/Icon';
 interface WizardProgressProps {
   currentStep: number;
   totalSteps?: number;
+  stepLabels?: string[];
   onStepClick?: (step: number) => void;
   canNavigateToStep?: (step: number) => boolean;
 }
 
-const STEP_LABELS = [
+const DEFAULT_STEP_LABELS = [
   'Purpose',
   'Personal',
-  'Occupation',
   'Requirement',
   'Review',
   'Results',
@@ -21,13 +21,16 @@ const STEP_LABELS = [
 
 export default function WizardProgress({
   currentStep,
-  totalSteps = 6,
+  totalSteps,
+  stepLabels,
   onStepClick,
   canNavigateToStep,
 }: WizardProgressProps) {
+  const labels = stepLabels && stepLabels.length > 0 ? stepLabels : DEFAULT_STEP_LABELS;
+  const effectiveTotal = totalSteps || labels.length;
   const progressPercent = Math.min(
     100,
-    Math.max(0, ((currentStep - 1) / (totalSteps - 1)) * 100)
+    Math.max(0, ((currentStep - 1) / (effectiveTotal - 1)) * 100)
   );
 
   return (
@@ -35,16 +38,19 @@ export default function WizardProgress({
       {/* Mobile step label */}
       <div className="flex sm:hidden items-center justify-between text-xs">
         <span className="font-bold text-primary">
-          Step {currentStep}: {STEP_LABELS[currentStep - 1] || 'Details'}
+          Step {currentStep}: {labels[currentStep - 1] || 'Details'}
         </span>
         <span className="text-on-surface-variant font-medium">
-          {currentStep} of {totalSteps}
+          {currentStep} of {effectiveTotal}
         </span>
       </div>
 
       {/* Desktop step indicators */}
-      <div className="hidden sm:grid grid-cols-6 gap-2 text-center text-xs">
-        {STEP_LABELS.map((label, index) => {
+      <div
+        className="hidden sm:grid gap-2 text-center text-xs"
+        style={{ gridTemplateColumns: `repeat(${labels.length}, minmax(0, 1fr))` }}
+      >
+        {labels.map((label, index) => {
           const stepNumber = index + 1;
           const isCompleted = currentStep > stepNumber;
           const isCurrent = currentStep === stepNumber;
