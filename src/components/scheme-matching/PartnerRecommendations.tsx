@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import Icon from '@/components/Icon';
+import { useApp } from '@/context/AppContext';
 import { useNearbyPartners } from '@/src/lib/query';
 import { ScoredPartner } from '@/src/types';
 
@@ -33,6 +34,7 @@ export default function PartnerRecommendations({
   initialLat,
   initialLng,
 }: PartnerRecommendationsProps) {
+  const { userLocation, requestUserLocation } = useApp();
   // Default coordinates (e.g. Varanasi center or user supplied)
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(() => {
     if (typeof initialLat === 'number' && typeof initialLng === 'number') {
@@ -44,6 +46,15 @@ export default function PartnerRecommendations({
   const [isLocating, setIsLocating] = useState(false);
   const [locationError, setLocationError] = useState<string | null>(null);
   const [selectedPartner, setSelectedPartner] = useState<ScoredPartner | null>(null);
+
+  useEffect(() => {
+    if (typeof initialLat === 'number' && typeof initialLng === 'number') return;
+    if (!userLocation) return;
+    const syncTimer = window.setTimeout(() => {
+      setCoords({ lat: userLocation.latitude, lng: userLocation.longitude });
+    }, 0);
+    return () => window.clearTimeout(syncTimer);
+  }, [initialLat, initialLng, userLocation]);
 
   const {
     data: partnerResponse,
@@ -58,28 +69,21 @@ export default function PartnerRecommendations({
   );
 
   const handleUseMyLocation = () => {
-    if (typeof window === 'undefined' || !navigator.geolocation) {
-      setLocationError('Geolocation is not supported by your browser.');
-      return;
-    }
-
     setIsLocating(true);
     setLocationError(null);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
+    requestUserLocation()
+      .then((location) => {
         setIsLocating(false);
         setCoords({
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude,
+          lat: location.latitude,
+          lng: location.longitude,
         });
-      },
-      (err) => {
+      })
+      .catch((err: Error) => {
         setIsLocating(false);
         setLocationError('Location permission was denied. Using district default location.');
         console.warn('Geolocation error:', err);
-      },
-      { enableHighAccuracy: true, timeout: 8000 }
-    );
+      });
   };
 
   const partners = partnerResponse?.data?.partners || [];

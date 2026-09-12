@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { CitizenApplication, INITIAL_APPLICATIONS, SUVIDHA_SCHEMES } from '@/lib/data';
 
 export type UserRole = 'citizen' | 'partner' | 'admin';
@@ -23,6 +23,15 @@ export interface UserProfile {
   phone: string;
   aadhaarMasked: string;
 }
+
+export interface UserLocation {
+  latitude: number;
+  longitude: number;
+}
+
+export type LocationStatus = 'unknown' | 'requesting' | 'granted' | 'denied';
+
+const LOCATION_SESSION_KEY = 'suvidha_user_location';
 
 export const DEMO_OFFICIAL_USERS: Record<string, { password: string; user: AuthUser }> = {
   'admin@suvidha.demo': {
@@ -84,6 +93,10 @@ interface AppContextType {
   ) => void;
   trackingQuery: string;
   setTrackingQuery: (arn: string) => void;
+  userLocation: UserLocation | null;
+  locationStatus: LocationStatus;
+  locationReady: boolean;
+  requestUserLocation: () => Promise<UserLocation>;
   selectedLanguage: string;
   setSelectedLanguage: (lang: string) => void;
   fontSize: 'sm' | 'md' | 'lg';
@@ -123,6 +136,68 @@ export function AppProvider({ children }: { children: ReactNode }) {
   });
 
   const [trackingQuery, setTrackingQuery] = useState<string>('ARN-2025-UP-8841');
+  const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
+  const [locationStatus, setLocationStatus] = useState<LocationStatus>('unknown');
+  const [locationReady, setLocationReady] = useState<boolean>(false);
+
+  useEffect(() => {
+    const restoreLocation = () => {
+      try {
+        const stored = sessionStorage.getItem(LOCATION_SESSION_KEY);
+        if (!stored) return;
+        const parsed = JSON.parse(stored) as Partial<UserLocation>;
+        if (typeof parsed.latitude === 'number' && typeof parsed.longitude === 'number') {
+          setUserLocation({ latitude: parsed.latitude, longitude: parsed.longitude });
+          setLocationStatus('granted');
+        } else {
+          sessionStorage.removeItem(LOCATION_SESSION_KEY);
+        }
+      } catch {
+        // Ignore unavailable or malformed session storage.
+      } finally {
+        setLocationReady(true);
+      }
+    };
+
+    const restoreTimer = window.setTimeout(restoreLocation, 0);
+    return () => window.clearTimeout(restoreTimer);
+  }, []);
+
+  const requestUserLocation = useCallback((): Promise<UserLocation> => {
+    if (userLocation) return Promise.resolve(userLocation);
+    if (locationStatus === 'requesting') {
+      return Promise.reject(new Error('Location request already in progress.'));
+    }
+    if (typeof navigator === 'undefined' || !navigator.geolocation) {
+      setLocationStatus('denied');
+      return Promise.reject(new Error('Geolocation is not supported by your browser.'));
+    }
+
+    setLocationStatus('requesting');
+    return new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const nextLocation = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          };
+          setUserLocation(nextLocation);
+          setLocationStatus('granted');
+          try {
+            sessionStorage.setItem(LOCATION_SESSION_KEY, JSON.stringify(nextLocation));
+          } catch {
+            // Session persistence is best effort.
+          }
+          resolve(nextLocation);
+        },
+        (error) => {
+          setLocationStatus('denied');
+          reject(error);
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 },
+      );
+    });
+  }, [locationStatus, userLocation]);
   const [selectedLanguage, setSelectedLanguageState] = useState<string>(() => {
     if (typeof window !== 'undefined') {
       const storedLanguage = localStorage.getItem('suvidha_language');
@@ -422,6 +497,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
         updateApplicationStatus,
         trackingQuery,
         setTrackingQuery,
+        userLocation,
+        locationStatus,
+        locationReady,
+        requestUserLocation,
         selectedLanguage,
         setSelectedLanguage,
         fontSize,

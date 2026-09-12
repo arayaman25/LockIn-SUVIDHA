@@ -38,7 +38,7 @@ export default function ChatMessage({ message, onRetry }: ChatMessageProps) {
   // Assistant message
   return (
     <div className="flex justify-start my-3 animate-in fade-in duration-200">
-      <div className="flex items-start gap-3 max-w-[95%] sm:max-w-[85%]">
+      <div className="flex max-w-[98%] items-start gap-3 sm:max-w-[92%]">
         {/* Assistant Emblem Avatar */}
         <div className="w-9 h-9 rounded-full bg-[#00472f] text-white flex items-center justify-center shrink-0 shadow-sm mt-0.5">
           <Image
@@ -81,98 +81,80 @@ export default function ChatMessage({ message, onRetry }: ChatMessageProps) {
             )}
           </div>
 
-          {/* Matched Schemes List (when backend intake reaches 'matched') */}
+          {/* Matched schemes returned by the backend intake and matcher */}
           {message.matchedSchemes && message.matchedSchemes.length > 0 && (
             <div className="space-y-3 pt-1">
-              <div className="text-xs font-bold uppercase tracking-wider text-stone-500 flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-stone-500">
                 <Icon name="verified" size={16} className="text-[#00472f]" />
-                <span>Recommended Concessional Schemes ({message.matchedSchemes.length})</span>
+                <span>{message.matchedSchemes.length} scheme{message.matchedSchemes.length === 1 ? '' : 's'} match your profile</span>
               </div>
 
-              <div className="grid grid-cols-1 gap-3">
-                {message.matchedSchemes.map((scheme: SchemeRecommendationItem) => (
+              <div className="space-y-3">
+                {message.matchedSchemes.map((scheme: SchemeRecommendationItem, index) => (
                   <div
                     key={scheme.schemeId || scheme.schemeCode}
-                    className="bg-white border border-stone-200 rounded-xl p-4 sm:p-5 shadow-sm hover:border-[#00472f]/50 transition-all space-y-3"
+                    className={`${index === 0 ? 'border-[#00472f]/25 p-4 sm:p-5 shadow-sm' : 'border-stone-200 p-3'} rounded-xl border bg-white transition-all hover:border-[#00472f]/50`}
                   >
                     <div className="flex items-start justify-between gap-2">
-                      <div>
+                      <div className="min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-50 text-[#00472f] border border-emerald-200">
-                            {scheme.schemeCode}
-                          </span>
-                          <h4 className="text-base font-bold text-stone-900">
+                          {index === 0 && <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-[#00472f] text-white">Best match</span>}
+                          <h4 className={`${index === 0 ? 'text-base' : 'text-sm'} font-bold text-stone-900`}>
                             {scheme.schemeName}
                           </h4>
                         </div>
-                        <p className="text-xs text-stone-600 mt-1 leading-relaxed">
-                          {scheme.reasoning}
+                        <p className="mt-1 text-xs leading-relaxed text-stone-600">
+                          {scheme.summary || scheme.description || scheme.reasoning}
                         </p>
                       </div>
 
-                      {typeof scheme.matchScore === 'number' && (
+                      {Number.isFinite(scheme.matchScore) && (
                         <div className="text-right shrink-0">
-                          <span className="inline-block px-2 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
-                            {Math.round(scheme.matchScore)}% Match
+                          <span className="inline-block rounded-full bg-emerald-100 px-2 py-1 text-[11px] font-bold text-emerald-800">
+                            {Math.round(scheme.matchScore)}% profile match
                           </span>
                         </div>
                       )}
                     </div>
 
-                    {/* Key Loan Metrics */}
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 bg-stone-50 p-2.5 rounded-lg text-xs">
-                      <div>
-                        <span className="text-stone-500 block text-[11px]">Interest Rate</span>
-                        <span className="font-semibold text-emerald-800">
-                          {scheme.interestRateMin === scheme.interestRateMax
-                            ? `${scheme.interestRateMin}%`
-                            : `${scheme.interestRateMin}% - ${scheme.interestRateMax}%`}{' '}
-                          p.a.
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-stone-500 block text-[11px]">Max Loan</span>
-                        <span className="font-semibold text-stone-900 font-mono">
-                          ₹{Number(scheme.maxLoanAmount || 0).toLocaleString('en-IN')}
-                        </span>
-                      </div>
-                      <div className="col-span-2 sm:col-span-1">
-                        <span className="text-stone-500 block text-[11px]">Repayment Tenure</span>
-                        <span className="font-semibold text-stone-900">
-                          Up to {scheme.repaymentTenureMonths} months
-                        </span>
-                      </div>
-                    </div>
+                    {index === 0 && (
+                      <>
+                        <div className="border-t border-stone-100 pt-3">
+                          <p className="text-[10px] font-bold uppercase tracking-wider text-stone-400">Why this may suit you</p>
+                          <p className="mt-1 text-xs leading-relaxed text-stone-700">{scheme.whyItFits || scheme.reasoning}</p>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 bg-stone-50 p-2.5 rounded-lg text-xs sm:grid-cols-3">
+                          {scheme.maxLoanAmount && <div><span className="block text-[10px] text-stone-500">Maximum loan</span><span className="font-semibold text-stone-900">₹{Number(scheme.maxLoanAmount).toLocaleString('en-IN')}</span></div>}
+                          {Number.isFinite(scheme.repaymentTenureMonths) && <div><span className="block text-[10px] text-stone-500">Repayment tenure</span><span className="font-semibold text-stone-900">Up to {scheme.repaymentTenureMonths} months</span></div>}
+                          {scheme.interestRateMin && scheme.interestRateMax && <div><span className="block text-[10px] text-stone-500">Interest rate</span><span className="font-semibold text-stone-900">{scheme.interestRateMin === scheme.interestRateMax ? scheme.interestRateMin : `${scheme.interestRateMin}-${scheme.interestRateMax}`}% p.a.</span></div>}
+                        </div>
+                      </>
+                    )}
 
-                    {/* Actions */}
-                    <div className="flex items-center justify-between pt-1 gap-2">
+                    <div className="flex flex-wrap items-center gap-3 pt-2 text-xs font-semibold">
                       <Link
-                        href={`/calculator?scheme=${scheme.schemeCode}`}
-                        className="text-xs font-semibold text-[#00472f] hover:underline flex items-center gap-1"
+                        href={`/schemes/${scheme.schemeCode || scheme.schemeId}`}
+                        className="text-[#00472f] hover:underline"
                       >
-                        <Icon name="calculate" size={14} />
-                        <span>Calculate EMI (किस्त देखें)</span>
+                        Details
                       </Link>
-
                       <Link
                         href={`/locator?scheme=${encodeURIComponent(scheme.schemeCode)}`}
-                        className="text-xs font-semibold text-[#00472f] hover:underline flex items-center gap-1"
+                        className="text-[#00472f] hover:underline"
                       >
-                        <Icon name="location_on" size={14} />
-                        <span>Find nearby partners</span>
+                        Nearby Partner
                       </Link>
-
-                      <Link
-                        href={`/apply?scheme=${scheme.schemeCode.toLowerCase()}`}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#00472f] text-white text-xs font-semibold hover:bg-[#003824] transition-colors"
-                      >
-                        <span>Apply (आवेदन करें)</span>
-                        <Icon name="arrow_forward" size={14} />
-                      </Link>
+                      {scheme.sourceUrl && (
+                        <a href={scheme.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-[#00472f] hover:underline">
+                          More Info <span aria-hidden="true">↗</span>
+                        </a>
+                      )}
                     </div>
+                    {index === 0 && <p className="mt-2 text-[11px] text-stone-500">Final eligibility is subject to official verification.</p>}
                   </div>
                 ))}
               </div>
+              {message.matchedSchemes.length > 1 && <p className="text-center text-xs font-semibold text-[#00472f]">View all matching schemes →</p>}
             </div>
           )}
 

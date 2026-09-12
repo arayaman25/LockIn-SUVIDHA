@@ -2,6 +2,7 @@ import { axiosInstance } from './axios';
 import {
   RecommendationRequest,
   RecommendationResponse,
+  SchemeSummaryResponse,
 } from '@/src/types/scheme-matching';
 
 /**
@@ -14,6 +15,16 @@ export async function fetchSchemeRecommendations(
   const response = await axiosInstance.post<RecommendationResponse>(
     '/api/scheme-matching/recommendations',
     profile
+  );
+  return response.data;
+}
+
+export async function fetchSchemeSummary(
+  channelId: string
+): Promise<SchemeSummaryResponse> {
+  const response = await axiosInstance.post<SchemeSummaryResponse>(
+    '/api/scheme-matching/summary',
+    { channelId }
   );
   return response.data;
 }

@@ -4,6 +4,7 @@ import React, { useState, useRef, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Icon from "@/components/Icon";
+import { useApp } from "@/context/AppContext";
 import { useNearbyPartners } from "@/src/lib/query";
 import {
   ScoredPartner,
@@ -39,11 +40,6 @@ const SCHEME_OPTIONS = [
   { id: "UNY", label: "Udyam Nidhi Yojana" },
 ];
 
-interface Coords {
-  lat: number;
-  lng: number;
-}
-
 function toMapPartner(p: ScoredPartner) {
   return {
     ...p,
@@ -67,7 +63,6 @@ export default function PartnerLocator() {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [userCoords, setUserCoords] = useState<Coords | null>(null);
   const [locationLabel, setLocationLabel] = useState<string>("");
   const [isLocating, setIsLocating] = useState(false);
   const [geoError, setGeoError] = useState<string | null>(null);
@@ -78,13 +73,14 @@ export default function PartnerLocator() {
   const [mobileTab, setMobileTab] = useState<"both" | "map" | "list">("both");
 
   const listContainerRef = useRef<HTMLDivElement>(null);
+  const { userLocation, locationReady, requestUserLocation } = useApp();
   const requestedScheme = searchParams.get("scheme")?.trim() ?? "";
   const matchingScheme = SCHEME_OPTIONS.find(
     (scheme) => scheme.id.toLowerCase() === requestedScheme.toLowerCase(),
   );
   const selectedSchemeId = matchingScheme?.id ?? "";
   const showLocationPrompt = Boolean(
-    matchingScheme && dismissedSchemePrompt !== matchingScheme.id,
+    matchingScheme && locationReady && !userLocation && dismissedSchemePrompt !== matchingScheme.id,
   );
 
   const handleSchemeSelection = (schemeId: string) => {
@@ -94,6 +90,9 @@ export default function PartnerLocator() {
     });
   };
 
+  const userCoords = userLocation
+    ? { lat: userLocation.latitude, lng: userLocation.longitude }
+    : null;
   const locationRequest: NearbyPartnersRequest | null = userCoords
     ? {
         citizenLat: userCoords.lat,
@@ -124,47 +123,27 @@ export default function PartnerLocator() {
     null;
 
   const handleUseMyLocation = useCallback(() => {
-    if (typeof window === "undefined" || !navigator.geolocation) {
-      setGeoError(
-        "Geolocation is not supported by your browser. Please search for a city or area instead.",
-      );
-      return;
-    }
     setIsLocating(true);
     setGeoError(null);
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
+    requestUserLocation()
+      .then(() => {
         setIsLocating(false);
-        setUserCoords({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        });
         setLocationLabel("Using your current location");
         setSelectedPartnerId(null);
-      },
-      (err) => {
+      })
+      .catch((error: GeolocationPositionError | Error) => {
         setIsLocating(false);
-        if (err.code === err.PERMISSION_DENIED) {
-          setGeoError(
-            "Location access was denied. You can search for a city or area instead.",
-          );
-        } else if (err.code === err.POSITION_UNAVAILABLE) {
-          setGeoError(
-            "Your location could not be determined. Please search for your area instead.",
-          );
-        } else if (err.code === err.TIMEOUT) {
-          setGeoError(
-            "We couldn't get your location right now. Please try again or search for your area.",
-          );
+        if ('code' in error && error.code === error.PERMISSION_DENIED) {
+          setGeoError("Location access was denied. You can search for a city or area instead.");
+        } else if ('code' in error && error.code === error.POSITION_UNAVAILABLE) {
+          setGeoError("Your location could not be determined. Please search for your area instead.");
+        } else if ('code' in error && error.code === error.TIMEOUT) {
+          setGeoError("We couldn't get your location right now. Please try again or search for your area.");
         } else {
-          setGeoError(
-            "Location access failed. Please search for your area instead.",
-          );
+          setGeoError(error.message || "Location access failed. Please search for your area instead.");
         }
-      },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 },
-    );
-  }, []);
+      });
+  }, [requestUserLocation]);
 
   const handleSelectFromMap = useCallback(
     (partner: ReturnType<typeof toMapPartner>) => {

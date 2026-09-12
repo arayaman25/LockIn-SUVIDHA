@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
+import { SUPPORTED_CHAT_LANGUAGES } from '@/src/lib/chat-languages';
 
 declare global {
   interface Window {
@@ -17,11 +18,10 @@ declare global {
   }
 }
 
-const GT_LANG_MAP: Record<string, string> = {
-  en: 'en', hi: 'hi', bn: 'bn', mr: 'mr',
-  ta: 'ta', te: 'te', gu: 'gu', kn: 'kn',
-};
-const GT_LANGUAGES = new Set(Object.values(GT_LANG_MAP));
+const GT_LANG_MAP = Object.fromEntries(
+  SUPPORTED_CHAT_LANGUAGES.map(({ code }) => [code, code])
+);
+const GT_LANGUAGES = new Set(SUPPORTED_CHAT_LANGUAGES.map(({ code }) => code));
 
 export default function GoogleTranslate() {
   const { selectedLanguage } = useApp();
@@ -33,7 +33,11 @@ export default function GoogleTranslate() {
     window.googleTranslateElementInit = () => {
       if (!window.google?.translate?.TranslateElement) return;
       new window.google.translate.TranslateElement(
-        { pageLanguage: 'en', includedLanguages: 'en,hi,bn,mr,ta,te,gu,kn', autoDisplay: false },
+        {
+          pageLanguage: 'en',
+          includedLanguages: SUPPORTED_CHAT_LANGUAGES.map(({ code }) => code).join(','),
+          autoDisplay: false,
+        },
         'google_translate_element'
       );
     };
