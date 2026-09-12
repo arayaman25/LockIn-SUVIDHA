@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useForm, FormProvider, FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { schemeMatchingFormSchema, CitizenProfileFormValues } from '@/src/lib/schemas/scheme-matching';
@@ -10,12 +10,12 @@ import { SchemeRecommendationResponse, RecommendationRequest } from '@/src/types
 import WizardProgress from './WizardProgress';
 import PurposeStep from './PurposeStep';
 import PersonalDetailsStep from './PersonalDetailsStep';
-import OccupationStep from './OccupationStep';
 import RequirementStep from './RequirementStep';
 import ReviewStep from './ReviewStep';
 import RecommendationResults from './RecommendationResults';
 import ConversationalIntake from '@/components/intake/ConversationalIntake';
 import Icon from '@/components/Icon';
+import { MANUAL_INTAKE_SESSION_KEY, readSessionValue, writeSessionValue } from '@/src/lib/intake-session';
 
 interface SchemeWizardProps {
   initialIntent?: 'business_loan' | 'education_loan' | 'skill_training';
@@ -30,6 +30,7 @@ export default function SchemeWizard({
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [resultsData, setResultsData] = useState<SchemeRecommendationResponse | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const manualStateHydrated = useRef(false);
 
   const methods = useForm<CitizenProfileFormValues>({
     resolver: zodResolver(schemeMatchingFormSchema) as any,
@@ -57,10 +58,29 @@ export default function SchemeWizard({
     mode: 'onTouched',
   });
 
-  const { trigger, getValues, handleSubmit, setValue } = methods;
+  const { trigger, getValues, handleSubmit, setValue, reset, watch } = methods;
   const recommendationMutation = useSchemeRecommendations();
 
-  // Step navigation gate: cannot access steps 3-6 if isScheduledCaste is false
+  useEffect(() => {
+    const savedForm = readSessionValue<Partial<CitizenProfileFormValues>>(MANUAL_INTAKE_SESSION_KEY);
+    if (savedForm) {
+      reset(savedForm);
+    }
+    manualStateHydrated.current = true;
+  }, [reset]);
+
+  useEffect(() => {
+    // react-hook-form's watch subscription is the supported field-level change API here.
+    // eslint-disable-next-line react-hooks/incompatible-library
+    const subscription = watch((values) => {
+      if (manualStateHydrated.current) {
+        writeSessionValue(MANUAL_INTAKE_SESSION_KEY, values);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [watch]);
+
+  // Step navigation gate: cannot access steps 3-5 if isScheduledCaste is false
   const canNavigateToStep = (targetStep: number): boolean => {
     const isSC = getValues('isScheduledCaste');
     if (!isSC && targetStep > 2) {
@@ -90,8 +110,6 @@ export default function SchemeWizard({
         'district',
       ]);
     } else if (currentStep === 3) {
-      isValid = await trigger(['occupationCategory', 'occupationType']);
-    } else if (currentStep === 4) {
       const intent = getValues('intent');
       if (intent === 'business_loan') {
         isValid = await trigger(['projectType', 'requiredLoanAmount', 'estimatedProjectCost']);
@@ -103,7 +121,7 @@ export default function SchemeWizard({
     }
 
     if (isValid) {
-      setCurrentStep((prev) => Math.min(prev + 1, 6));
+      setCurrentStep((prev) => Math.min(prev + 1, 5));
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
@@ -124,7 +142,7 @@ export default function SchemeWizard({
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Submission from Step 5 -> Call Backend API & Advance to Step 6
+  // Submission from Review -> Call Backend API & Advance to Results
   const onSubmitReview = async (formData: Partial<CitizenProfileFormValues>) => {
     // Gate check: do not submit if not SC
     if (formData.isScheduledCaste === false) {
@@ -137,7 +155,7 @@ export default function SchemeWizard({
     }
 
     setSubmitError(null);
-    setCurrentStep(6);
+    setCurrentStep(5);
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
     let payload: RecommendationRequest;
@@ -248,8 +266,8 @@ export default function SchemeWizard({
     [getValues, setValue]
   );
 
-  // Results View (Step 6)
-  if (currentStep === 6) {
+  // Results View (Step 5)
+  if (currentStep === 5) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8">
         <RecommendationResults
@@ -259,7 +277,7 @@ export default function SchemeWizard({
           onRetry={handleRetry}
           onReviewProfile={() => {
             setEntryMode('form');
-            handleJumpToStep(5);
+            handleJumpToStep(4);
           }}
         />
       </div>
@@ -319,14 +337,10 @@ export default function SchemeWizard({
           )}
 
           {currentStep === 3 && (
-            <OccupationStep onContinue={handleNext} onPrevious={handleBack} />
-          )}
-
-          {currentStep === 4 && (
             <RequirementStep onContinue={handleNext} onPrevious={handleBack} />
           )}
 
-          {currentStep === 5 && (
+          {currentStep === 4 && (
             <ReviewStep
               onGoToStep={handleJumpToStep}
               onSubmit={handleSubmit((data) => onSubmitReview(data), onInvalidSubmit)}

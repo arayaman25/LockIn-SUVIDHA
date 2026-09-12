@@ -128,8 +128,8 @@ export type CitizenProfileFormValues = {
   annualFamilyIncome: number;
   state: string;
   district: string;
-  occupationCategory: string;
-  occupationType: string;
+  occupationCategory?: string;
+  occupationType?: string;
   customOccupation?: string;
   projectType?: string;
   estimatedProjectCost?: number;
@@ -165,8 +165,8 @@ export const schemeMatchingFormSchema = z
       ),
     state: z.string().trim().min(1, 'State is required'),
     district: z.string().trim().min(1, 'District is required'),
-    occupationCategory: z.string().trim().min(1, 'Occupation category is required'),
-    occupationType: z.string().trim().min(1, 'Occupation type is required'),
+    occupationCategory: z.string().trim().min(1, 'Occupation category is required').optional(),
+    occupationType: z.string().trim().min(1, 'Occupation type is required').optional(),
     customOccupation: z.preprocess(sanitizeString, z.string().optional()),
     projectType: z.preprocess(sanitizeString, z.string().optional()),
     estimatedProjectCost: z.preprocess(

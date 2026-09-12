@@ -13,7 +13,6 @@ interface WizardProgressProps {
 const STEP_LABELS = [
   'Purpose',
   'Personal',
-  'Occupation',
   'Requirement',
   'Review',
   'Results',
@@ -21,7 +20,7 @@ const STEP_LABELS = [
 
 export default function WizardProgress({
   currentStep,
-  totalSteps = 6,
+  totalSteps = STEP_LABELS.length,
   onStepClick,
   canNavigateToStep,
 }: WizardProgressProps) {
@@ -43,7 +42,7 @@ export default function WizardProgress({
       </div>
 
       {/* Desktop step indicators */}
-      <div className="hidden sm:grid grid-cols-6 gap-2 text-center text-xs">
+      <div className="hidden sm:grid grid-cols-5 gap-2 text-center text-xs">
         {STEP_LABELS.map((label, index) => {
           const stepNumber = index + 1;
           const isCompleted = currentStep > stepNumber;

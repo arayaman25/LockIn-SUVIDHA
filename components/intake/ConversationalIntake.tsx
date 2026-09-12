@@ -14,6 +14,12 @@ import TypingIndicator from "./TypingIndicator";
 import ApplicationDetailsPanel from "./ApplicationDetailsPanel";
 import { CitizenProfileFormValues } from "@/src/lib/schemas/scheme-matching";
 import { SchemeRecommendationItem } from "@/src/types/scheme-matching";
+import {
+  CHAT_INTAKE_SESSION_KEY,
+  PersistedChatIntakeState,
+  readSessionValue,
+  writeSessionValue,
+} from "@/src/lib/intake-session";
 
 const WELCOME_MESSAGE_ID = "welcome-msg";
 
@@ -197,7 +203,7 @@ export default function ConversationalIntake({
   onSwitchToForm,
 }: ConversationalIntakeProps) {
   // Stable channel ID: created once on component mount, reused for every turn
-  const [channelId] = useState<string>(() => createStableChannelId());
+  const [channelId, setChannelId] = useState<string>(() => createStableChannelId());
 
   // Accumulated profile state — start truly empty.
   // Only incorporate what was explicitly passed via initialProfile.
@@ -236,11 +242,43 @@ export default function ConversationalIntake({
   const [activeMobilePanel, setActiveMobilePanel] = useState<
     "chat" | "details"
   >("chat");
+  const chatStateHydrated = useRef(false);
   // Ref to the scrollable messages container — used for internal-only scroll.
   // We never call scrollIntoView (which leaks to the page viewport).
   const containerRef = useRef<HTMLDivElement>(null);
   const shouldFollowLatestRef = useRef(true);
   const intakeMutation = useIntakeChat();
+
+  useEffect(() => {
+    const restoreChatState = () => {
+      const savedChat = readSessionValue<PersistedChatIntakeState>(CHAT_INTAKE_SESSION_KEY);
+      if (
+        savedChat &&
+        typeof savedChat.channelId === "string" &&
+        Array.isArray(savedChat.messages) &&
+        savedChat.messages.length > 0
+      ) {
+        setChannelId(savedChat.channelId);
+        setMessages(savedChat.messages);
+        setAccumulatedProfile(savedChat.profile || {});
+        setLastUserMessage(savedChat.lastUserMessage || "");
+      }
+      chatStateHydrated.current = true;
+    };
+
+    const restoreTimer = window.setTimeout(restoreChatState, 0);
+    return () => window.clearTimeout(restoreTimer);
+  }, []);
+
+  useEffect(() => {
+    if (!chatStateHydrated.current) return;
+    writeSessionValue<PersistedChatIntakeState>(CHAT_INTAKE_SESSION_KEY, {
+      channelId,
+      messages,
+      profile: accumulatedProfile,
+      lastUserMessage,
+    });
+  }, [accumulatedProfile, channelId, lastUserMessage, messages]);
 
   /**
    * Scroll the internal conversation container to the bottom ONLY when the
@@ -276,7 +314,7 @@ export default function ConversationalIntake({
     setLastUserMessage(trimmed);
 
     // 1. Add user message locally
-    const userMsgId = `user-${Date.now()}`;
+    const userMsgId = `user-${createStableChannelId()}`;
     const newMessages: ChatMessageItem[] = [
       ...messages,
       {
