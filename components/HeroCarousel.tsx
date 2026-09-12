@@ -70,7 +70,7 @@ export const HERO_SLIDES: HeroSlide[] = [
     description:
       'Composite bank credit between ₹10 Lakh and ₹1 Crore for women entrepreneurs establishing greenfield manufacturing, service, or trading ventures.',
     wizardRoute: '/wizard?purpose=business',
-    image: '/images/hero-women-entrepreneur.jpg',
+    image: '/images/b6.jpg',
     imageAlt: 'Indian woman artisan and weaver operating a traditional handloom workshop',
     badge: '₹10 Lakh to ₹1 Crore Credit',
     highlightTag: 'Greenfield Enterprise Support',
