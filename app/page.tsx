@@ -2,16 +2,10 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { useApp } from '@/context/AppContext';
-import { SUVIDHA_SCHEMES } from '@/lib/data';
-import SchemeCard from '@/components/SchemeCard';
 import Icon from '@/components/Icon';
 import HeroCarousel from '@/components/HeroCarousel';
 
 export default function HomePage() {
-  const { setIsCompanionOpen } = useApp();
-  const featuredSchemes = SUVIDHA_SCHEMES.slice(0, 3);
-
   return (
     <div className="space-y-0">
       <HeroCarousel />
@@ -32,7 +26,7 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Card 1: Find My Scheme */}
           <Link
             href="/wizard"
@@ -95,63 +89,11 @@ export default function HomePage() {
               Find centers →
             </span>
           </Link>
-
-          {/* Card 4: Track Application */}
-          <Link
-            href="/tracking"
-            className="bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/50 hover:border-primary hover:shadow-lg transition-all flex flex-col justify-between group cursor-pointer"
-          >
-            <div>
-              <div className="w-12 h-12 rounded-xl bg-surface-container-highest text-on-surface flex items-center justify-center mb-5 group-hover:scale-105 transition-transform shrink-0">
-                <Icon name="track_changes" className="w-6 h-6 text-on-surface" />
-              </div>
-              <h3 className="text-base font-bold text-primary mb-2">
-                Track Application
-              </h3>
-              <p className="text-xs text-on-surface-variant leading-relaxed mb-6">
-                Check live review progress, document verification status, and sanction updates.
-              </p>
-            </div>
-            <span className="text-xs font-bold text-primary inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-              Track status →
-            </span>
-          </Link>
         </div>
       </section>
 
       {/* ========================================================================= */}
-      {/* 3. SIMPLIFIED FEATURED SCHEMES SECTION (EXACTLY 3 CLEAN CARDS)            */}
-      {/* ========================================================================= */}
-      <section className="bg-surface-container-low border-y border-outline-variant/30 py-16" id="schemes">
-        <div className="max-w-[1240px] mx-auto px-4 md:px-8">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8 gap-4">
-            <div>
-              <p className="text-xs font-bold text-secondary uppercase">
-                High-Demand Assistance
-              </p>
-              <h2 className="text-2xl md:text-3xl font-serif font-bold text-primary mt-1">
-                Explore schemes that may help you
-              </h2>
-            </div>
-            <Link
-              className="text-primary hover:underline font-bold text-sm flex items-center gap-1"
-              href="/schemes"
-            >
-              <span>View all schemes</span>
-              <Icon name="arrow_forward" className="w-4 h-4" />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {featuredSchemes.map((scheme) => (
-              <SchemeCard key={scheme.id} scheme={scheme} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ========================================================================= */}
-      {/* 4. HOW IT WORKS SECTION (4 CLEAR STEPS)                                  */}
+      {/* 3. HOW IT WORKS SECTION (4 CLEAR STEPS)                                  */}
       {/* ========================================================================= */}
       <section className="max-w-[1240px] mx-auto px-4 md:px-8 py-16">
         <div className="text-center max-w-xl mx-auto mb-12">
@@ -218,7 +160,7 @@ export default function HomePage() {
       </section>
 
       {/* ========================================================================= */}
-      {/* 5. HELP SECTION (NEAR BOTTOM)                                            */}
+      {/* 4. HELP SECTION (NEAR BOTTOM)                                            */}
       {/* ========================================================================= */}
       <section className="bg-surface-container-low border-t border-outline-variant/30 py-16" id="help">
         <div className="max-w-[1240px] mx-auto px-4 md:px-8">

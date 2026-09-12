@@ -11,7 +11,6 @@ export interface HeroSlide {
   titlePrefix: string;
   title: string;
   description: string;
-  schemeRoute: string;
   wizardRoute: string;
   image: string;
   imageAlt: string;
@@ -28,7 +27,6 @@ export const HERO_SLIDES: HeroSlide[] = [
     title: 'MUDRA Term Loan Scheme',
     description:
       'Concessional capital credit up to ₹5 Lakh with zero third-party guarantee to procure machinery, expand inventory, and upgrade commercial enterprises.',
-    schemeRoute: '/schemes/mudra-kishore',
     wizardRoute: '/wizard?purpose=business',
     image: '/images/hero-real-fast-food.avif',
     imageAlt: 'Indian small business owner in his electronics and hardware workshop',
@@ -43,7 +41,6 @@ export const HERO_SLIDES: HeroSlide[] = [
     title: 'Micro Finance Scheme',
     description:
       'Collateral-free working capital loan starting at ₹10,000 up to ₹50,000 with 7% interest subvention and cashback rewards on digital transactions.',
-    schemeRoute: '/schemes/pmsvanidhi',
     wizardRoute: '/wizard?purpose=business',
     image: '/images/hero-real-students.jpg',
     imageAlt: 'Indian street vendor merchant at his certified food stall with digital payment',
@@ -58,7 +55,6 @@ export const HERO_SLIDES: HeroSlide[] = [
     title: 'Educational Loan Subsidy',
     description:
       '100% full government interest subvention during the moratorium and course period for professional and technical higher education in recognized Indian institutions.',
-    schemeRoute: '/schemes/csis',
     wizardRoute: '/wizard?purpose=education',
     image: '/images/hero-real-handloom.jpg',
     imageAlt: 'Indian university students holding study materials and laptop on campus',
@@ -73,7 +69,6 @@ export const HERO_SLIDES: HeroSlide[] = [
     title: 'Women Enterprise Scheme',
     description:
       'Composite bank credit between ₹10 Lakh and ₹1 Crore for women entrepreneurs establishing greenfield manufacturing, service, or trading ventures.',
-    schemeRoute: '/schemes/standup',
     wizardRoute: '/wizard?purpose=business',
     image: '/images/hero-women-entrepreneur.jpg',
     imageAlt: 'Indian woman artisan and weaver operating a traditional handloom workshop',
@@ -170,14 +165,8 @@ export default function HeroCarousel() {
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
-      className="relative mx-4 overflow-hidden rounded-[26px] bg-[linear-gradient(112deg,#fb6413_0%,#f47717_28%,#9a9f41_58%,#0b814a_100%)] text-white shadow-[0_20px_36px_-22px_rgba(16,43,32,0.65)] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80 md:mx-8 lg:mx-12"
+      className="relative mx-4 overflow-hidden rounded-[26px] bg-[#1b4332] text-white shadow-[0_20px_36px_-22px_rgba(16,43,32,0.65)] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80 md:mx-8 lg:mx-12"
     >
-      {/* Background ambient radial highlight */}
-      <div
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_52%_46%,rgba(255,211,75,0.22),transparent_35%)]"
-        aria-hidden="true"
-      />
-
       {/* Carousel Track */}
       <div
         className="flex w-full transition-transform duration-500 ease-in-out"
@@ -265,22 +254,21 @@ export default function HeroCarousel() {
                     </div>
                   </div>
 
-                  {/* Primary & Secondary Action Buttons */}
+                  {/* Primary actions */}
                   <div className="order-6 mt-6 flex flex-wrap items-center gap-4 lg:mt-8">
-                    {/* Secondary CTA: Know More */}
-                    <Link
-                      href={slide.schemeRoute}
-                      className="rounded-full bg-white px-7 py-3.5 text-xs font-bold uppercase tracking-wider text-[#086d46] shadow-md transition-all hover:bg-white/95 hover:shadow-lg focus-visible:ring-2 focus-visible:ring-white sm:text-sm"
-                    >
-                      Know More
-                    </Link>
-
-                    {/* Primary CTA: Find Eligible Schemes */}
                     <Link
                       href={slide.wizardRoute}
-                      className="rounded-full bg-[#7d7b3b]/85 px-7 py-3.5 text-xs font-bold text-white ring-1 ring-white/20 shadow-md transition-all hover:bg-[#6d7138] focus-visible:ring-2 focus-visible:ring-white flex items-center gap-1.5 sm:text-sm"
+                      className="inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-xs font-bold uppercase tracking-wider text-[#086d46] shadow-md transition-all hover:bg-white/95 hover:shadow-lg focus-visible:ring-2 focus-visible:ring-white sm:text-sm"
                     >
-                      <span>Find Eligible Schemes</span>
+                      <span>Get Scheme Recommendations</span>
+                      <span aria-hidden="true">→</span>
+                    </Link>
+
+                    <Link
+                      href="/assistant"
+                      className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/10 px-7 py-3.5 text-xs font-bold uppercase tracking-wider text-white shadow-md backdrop-blur-sm transition-all hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-white sm:text-sm"
+                    >
+                      <span>Chat with Suvidha AI</span>
                       <span aria-hidden="true">→</span>
                     </Link>
                   </div>

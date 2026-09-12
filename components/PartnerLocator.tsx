@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useCallback } from "react";
 import dynamic from "next/dynamic";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Icon from "@/components/Icon";
 import { useNearbyPartners } from "@/src/lib/query";
 import {
@@ -63,17 +64,35 @@ function toMapPartner(p: ScoredPartner) {
 }
 
 export default function PartnerLocator() {
+  const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [userCoords, setUserCoords] = useState<Coords | null>(null);
   const [locationLabel, setLocationLabel] = useState<string>("");
   const [isLocating, setIsLocating] = useState(false);
   const [geoError, setGeoError] = useState<string | null>(null);
-  const [selectedSchemeId, setSelectedSchemeId] = useState<string>("");
+  const [dismissedSchemePrompt, setDismissedSchemePrompt] = useState<string | null>(null);
   const [selectedPartnerId, setSelectedPartnerId] = useState<string | null>(
     null,
   );
   const [mobileTab, setMobileTab] = useState<"both" | "map" | "list">("both");
 
   const listContainerRef = useRef<HTMLDivElement>(null);
+  const requestedScheme = searchParams.get("scheme")?.trim() ?? "";
+  const matchingScheme = SCHEME_OPTIONS.find(
+    (scheme) => scheme.id.toLowerCase() === requestedScheme.toLowerCase(),
+  );
+  const selectedSchemeId = matchingScheme?.id ?? "";
+  const showLocationPrompt = Boolean(
+    matchingScheme && dismissedSchemePrompt !== matchingScheme.id,
+  );
+
+  const handleSchemeSelection = (schemeId: string) => {
+    setDismissedSchemePrompt(null);
+    router.replace(`${pathname}?scheme=${encodeURIComponent(schemeId)}`, {
+      scroll: false,
+    });
+  };
 
   const locationRequest: NearbyPartnersRequest | null = userCoords
     ? {
@@ -164,6 +183,51 @@ export default function PartnerLocator() {
 
   return (
     <div className="space-y-6">
+      {showLocationPrompt && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="location-prompt-title"
+        >
+          <div className="w-full max-w-md rounded-2xl bg-surface-container-lowest p-6 shadow-2xl border border-outline-variant/60">
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary-container/50 text-secondary">
+                <Icon name="my_location" className="h-5 w-5" />
+              </div>
+              <div>
+                <h2 id="location-prompt-title" className="text-lg font-bold text-primary">
+                  Find nearby partners
+                </h2>
+                <p className="mt-1 text-sm leading-relaxed text-on-surface-variant">
+                  Your recommended scheme is selected. Click <strong>Use My Location</strong> to find authorized partners near you.
+                </p>
+              </div>
+            </div>
+            <div className="mt-5 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setDismissedSchemePrompt(matchingScheme?.id ?? null)}
+                className="rounded-xl border border-outline-variant px-3.5 py-2 text-xs font-bold text-on-surface hover:bg-surface transition-colors"
+              >
+                Choose Later
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setDismissedSchemePrompt(matchingScheme?.id ?? null);
+                  handleUseMyLocation();
+                }}
+                className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-3.5 py-2 text-xs font-bold text-white transition-colors hover:opacity-95"
+              >
+                <Icon name="my_location" className="h-3.5 w-3.5" />
+                Use My Location
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
@@ -233,7 +297,7 @@ export default function PartnerLocator() {
               key={scheme.id}
               type="button"
               onClick={() => {
-                setSelectedSchemeId(scheme.id);
+                handleSchemeSelection(scheme.id);
                 setSelectedPartnerId(null);
               }}
               className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all ${

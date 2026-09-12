@@ -21,6 +21,7 @@ const GT_LANG_MAP: Record<string, string> = {
   en: 'en', hi: 'hi', bn: 'bn', mr: 'mr',
   ta: 'ta', te: 'te', gu: 'gu', kn: 'kn',
 };
+const GT_LANGUAGES = new Set(Object.values(GT_LANG_MAP));
 
 export default function GoogleTranslate() {
   const { selectedLanguage } = useApp();
@@ -44,26 +45,24 @@ export default function GoogleTranslate() {
     document.body.appendChild(script);
   }, []);
 
-  /* Drive translation whenever selectedLanguage changes */
+  /* Use Google's cookie and a reload so it never mutates React nodes in place. */
   useEffect(() => {
     const targetLang = GT_LANG_MAP[selectedLanguage] ?? 'en';
+    const cookieValue = document.cookie
+      .split('; ')
+      .find((cookie) => cookie.startsWith('googtrans='))
+      ?.split('=')[1];
+    const cookieLanguage = decodeURIComponent(cookieValue ?? '').split('/').pop() ?? 'en';
+    const currentLang = GT_LANGUAGES.has(cookieLanguage) ? cookieLanguage : 'en';
 
-    const applyTranslation = () => {
-      const gtSelect = document.querySelector<HTMLSelectElement>('.goog-te-combo');
-      if (gtSelect) {
-        gtSelect.value = targetLang;
-        gtSelect.dispatchEvent(new Event('change'));
-        return true;
-      }
-      return false;
-    };
+    if (currentLang === targetLang) return;
 
-    let attempts = 0;
-    const interval = setInterval(() => {
-      if (applyTranslation() || ++attempts > 20) clearInterval(interval);
-    }, 300);
-
-    return () => clearInterval(interval);
+    if (targetLang === 'en') {
+      document.cookie = 'googtrans=; Max-Age=0; path=/';
+    } else {
+      document.cookie = `googtrans=/en/${targetLang}; path=/`;
+    }
+    window.location.reload();
   }, [selectedLanguage]);
 
   return (

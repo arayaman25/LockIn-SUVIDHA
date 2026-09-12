@@ -123,7 +123,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
   });
 
   const [trackingQuery, setTrackingQuery] = useState<string>('ARN-2025-UP-8841');
-  const [selectedLanguage, setSelectedLanguage] = useState<string>('en');
+  const [selectedLanguage, setSelectedLanguageState] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      const storedLanguage = localStorage.getItem('suvidha_language');
+      if (storedLanguage) return storedLanguage;
+
+      const cookieValue = document.cookie
+        .split('; ')
+        .find((cookie) => cookie.startsWith('googtrans='))
+        ?.split('=')[1];
+      const cookieLanguage = decodeURIComponent(cookieValue ?? '').split('/').pop();
+      if (cookieLanguage) return cookieLanguage;
+    }
+    return 'en';
+  });
+  const setSelectedLanguage = (lang: string) => {
+    setSelectedLanguageState(lang);
+    if (typeof window !== 'undefined') localStorage.setItem('suvidha_language', lang);
+  };
   const [fontSize, setFontSizeState] = useState<'sm' | 'md' | 'lg'>('md');
   const [screenReaderMode, setScreenReaderMode] = useState<boolean>(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);

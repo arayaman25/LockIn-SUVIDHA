@@ -155,6 +155,14 @@ export default function ChatMessage({ message, onRetry }: ChatMessageProps) {
                       </Link>
 
                       <Link
+                        href={`/locator?scheme=${encodeURIComponent(scheme.schemeCode)}`}
+                        className="text-xs font-semibold text-[#00472f] hover:underline flex items-center gap-1"
+                      >
+                        <Icon name="location_on" size={14} />
+                        <span>Find nearby partners</span>
+                      </Link>
+
+                      <Link
                         href={`/apply?scheme=${scheme.schemeCode.toLowerCase()}`}
                         className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#00472f] text-white text-xs font-semibold hover:bg-[#003824] transition-colors"
                       >

@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import Link from 'next/link';
 import PartnerLocator from '@/components/PartnerLocator';
 import Icon from '@/components/Icon';
@@ -19,7 +19,9 @@ export default function LocatorPage() {
       </nav>
 
       <div className="py-2">
-        <PartnerLocator />
+        <Suspense fallback={<div className="min-h-[460px]" />}>
+          <PartnerLocator />
+        </Suspense>
       </div>
     </div>
   );

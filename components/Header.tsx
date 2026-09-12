@@ -165,16 +165,6 @@ export default function Header() {
               Home
             </Link>
             <Link
-              href="/schemes"
-              className={`transition-colors pb-1 text-sm font-semibold ${
-                isNavActive('/schemes')
-                  ? 'border-b-2 border-primary text-primary'
-                  : 'text-on-surface-variant hover:text-primary'
-              }`}
-            >
-              Schemes
-            </Link>
-            <Link
               href="/find-scheme"
               className={`transition-colors pb-1 text-sm font-semibold ${
                 isNavActive('/find-scheme')

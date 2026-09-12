@@ -216,6 +216,14 @@ export default function SchemeRecommendationCard({
             <Icon name="pin_drop" className="w-3.5 h-3.5" />
             <span>{showPartners ? 'Hide Partners' : 'Find Partner Desk'}</span>
           </button>
+
+          <Link
+            href={`/locator?scheme=${encodeURIComponent(scheme.schemeCode || scheme.schemeId)}`}
+            className="px-3.5 py-2 rounded-xl border border-outline-variant bg-surface-container-lowest hover:bg-surface text-xs font-bold text-secondary hover:text-primary transition-all shadow-xs flex items-center gap-1.5"
+          >
+            <Icon name="location_on" className="w-3.5 h-3.5" />
+            <span>Use My Location</span>
+          </Link>
         </div>
 
         {/* Primary Apply Action */}
