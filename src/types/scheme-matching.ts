@@ -130,10 +130,11 @@ export interface IntakeRequest {
   channelId: string;
   userId?: string;
   /**
-   * ISO 639-1 code the citizen chose for themselves. Authoritative — the
-   * backend answers in this language instead of guessing from the message.
+   * The portal language, as a hint. Replies follow the language the citizen
+   * actually writes in; this only covers messages with no language of their
+   * own, such as a bare number.
    */
-  language?: string;
+  preferredLanguage?: string;
 }
 
 export type IntakeResponseStatus = 'in_progress' | 'needs_clarification' | 'matched' | 'no_match';

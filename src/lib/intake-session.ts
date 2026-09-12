@@ -9,6 +9,7 @@ export interface PersistedChatIntakeState {
   messages: ChatMessageItem[];
   profile: Partial<CitizenProfileFormValues>;
   lastUserMessage: string;
+  conversationLanguage?: string | null;
 }
 
 export function readSessionValue<T>(key: string): T | null {

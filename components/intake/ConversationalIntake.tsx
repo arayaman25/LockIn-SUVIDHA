@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import Icon from "@/components/Icon";
 import { useApp } from "@/context/AppContext";
-import { getLanguage } from "@/lib/languages";
+import { getLanguage, resolveLanguageCode } from "@/lib/languages";
 import { useIntakeChat } from "@/src/lib/query/intake";
 import { fetchSchemeSummary } from "@/src/lib/api/scheme-matching";
 import { ChatMessageItem } from "./intake.types";
@@ -212,14 +212,19 @@ export default function ConversationalIntake({
     Partial<CitizenProfileFormValues>
   >(() => ({ ...initialProfile }));
 
-  // The language the citizen chose on arrival is authoritative: it is what the
-  // speech recognizer is configured with and what the backend is told to answer
-  // in. It is never overwritten by the language the backend reports detecting.
+  // Two languages are in play. The portal language is what the citizen picked
+  // for the interface; the conversation language is whatever they are actually
+  // writing or speaking in, as reported back by the backend each turn. The
+  // conversation follows the citizen, so the portal language is only a
+  // starting point until their first message is understood.
   const { selectedLanguage } = useApp();
-  const language = getLanguage(selectedLanguage);
-  const timeLocale = `${language.code}-IN`;
+  const portalLanguage = getLanguage(selectedLanguage);
+  const timeLocale = `${portalLanguage.code}-IN`;
+  const [conversationLanguage, setConversationLanguage] = useState<
+    string | null
+  >(null);
 
-  // The chosen language comes from sessionStorage, so it is unknown during
+  // The portal language comes from sessionStorage, so it is unknown during
   // server rendering. Anything derived from it waits for mount to keep the
   // server and first client render identical.
   const mounted = React.useSyncExternalStore(
@@ -227,7 +232,8 @@ export default function ConversationalIntake({
     () => true,
     () => false,
   );
-  const renderLanguage = mounted ? language.code : "en";
+  const renderPortalLanguage = mounted ? portalLanguage.code : "en";
+  const chatLanguage = conversationLanguage ?? renderPortalLanguage;
 
   const [messages, setMessages] = useState<ChatMessageItem[]>([
     {
@@ -262,6 +268,7 @@ export default function ConversationalIntake({
         setMessages(savedChat.messages);
         setAccumulatedProfile(savedChat.profile || {});
         setLastUserMessage(savedChat.lastUserMessage || "");
+        setConversationLanguage(savedChat.conversationLanguage ?? null);
       }
       chatStateHydrated.current = true;
     };
@@ -277,8 +284,15 @@ export default function ConversationalIntake({
       messages,
       profile: accumulatedProfile,
       lastUserMessage,
+      conversationLanguage,
     });
-  }, [accumulatedProfile, channelId, lastUserMessage, messages]);
+  }, [
+    accumulatedProfile,
+    channelId,
+    conversationLanguage,
+    lastUserMessage,
+    messages,
+  ]);
 
   /**
    * Scroll the internal conversation container to the bottom ONLY when the
@@ -331,12 +345,13 @@ export default function ConversationalIntake({
       {
         message: trimmed,
         channelId: channelId,
-        language: language.code,
+        preferredLanguage: portalLanguage.code,
       },
       {
         onSuccess: async (rawResponse) => {
           const {
             status,
+            language,
             question,
             partialProfile,
             matches,
@@ -345,6 +360,10 @@ export default function ConversationalIntake({
           } = extractIntakePayload(rawResponse);
 
           const timestamp = formatCurrentTime(timeLocale);
+
+          // The next voice message is recognized in the language the citizen
+          // just used, so someone who switches to Hindi can keep speaking it.
+          setConversationLanguage(resolveLanguageCode(language));
 
           // Merge newly extracted fields into local state and notify parent ONCE
           if (partialProfile && Object.keys(partialProfile).length > 0) {
@@ -542,7 +561,7 @@ export default function ConversationalIntake({
                 key={msg.id}
                 message={
                   msg.id === WELCOME_MESSAGE_ID
-                    ? { ...msg, content: getWelcomeMessage(renderLanguage) }
+                    ? { ...msg, content: getWelcomeMessage(renderPortalLanguage) }
                     : msg
                 }
                 onRetry={handleRetryLast}
@@ -558,7 +577,7 @@ export default function ConversationalIntake({
             <ChatInput
               onSendMessage={handleSendMessage}
               isPending={intakeMutation.isPending}
-              detectedLanguage={language.code}
+              detectedLanguage={chatLanguage}
             />
 
             {/* Bottom Helper Bar */}
@@ -579,7 +598,7 @@ export default function ConversationalIntake({
           <ApplicationDetailsPanel
             profile={accumulatedProfile}
             onReview={() => onSwitchToForm?.()}
-            language={renderLanguage}
+            language={chatLanguage}
           />
         </section>
       </div>
