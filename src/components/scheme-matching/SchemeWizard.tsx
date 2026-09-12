@@ -269,7 +269,7 @@ export default function SchemeWizard({
   // Primary Conversational Intake View
   if (entryMode === 'conversational') {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-4 space-y-4">
+      <div className="w-full px-0 py-4">
         <ConversationalIntake
           initialProfile={getValues()}
           onProfileUpdate={handleProfileUpdateFromAI}

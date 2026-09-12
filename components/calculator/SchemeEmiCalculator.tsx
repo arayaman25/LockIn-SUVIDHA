@@ -21,7 +21,6 @@ import {
 
 import CalculatorInputPanel from './CalculatorInputPanel';
 import CalculatorResults from './CalculatorResults';
-import AgencyModal from './AgencyModal';
 import Icon from '@/components/Icon';
 
 export default function SchemeEmiCalculator() {
@@ -79,9 +78,6 @@ export default function SchemeEmiCalculator() {
     // Default to max tenure or 36 months, whichever is smaller
     return Math.min(36, selectedScheme.repaymentTenureMonthsMax);
   });
-
-  // Agency discovery modal state
-  const [isAgencyModalOpen, setIsAgencyModalOpen] = useState<boolean>(false);
 
   // Synchronize defaults whenever scheme code changes
   useEffect(() => {
@@ -237,18 +233,10 @@ export default function SchemeEmiCalculator() {
             scheme={selectedScheme}
             result={emiResult}
             effectiveMaxLoan={effectiveMaxLoan}
-            onOpenAgencyModal={() => setIsAgencyModalOpen(true)}
           />
         </div>
       </div>
 
-      {/* Nearby Channelising Agency Modal */}
-      <AgencyModal
-        isOpen={isAgencyModalOpen}
-        onClose={() => setIsAgencyModalOpen(false)}
-        scheme={selectedScheme}
-        selectedChannel={selectedChannel}
-      />
     </div>
   );
 }

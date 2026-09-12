@@ -64,7 +64,7 @@ export default function CalculatorSlider({
         </div>
 
         {/* Precision numeric input box */}
-        <div className="relative self-start sm:self-auto">
+        <div className="relative flex items-center gap-2 self-start sm:self-auto">
           {isCurrency && (
             <span className="absolute inset-y-0 left-3 flex items-center text-xs font-bold text-on-surface-variant pointer-events-none">
               ₹
@@ -75,7 +75,7 @@ export default function CalculatorSlider({
             inputMode="numeric"
             value={isCurrency ? value.toLocaleString('en-IN') : value}
             onChange={handleInputChange}
-            className={`w-36 py-2 rounded-xl text-right font-bold text-xs sm:text-sm bg-surface border focus:outline-none focus:ring-1 transition-all ${
+            className={`${isCurrency ? 'w-36' : 'w-20'} rounded-xl bg-surface py-2 text-right text-xs font-bold transition-all focus:outline-none focus:ring-1 sm:text-sm ${
               isCurrency ? 'pl-7 pr-3' : 'px-3'
             } ${
               error
@@ -84,7 +84,7 @@ export default function CalculatorSlider({
             }`}
           />
           {!isCurrency && unitSuffix && (
-            <span className="absolute inset-y-0 right-3 flex items-center text-[10px] font-semibold text-on-surface-variant pointer-events-none">
+            <span className="shrink-0 whitespace-nowrap text-[10px] font-semibold text-on-surface-variant">
               {unitSuffix}
             </span>
           )}

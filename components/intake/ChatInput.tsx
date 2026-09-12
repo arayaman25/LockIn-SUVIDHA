@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React, { useState, useRef, useEffect, KeyboardEvent } from 'react';
-import Icon from '@/components/Icon';
-import VoiceInputButton from './VoiceInputButton';
+import React, { useState, useRef, useEffect, KeyboardEvent } from "react";
+import Icon from "@/components/Icon";
+import VoiceInputButton from "./VoiceInputButton";
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
@@ -16,10 +16,10 @@ export default function ChatInput({
   onSendMessage,
   disabled = false,
   isPending = false,
-  detectedLanguage = 'en',
+  detectedLanguage = "en",
   placeholder,
 }: ChatInputProps) {
-  const [inputText, setInputText] = useState<string>('');
+  const [inputText, setInputText] = useState<string>("");
   const [isListening, setIsListening] = useState<boolean>(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -28,8 +28,8 @@ export default function ChatInput({
     const textarea = textareaRef.current;
     if (!textarea) return;
 
-    textarea.style.height = 'auto';
-    const newHeight = Math.min(Math.max(textarea.scrollHeight, 48), 160);
+    textarea.style.height = "auto";
+    const newHeight = Math.min(Math.max(textarea.scrollHeight, 44), 84);
     textarea.style.height = `${newHeight}px`;
   }, [inputText]);
 
@@ -52,16 +52,16 @@ export default function ChatInput({
     if (!trimmed || disabled || isPending) return;
 
     onSendMessage(trimmed);
-    setInputText('');
+    setInputText("");
 
     if (textareaRef.current) {
-      textareaRef.current.style.height = '48px';
+      textareaRef.current.style.height = "44px";
       textareaRef.current.focus();
     }
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
@@ -70,7 +70,7 @@ export default function ChatInput({
   const isSendDisabled = !inputText.trim() || disabled || isPending;
 
   const defaultPlaceholder =
-    'Tell us what you need in your own words... (e.g. I need a loan for business or education)';
+    "Tell us what you need in your own words... (e.g. I need a loan for business or education)";
 
   return (
     <div className="w-full relative">
@@ -90,8 +90,8 @@ export default function ChatInput({
       )}
 
       {/* Input Card Container */}
-      <div className="bg-white rounded-2xl sm:rounded-3xl border border-stone-300 focus-within:border-[#00472f] focus-within:ring-4 focus-within:ring-[#00472f]/10 shadow-sm transition-all duration-200 p-2 sm:p-3 relative z-10">
-        <div className="flex flex-col gap-2">
+      <div className="relative z-10 rounded-2xl border border-stone-300 bg-white p-2 shadow-sm transition-all duration-200 focus-within:border-[#00472f] focus-within:ring-4 focus-within:ring-[#00472f]/10 sm:rounded-3xl sm:p-2.5">
+        <div className="flex flex-col gap-1.5">
           {/* Multiline Textarea */}
           <textarea
             ref={textareaRef}
@@ -102,11 +102,11 @@ export default function ChatInput({
             placeholder={placeholder || defaultPlaceholder}
             rows={1}
             aria-label="Describe your requirement in your preferred language"
-            className="w-full resize-none bg-transparent px-3 py-2 text-sm sm:text-base text-stone-900 placeholder:text-stone-400 focus:outline-none leading-relaxed"
+            className="w-full resize-none bg-transparent px-3 py-1.5 text-sm leading-5 text-stone-900 placeholder:text-stone-400 focus:outline-none sm:text-base"
           />
 
           {/* Action Row */}
-          <div className="flex items-center justify-between pt-2 px-1 border-t border-stone-100">
+          <div className="flex items-center justify-between border-t border-stone-100 px-1 pt-1.5">
             {/* Keyboard shortcut hint */}
             <div className="text-[11px] text-stone-400 hidden sm:flex items-center gap-1">
               <span>Press</span>
@@ -121,7 +121,7 @@ export default function ChatInput({
             </div>
 
             {/* Buttons: Microphone + Send */}
-            <div className="flex items-center gap-2.5 ml-auto shrink-0 z-20">
+            <div className="z-20 ml-auto flex shrink-0 items-center gap-2">
               {/* Prominent Voice Input Button */}
               <VoiceInputButton
                 onTranscript={handleTranscript}
@@ -136,13 +136,12 @@ export default function ChatInput({
                 onClick={handleSend}
                 disabled={isSendDisabled}
                 aria-label="Send message"
-                className={`inline-flex items-center justify-center gap-1.5 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 active:scale-95 shrink-0 ${
+                className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-xs font-semibold transition-all duration-200 active:scale-95 ${
                   isSendDisabled
-                    ? 'bg-stone-100 text-stone-400 cursor-not-allowed border border-stone-200'
-                    : 'bg-[#00472f] hover:bg-[#003824] text-white shadow-md cursor-pointer'
+                    ? "bg-stone-100 text-stone-400 cursor-not-allowed border border-stone-200"
+                    : "bg-[#00472f] hover:bg-[#003824] text-white shadow-md cursor-pointer"
                 }`}
               >
-                <span>Send</span>
                 <Icon name="arrow_forward" size={16} />
               </button>
             </div>

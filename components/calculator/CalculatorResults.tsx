@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { SchemeFinancialTerms, EmiCalculationResult } from './calculator.types';
 import Icon from '@/components/Icon';
 
@@ -8,7 +9,6 @@ interface CalculatorResultsProps {
   scheme: SchemeFinancialTerms;
   result: EmiCalculationResult;
   effectiveMaxLoan: number;
-  onOpenAgencyModal: () => void;
 }
 
 function formatINR(val: number): string {
@@ -22,8 +22,8 @@ export default function CalculatorResults({
   scheme,
   result,
   effectiveMaxLoan,
-  onOpenAgencyModal,
 }: CalculatorResultsProps) {
+  const router = useRouter();
   const isQuarterly = result.repaymentFrequency === 'quarterly';
   const quarterlyAmount = result.quarterlyEquivalentInstallment ?? result.monthlyEmi * 3;
 
@@ -197,7 +197,7 @@ export default function CalculatorResults({
         {/* Primary Action */}
         <button
           type="button"
-          onClick={onOpenAgencyModal}
+          onClick={() => router.push('/locator')}
           className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#00472f] hover:bg-[#003824] text-white text-sm font-semibold shadow-md transition-all active:scale-[0.99]"
         >
           <Icon name="location_on" size={18} />
@@ -207,7 +207,7 @@ export default function CalculatorResults({
         {/* Secondary Action */}
         {scheme.sourceUrl && (
           <a
-            href={scheme.sourceUrl}
+            href="https://nsfdc.nic.in/scheme"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-white hover:bg-stone-50 text-stone-700 border border-stone-300 text-xs sm:text-sm font-medium shadow-sm transition-colors"

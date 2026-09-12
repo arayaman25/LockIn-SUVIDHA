@@ -1,10 +1,21 @@
-'use client';
+"use client";
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { CitizenApplication, INITIAL_APPLICATIONS, SUVIDHA_SCHEMES } from '@/lib/data';
-import { DEFAULT_LANGUAGE_CODE, resolveLanguageCode } from '@/lib/languages';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  ReactNode,
+} from "react";
+import {
+  CitizenApplication,
+  INITIAL_APPLICATIONS,
+  SUVIDHA_SCHEMES,
+} from "@/lib/data";
+import { DEFAULT_LANGUAGE_CODE, resolveLanguageCode } from "@/lib/languages";
 
-export type UserRole = 'citizen' | 'partner' | 'admin';
+export type UserRole = "citizen" | "partner" | "admin";
 
 export interface AuthUser {
   id: string;
@@ -13,7 +24,7 @@ export interface AuthUser {
   role: UserRole;
   organization?: string;
   organizationId?: string;
-  status: 'active' | 'inactive' | 'suspended';
+  status: "active" | "inactive" | "suspended";
   phone?: string;
   aadhaarMasked?: string;
 }
@@ -25,44 +36,56 @@ export interface UserProfile {
   aadhaarMasked: string;
 }
 
-export const DEMO_OFFICIAL_USERS: Record<string, { password: string; user: AuthUser }> = {
-  'admin@suvidha.demo': {
-    password: 'admin123',
+export interface UserLocation {
+  latitude: number;
+  longitude: number;
+}
+
+export type LocationStatus = "unknown" | "requesting" | "granted" | "denied";
+
+const LOCATION_SESSION_KEY = "suvidha_user_location";
+
+export const DEMO_OFFICIAL_USERS: Record<
+  string,
+  { password: string; user: AuthUser }
+> = {
+  "admin@suvidha.demo": {
+    password: "admin123",
     user: {
-      id: 'usr-admin-01',
-      name: 'Vikramaditya Sharma',
-      email: 'admin@suvidha.demo',
-      role: 'admin',
-      organization: 'SUVIDHA Administration (Central Nodal Mission)',
-      organizationId: 'org-suvidha-hq',
-      status: 'active',
-      phone: '+91 11 2338 1234',
+      id: "usr-admin-01",
+      name: "Vikramaditya Sharma",
+      email: "admin@suvidha.demo",
+      role: "admin",
+      organization: "SUVIDHA Administration (Central Nodal Mission)",
+      organizationId: "org-suvidha-hq",
+      status: "active",
+      phone: "+91 11 2338 1234",
     },
   },
-  'partner@suvidha.demo': {
-    password: 'partner123',
+  "partner@suvidha.demo": {
+    password: "partner123",
     user: {
-      id: 'usr-partner-01',
-      name: 'Rajesh Kumar',
-      email: 'partner@suvidha.demo',
-      role: 'partner',
-      organization: 'State Bank of India (Varanasi Nodal Desk)',
-      organizationId: 'sbi-civil-lines',
-      status: 'active',
-      phone: '0542-250123',
+      id: "usr-partner-01",
+      name: "Rajesh Kumar",
+      email: "partner@suvidha.demo",
+      role: "partner",
+      organization: "State Bank of India (Varanasi Nodal Desk)",
+      organizationId: "sbi-civil-lines",
+      status: "active",
+      phone: "0542-250123",
     },
   },
-  'inactive@suvidha.demo': {
-    password: 'inactive123',
+  "inactive@suvidha.demo": {
+    password: "inactive123",
     user: {
-      id: 'usr-partner-inactive',
-      name: 'Suspended Agency Agent',
-      email: 'inactive@suvidha.demo',
-      role: 'partner',
-      organization: 'Deactivated Partner Desk',
-      organizationId: 'org-deactivated',
-      status: 'inactive',
-      phone: '9876500000',
+      id: "usr-partner-inactive",
+      name: "Suspended Agency Agent",
+      email: "inactive@suvidha.demo",
+      role: "partner",
+      organization: "Deactivated Partner Desk",
+      organizationId: "org-deactivated",
+      status: "inactive",
+      phone: "9876500000",
     },
   },
 };
@@ -79,12 +102,16 @@ interface AppContextType {
   }) => string;
   updateApplicationStatus: (
     arn: string,
-    status: CitizenApplication['status'],
+    status: CitizenApplication["status"],
     stage: 1 | 2 | 3 | 4,
-    remarks?: string
+    remarks?: string,
   ) => void;
   trackingQuery: string;
   setTrackingQuery: (arn: string) => void;
+  userLocation: UserLocation | null;
+  locationStatus: LocationStatus;
+  locationReady: boolean;
+  requestUserLocation: () => Promise<UserLocation>;
   selectedLanguage: string;
   setSelectedLanguage: (lang: string) => void;
   /**
@@ -94,10 +121,12 @@ interface AppContextType {
    * from never having chosen.
    */
   hasChosenLanguage: boolean;
-  fontSize: 'sm' | 'md' | 'lg';
-  setFontSize: (size: 'sm' | 'md' | 'lg') => void;
+  fontSize: "sm" | "md" | "lg";
+  setFontSize: (size: "sm" | "md" | "lg") => void;
   screenReaderMode: boolean;
-  setScreenReaderMode: (enabled: boolean | ((prev: boolean) => boolean)) => void;
+  setScreenReaderMode: (
+    enabled: boolean | ((prev: boolean) => boolean),
+  ) => void;
   isLoginModalOpen: boolean;
   setIsLoginModalOpen: (open: boolean) => void;
   isCompanionOpen: boolean;
@@ -109,19 +138,25 @@ interface AppContextType {
   authUser: AuthUser | null;
   isAuthLoaded: boolean;
   loginAsCitizen: (phone: string, name?: string) => AuthUser;
-  loginAsOfficial: (email: string, password: string) => { success: boolean; error?: string; user?: AuthUser };
+  loginAsOfficial: (
+    email: string,
+    password: string,
+  ) => { success: boolean; error?: string; user?: AuthUser };
   logout: () => void;
-  notification: { message: string; type: 'success' | 'info' | 'error' } | null;
-  showNotification: (message: string, type?: 'success' | 'info' | 'error') => void;
+  notification: { message: string; type: "success" | "info" | "error" } | null;
+  showNotification: (
+    message: string,
+    type?: "success" | "info" | "error",
+  ) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [applications, setApplications] = useState<CitizenApplication[]>(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       try {
-        const savedApps = localStorage.getItem('suvidha_applications');
+        const savedApps = localStorage.getItem("suvidha_applications");
         if (savedApps) return JSON.parse(savedApps);
       } catch {
         // ignore
@@ -130,28 +165,106 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return INITIAL_APPLICATIONS;
   });
 
-  const [trackingQuery, setTrackingQuery] = useState<string>('ARN-2025-UP-8841');
+  const [trackingQuery, setTrackingQuery] =
+    useState<string>("ARN-2025-UP-8841");
+  const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
+  const [locationStatus, setLocationStatus] =
+    useState<LocationStatus>("unknown");
+  const [locationReady, setLocationReady] = useState<boolean>(false);
+
+  useEffect(() => {
+    const restoreLocation = () => {
+      try {
+        const stored = sessionStorage.getItem(LOCATION_SESSION_KEY);
+        if (!stored) return;
+        const parsed = JSON.parse(stored) as Partial<UserLocation>;
+        if (
+          typeof parsed.latitude === "number" &&
+          typeof parsed.longitude === "number"
+        ) {
+          setUserLocation({
+            latitude: parsed.latitude,
+            longitude: parsed.longitude,
+          });
+          setLocationStatus("granted");
+        } else {
+          sessionStorage.removeItem(LOCATION_SESSION_KEY);
+        }
+      } catch {
+        // Ignore unavailable or malformed session storage.
+      } finally {
+        setLocationReady(true);
+      }
+    };
+
+    const restoreTimer = window.setTimeout(restoreLocation, 0);
+    return () => window.clearTimeout(restoreTimer);
+  }, []);
+
+  const requestUserLocation = useCallback((): Promise<UserLocation> => {
+    if (userLocation) return Promise.resolve(userLocation);
+    if (locationStatus === "requesting") {
+      return Promise.reject(new Error("Location request already in progress."));
+    }
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      setLocationStatus("denied");
+      return Promise.reject(
+        new Error("Geolocation is not supported by your browser."),
+      );
+    }
+
+    setLocationStatus("requesting");
+    return new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const nextLocation = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          };
+          setUserLocation(nextLocation);
+          setLocationStatus("granted");
+          try {
+            sessionStorage.setItem(
+              LOCATION_SESSION_KEY,
+              JSON.stringify(nextLocation),
+            );
+          } catch {
+            // Session persistence is best effort.
+          }
+          resolve(nextLocation);
+        },
+        (error) => {
+          setLocationStatus("denied");
+          reject(error);
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 },
+      );
+    });
+  }, [locationStatus, userLocation]);
+
   // Language lives in sessionStorage, not localStorage: the choice should
   // survive refreshes and navigation within a visit, but a citizen returning
   // later should be asked again rather than silently locked into a language
   // someone else picked on a shared device.
   const [selectedLanguage, setSelectedLanguageState] = useState<string>(() => {
-    if (typeof window !== 'undefined') {
-      const storedLanguage = sessionStorage.getItem('suvidha_language');
+    if (typeof window !== "undefined") {
+      const storedLanguage = sessionStorage.getItem("suvidha_language");
       if (storedLanguage) return resolveLanguageCode(storedLanguage);
 
       const cookieValue = document.cookie
-        .split('; ')
-        .find((cookie) => cookie.startsWith('googtrans='))
-        ?.split('=')[1];
-      const cookieLanguage = decodeURIComponent(cookieValue ?? '').split('/').pop();
+        .split("; ")
+        .find((cookie) => cookie.startsWith("googtrans="))
+        ?.split("=")[1];
+      const cookieLanguage = decodeURIComponent(cookieValue ?? "")
+        .split("/")
+        .pop();
       if (cookieLanguage) return resolveLanguageCode(cookieLanguage);
     }
     return DEFAULT_LANGUAGE_CODE;
   });
   const [hasChosenLanguage, setHasChosenLanguage] = useState<boolean>(() => {
-    if (typeof window !== 'undefined') {
-      return sessionStorage.getItem('suvidha_language_chosen') === 'true';
+    if (typeof window !== "undefined") {
+      return sessionStorage.getItem("suvidha_language_chosen") === "true";
     }
     return false;
   });
@@ -159,21 +272,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const code = resolveLanguageCode(lang);
     setSelectedLanguageState(code);
     setHasChosenLanguage(true);
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem('suvidha_language', code);
-      sessionStorage.setItem('suvidha_language_chosen', 'true');
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("suvidha_language", code);
+      sessionStorage.setItem("suvidha_language_chosen", "true");
     }
   };
-  const [fontSize, setFontSizeState] = useState<'sm' | 'md' | 'lg'>('md');
+  const [fontSize, setFontSizeState] = useState<"sm" | "md" | "lg">("md");
   const [screenReaderMode, setScreenReaderMode] = useState<boolean>(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
   const [isCompanionOpen, setIsCompanionOpen] = useState<boolean>(false);
 
   // Backward compatible citizen user state
   const [user, setUser] = useState<UserProfile>(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       try {
-        const savedUser = localStorage.getItem('suvidha_user');
+        const savedUser = localStorage.getItem("suvidha_user");
         if (savedUser) return JSON.parse(savedUser);
       } catch {
         // ignore
@@ -181,17 +294,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
     return {
       isLoggedIn: false,
-      name: 'Citizen Guest',
-      phone: '',
-      aadhaarMasked: '',
+      name: "Citizen Guest",
+      phone: "",
+      aadhaarMasked: "",
     };
   });
 
   // Unified persistent authenticated user
   const [authUser, setAuthUser] = useState<AuthUser | null>(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       try {
-        const savedAuth = localStorage.getItem('suvidha_auth_user');
+        const savedAuth = localStorage.getItem("suvidha_auth_user");
         if (savedAuth) {
           return JSON.parse(savedAuth);
         }
@@ -204,21 +317,27 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const [isAuthLoaded] = useState<boolean>(true);
 
-  const [notification, setNotification] = useState<{ message: string; type: 'success' | 'info' | 'error' } | null>(null);
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: "success" | "info" | "error";
+  } | null>(null);
 
-  const setFontSize = (size: 'sm' | 'md' | 'lg') => {
+  const setFontSize = (size: "sm" | "md" | "lg") => {
     setFontSizeState(size);
-    if (typeof document !== 'undefined') {
-      const scales: Record<'sm' | 'md' | 'lg', string> = {
-        sm: '0.9rem',
-        md: '1rem',
-        lg: '1.125rem',
+    if (typeof document !== "undefined") {
+      const scales: Record<"sm" | "md" | "lg", string> = {
+        sm: "0.9rem",
+        md: "1rem",
+        lg: "1.125rem",
       };
-      document.documentElement.style.setProperty('--font-scale', scales[size]);
+      document.documentElement.style.setProperty("--font-scale", scales[size]);
     }
   };
 
-  const showNotification = (message: string, type: 'success' | 'info' | 'error' = 'info') => {
+  const showNotification = (
+    message: string,
+    type: "success" | "info" | "error" = "info",
+  ) => {
     setNotification({ message, type });
     setTimeout(() => {
       setNotification(null);
@@ -233,52 +352,59 @@ export function AppProvider({ children }: { children: ReactNode }) {
     amount: string;
     bankBranch: string;
   }): string => {
-    const scheme = SUVIDHA_SCHEMES.find((s) => s.id === data.schemeId) || SUVIDHA_SCHEMES[0];
+    const scheme =
+      SUVIDHA_SCHEMES.find((s) => s.id === data.schemeId) || SUVIDHA_SCHEMES[0];
     const randomSuffix = Math.floor(1000 + Math.random() * 9000);
     const arn = `ARN-2025-UP-${randomSuffix}`;
-    const today = new Date().toLocaleDateString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
+    const today = new Date().toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
     });
 
     const newApp: CitizenApplication = {
       arn,
       schemeId: scheme.id,
       scheme: scheme.name,
-      applicant: data.fullName || 'Citizen Beneficiary',
-      phone: data.phone || '9876543210',
-      aadhaarMasked: data.aadhaarMasked || 'XXXX-XXXX-4812',
-      amount: data.amount.startsWith('₹') ? data.amount : `₹${Number(data.amount).toLocaleString('en-IN')}`,
+      applicant: data.fullName || "Citizen Beneficiary",
+      phone: data.phone || "9876543210",
+      aadhaarMasked: data.aadhaarMasked || "XXXX-XXXX-4812",
+      amount: data.amount.startsWith("₹")
+        ? data.amount
+        : `₹${Number(data.amount).toLocaleString("en-IN")}`,
       date: today,
-      status: 'Under Verification',
+      status: "Under Verification",
       stage: 2,
       bank: data.bankBranch,
-      remarks: 'Application registered digitally. Automated Aadhaar & Gram/ULB verification in progress.',
+      remarks:
+        "Application registered digitally. Automated Aadhaar & Gram/ULB verification in progress.",
       timeline: [
         {
-          title: 'Application Submitted Online',
-          description: 'Citizen digital receipt registered with nodal portal. Acknowledgement sent via SMS.',
+          title: "Application Submitted Online",
+          description:
+            "Citizen digital receipt registered with nodal portal. Acknowledgement sent via SMS.",
           completed: true,
           date: today,
         },
         {
-          title: 'Automated Eligibility & KYC Check',
-          description: 'Aadhaar e-KYC cross-referenced against public sector welfare records.',
+          title: "Automated Eligibility & KYC Check",
+          description:
+            "Aadhaar e-KYC cross-referenced against public sector welfare records.",
           completed: true,
-          date: 'In Progress',
+          date: "In Progress",
         },
         {
-          title: 'Bank Branch Credit Officer Review',
+          title: "Bank Branch Credit Officer Review",
           description: `Desk evaluation and subsidy subvention scrutiny at ${data.bankBranch}.`,
           completed: false,
-          date: 'Pending',
+          date: "Pending",
         },
         {
-          title: 'Concessional Sanction & DBT Disbursal',
-          description: 'Subject to nodal credit guarantee approval and direct DBT linkage.',
+          title: "Concessional Sanction & DBT Disbursal",
+          description:
+            "Subject to nodal credit guarantee approval and direct DBT linkage.",
           completed: false,
-          date: 'Pending',
+          date: "Pending",
         },
       ],
     };
@@ -287,20 +413,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setApplications(updated);
     setTrackingQuery(arn);
     try {
-      localStorage.setItem('suvidha_applications', JSON.stringify(updated));
+      localStorage.setItem("suvidha_applications", JSON.stringify(updated));
     } catch {
       // ignore
     }
 
-    showNotification(`Application ${arn} registered successfully!`, 'success');
+    showNotification(`Application ${arn} registered successfully!`, "success");
     return arn;
   };
 
   const updateApplicationStatus = (
     arn: string,
-    status: CitizenApplication['status'],
+    status: CitizenApplication["status"],
     stage: 1 | 2 | 3 | 4,
-    remarks?: string
+    remarks?: string,
   ) => {
     const updated = applications.map((app) => {
       if (app.arn.toLowerCase() === arn.toLowerCase()) {
@@ -321,23 +447,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
     setApplications(updated);
     try {
-      localStorage.setItem('suvidha_applications', JSON.stringify(updated));
+      localStorage.setItem("suvidha_applications", JSON.stringify(updated));
     } catch {
       // ignore
     }
-    showNotification(`Application ${arn} updated to "${status}".`, 'info');
+    showNotification(`Application ${arn} updated to "${status}".`, "info");
   };
 
   // Login as Citizen
-  const loginAsCitizen = (phone: string, name = 'Sunita Devi'): AuthUser => {
+  const loginAsCitizen = (phone: string, name = "Sunita Devi"): AuthUser => {
     const citizenUser: AuthUser = {
-      id: `usr-citizen-${phone.slice(-4) || '8841'}`,
+      id: `usr-citizen-${phone.slice(-4) || "8841"}`,
       name,
-      email: `${name.toLowerCase().replace(/\s+/g, '.')}@citizen.demo`,
-      role: 'citizen',
+      email: `${name.toLowerCase().replace(/\s+/g, ".")}@citizen.demo`,
+      role: "citizen",
       phone,
-      aadhaarMasked: 'XXXX-XXXX-4812',
-      status: 'active',
+      aadhaarMasked: "XXXX-XXXX-4812",
+      status: "active",
     };
 
     setAuthUser(citizenUser);
@@ -345,35 +471,41 @@ export function AppProvider({ children }: { children: ReactNode }) {
       isLoggedIn: true,
       name,
       phone,
-      aadhaarMasked: 'XXXX-XXXX-4812',
+      aadhaarMasked: "XXXX-XXXX-4812",
     });
 
     try {
-      localStorage.setItem('suvidha_auth_user', JSON.stringify(citizenUser));
-      localStorage.setItem('suvidha_user', JSON.stringify({
-        isLoggedIn: true,
-        name,
-        phone,
-        aadhaarMasked: 'XXXX-XXXX-4812',
-      }));
+      localStorage.setItem("suvidha_auth_user", JSON.stringify(citizenUser));
+      localStorage.setItem(
+        "suvidha_user",
+        JSON.stringify({
+          isLoggedIn: true,
+          name,
+          phone,
+          aadhaarMasked: "XXXX-XXXX-4812",
+        }),
+      );
     } catch {
       // ignore
     }
 
     setIsLoginModalOpen(false);
-    showNotification(`Welcome back, ${name}! Citizen session verified.`, 'success');
+    showNotification(
+      `Welcome back, ${name}! Citizen session verified.`,
+      "success",
+    );
     return citizenUser;
   };
 
   // Legacy login alias
-  const login = (phone: string, name = 'Sunita Devi') => {
+  const login = (phone: string, name = "Sunita Devi") => {
     loginAsCitizen(phone, name);
   };
 
   // Login as Official (Administrator or Channel Partner)
   const loginAsOfficial = (
     email: string,
-    password: string
+    password: string,
   ): { success: boolean; error?: string; user?: AuthUser } => {
     const normalizedEmail = email.trim().toLowerCase();
     const entry = DEMO_OFFICIAL_USERS[normalizedEmail];
@@ -381,21 +513,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (!entry) {
       return {
         success: false,
-        error: 'Invalid official credentials. Please check your registered User ID or Email.',
+        error:
+          "Invalid official credentials. Please check your registered User ID or Email.",
       };
     }
 
     if (entry.password !== password) {
       return {
         success: false,
-        error: 'Incorrect security password. Please re-enter your official password.',
+        error:
+          "Incorrect security password. Please re-enter your official password.",
       };
     }
 
-    if (entry.user.status === 'inactive' || entry.user.status === 'suspended') {
+    if (entry.user.status === "inactive" || entry.user.status === "suspended") {
       return {
         success: false,
-        error: 'This official account is currently deactivated. Please contact SUVIDHA Central Nodal Administration.',
+        error:
+          "This official account is currently deactivated. Please contact SUVIDHA Central Nodal Administration.",
       };
     }
 
@@ -403,14 +538,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setAuthUser(authenticated);
 
     try {
-      localStorage.setItem('suvidha_auth_user', JSON.stringify(authenticated));
+      localStorage.setItem("suvidha_auth_user", JSON.stringify(authenticated));
     } catch {
       // ignore
     }
 
     showNotification(
-      `Authenticated successfully as ${authenticated.role === 'admin' ? 'Administrator' : 'Channel Partner'}. Welcome, ${authenticated.name}!`,
-      'success'
+      `Authenticated successfully as ${authenticated.role === "admin" ? "Administrator" : "Channel Partner"}. Welcome, ${authenticated.name}!`,
+      "success",
     );
 
     return { success: true, user: authenticated };
@@ -421,20 +556,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setAuthUser(null);
     const guestUser: UserProfile = {
       isLoggedIn: false,
-      name: 'Citizen Guest',
-      phone: '',
-      aadhaarMasked: '',
+      name: "Citizen Guest",
+      phone: "",
+      aadhaarMasked: "",
     };
     setUser(guestUser);
 
     try {
-      localStorage.removeItem('suvidha_auth_user');
-      localStorage.removeItem('suvidha_user');
+      localStorage.removeItem("suvidha_auth_user");
+      localStorage.removeItem("suvidha_user");
     } catch {
       // ignore
     }
 
-    showNotification('Logged out successfully.', 'info');
+    showNotification("Logged out successfully.", "info");
   };
 
   return (
@@ -445,6 +580,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
         updateApplicationStatus,
         trackingQuery,
         setTrackingQuery,
+        userLocation,
+        locationStatus,
+        locationReady,
+        requestUserLocation,
         selectedLanguage,
         setSelectedLanguage,
         hasChosenLanguage,
@@ -475,7 +614,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 export function useApp() {
   const context = useContext(AppContext);
   if (!context) {
-    throw new Error('useApp must be used within an AppProvider');
+    throw new Error("useApp must be used within an AppProvider");
   }
   return context;
 }

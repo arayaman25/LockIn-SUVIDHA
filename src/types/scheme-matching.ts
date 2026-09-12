@@ -61,6 +61,9 @@ export interface SchemeRecommendationItem {
   schemeId: string;
   schemeCode: string;
   schemeName: string;
+  description?: string;
+  sourceUrl?: string | null;
+  eligibilityRules?: Record<string, unknown>;
   matchScore: number;
   reasoning: string;
   minLoanAmount: string;
@@ -72,6 +75,8 @@ export interface SchemeRecommendationItem {
   moratoriumMonthsMax: number;
   requiredDocuments: string[];
   scoreBreakdown: ScoreBreakdown;
+  summary?: string;
+  whyItFits?: string;
 }
 
 export interface SchemeRecommendationResult {
@@ -150,6 +155,28 @@ export interface IntakeMatchedResponse {
   language?: string;
   detectedLanguage?: string;
   matches: SchemeRecommendationItem[];
+  channelId?: string;
+}
+
+export interface SchemeSummaryItem {
+  schemeCode: string;
+  schemeId: string;
+  schemeName: string;
+  headline: string;
+  whyItFits: string;
+  keyTerms: string[];
+  nextSteps: string[];
+  matchScore: number;
+}
+
+export interface SchemeSummaryResponse {
+  success: boolean;
+  data: {
+    language: string;
+    overallSummary: string;
+    schemeSummaries: SchemeSummaryItem[];
+    matches: SchemeRecommendationItem[];
+  };
 }
 
 export interface IntakeNoMatchResponse {

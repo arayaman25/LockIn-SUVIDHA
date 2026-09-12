@@ -18,7 +18,7 @@ function FindSchemeContent() {
   }
 
   return (
-    <div className="max-w-[1240px] mx-auto px-4 md:px-8 py-8">
+    <div className="mx-auto max-w-[1240px] px-4 py-8 md:px-8">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-xs text-on-surface-variant mb-6 pb-2 border-b border-outline-variant/40">
         <Link href="/" className="hover:text-primary flex items-center gap-1">
