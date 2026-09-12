@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
-import { INDIAN_LANGUAGES } from '@/lib/data';
+import { SUPPORTED_LANGUAGES } from '@/lib/languages';
 import Icon from '@/components/Icon';
 
 const emptySubscribe = () => () => {};
@@ -116,9 +116,9 @@ export default function Header() {
                 aria-label="Select Official Language"
                 className="bg-surface text-[12px] py-0.5 px-1.5 border border-outline-variant/50 rounded font-label-sm text-on-surface focus:ring-1 focus:ring-primary focus:outline-none cursor-pointer"
               >
-                {INDIAN_LANGUAGES.map((lang) => (
+                {SUPPORTED_LANGUAGES.map((lang) => (
                   <option key={lang.code} value={lang.code}>
-                    {lang.label}
+                    {lang.nativeLabel} ({lang.englishName})
                   </option>
                 ))}
               </select>

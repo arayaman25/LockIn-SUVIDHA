@@ -3,6 +3,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import Icon from '@/components/Icon';
+import { useApp } from '@/context/AppContext';
+import { getLanguage } from '@/lib/languages';
 import { useIntakeChat } from '@/src/lib/query/intake';
 import { ChatMessageItem } from './intake.types';
 import ChatMessage from './ChatMessage';
@@ -20,8 +22,8 @@ function createStableChannelId(): string {
   return `chn-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 9)}`;
 }
 
-function formatCurrentTime(): string {
-  return new Intl.DateTimeFormat('en-IN', {
+function formatCurrentTime(locale: string): string {
+  return new Intl.DateTimeFormat(locale, {
     hour: 'numeric',
     minute: 'numeric',
     hour12: true,
@@ -163,17 +165,20 @@ export default function ConversationalIntake({
    */
   const [intakePhase, setIntakePhase] = useState<IntakePhase>('conversation');
 
-  // Initial language MUST be English per specification
-  const [currentLanguage, setCurrentLanguage] = useState<string>('en');
+  // The language the citizen chose on arrival is authoritative: it is what the
+  // speech recognizer is configured with and what the backend is told to answer
+  // in. It is never overwritten by the language the backend reports detecting.
+  const { selectedLanguage } = useApp();
+  const language = getLanguage(selectedLanguage);
+  const timeLocale = `${language.code}-IN`;
 
-  // Initial message starts strictly in English
   const [messages, setMessages] = useState<ChatMessageItem[]>([
     {
       id: 'welcome-msg',
       role: 'assistant',
       content:
         "Namaste! I'm here to help you find a suitable government loan or assistance scheme. What would you like help with today?",
-      timestamp: formatCurrentTime(),
+      timestamp: formatCurrentTime('en-IN'),
     },
   ]);
 
@@ -218,7 +223,7 @@ export default function ConversationalIntake({
         id: userMsgId,
         role: 'user',
         content: trimmed,
-        timestamp: formatCurrentTime(),
+        timestamp: formatCurrentTime(timeLocale),
       },
     ];
     setMessages(newMessages);
@@ -228,12 +233,12 @@ export default function ConversationalIntake({
       {
         message: trimmed,
         channelId: channelId,
+        language: language.code,
       },
       {
         onSuccess: (rawResponse) => {
           const {
             status,
-            language,
             question,
             partialProfile,
             matches,
@@ -241,12 +246,7 @@ export default function ConversationalIntake({
             missingFields,
           } = extractIntakePayload(rawResponse);
 
-          const timestamp = formatCurrentTime();
-
-          // Follow the language detected by the backend dynamically
-          if (language) {
-            setCurrentLanguage(language);
-          }
+          const timestamp = formatCurrentTime(timeLocale);
 
           // Merge newly extracted fields into local state and notify parent ONCE
           if (partialProfile && Object.keys(partialProfile).length > 0) {
@@ -272,10 +272,7 @@ export default function ConversationalIntake({
               {
                 id: `asst-${Date.now()}`,
                 role: 'assistant',
-                content:
-                  language === 'hi'
-                    ? 'धन्यवाद! आपकी प्रोफ़ाइल और आवश्यकतानुसार उपयुक्त सरकारी योजनाएं नीचे दी गई हैं:'
-                    : 'Thanks. I have enough information to look for suitable schemes:',
+                content: 'Thanks. I have enough information to look for suitable schemes:',
                 timestamp,
                 matchedSchemes: matches,
               },
@@ -329,17 +326,13 @@ export default function ConversationalIntake({
           }
 
           // Fallback only if no question was provided by backend
-          const localizedFallback =
-            language === 'hi'
-              ? 'धन्यवाद। कृपया अपनी आयु, वार्षिक पारिवारिक आय और ऋण राशि का विवरण बताएं।'
-              : 'Thank you. Could you also share your age, family income, and required loan amount?';
-
           setMessages((prev) => [
             ...prev,
             {
               id: `asst-${Date.now()}`,
               role: 'assistant',
-              content: localizedFallback,
+              content:
+                'Thank you. Could you also share your age, family income, and required loan amount?',
               timestamp,
             },
           ]);
@@ -350,11 +343,8 @@ export default function ConversationalIntake({
             {
               id: `asst-err-${Date.now()}`,
               role: 'assistant',
-              content:
-                currentLanguage === 'hi'
-                  ? 'कुछ तकनीकी समस्या आई है। कृपया पुनः प्रयास करें।'
-                  : 'Something went wrong while processing your request. Please try again.',
-              timestamp: formatCurrentTime(),
+              content: 'Something went wrong while processing your request. Please try again.',
+              timestamp: formatCurrentTime(timeLocale),
               canRetry: true,
             },
           ]);
@@ -392,19 +382,20 @@ export default function ConversationalIntake({
           </div>
         </div>
 
-        {/* Step-by-Step Form Fallback */}
-        {onSwitchToForm && (
-          <div className="shrink-0 text-right">
+        <div className="shrink-0 flex items-center gap-2">
+          {/* Step-by-Step Form Fallback */}
+          {onSwitchToForm && (
             <button
               type="button"
               onClick={onSwitchToForm}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-stone-300 hover:border-[#00472f] text-stone-700 hover:text-[#00472f] text-xs font-semibold bg-white shadow-xs transition-colors cursor-pointer"
             >
-              <span>Prefer a step-by-step form?</span>
+              <span className="hidden sm:inline">Prefer a step-by-step form?</span>
+              <span className="sm:hidden">Use a form</span>
               <Icon name="arrow_forward" size={14} />
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {/* Scrollable Conversation Message History */}
@@ -435,7 +426,7 @@ export default function ConversationalIntake({
         <ChatInput
           onSendMessage={handleSendMessage}
           isPending={intakeMutation.isPending}
-          detectedLanguage={currentLanguage}
+          detectedLanguage={language.code}
         />
 
         {/* Bottom Helper Bar */}

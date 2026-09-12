@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { getLanguage } from '@/lib/languages';
 
 interface VoiceInputButtonProps {
   onTranscript: (transcript: string) => void;
@@ -9,28 +10,13 @@ interface VoiceInputButtonProps {
   onListeningStateChange?: (isListening: boolean) => void;
 }
 
-// Maps detected language codes to appropriate browser speech recognition locales
-export function getVoiceLocale(lang?: string): string {
-  if (!lang) return 'en-IN';
-  const l = lang.toLowerCase().trim();
-  if (l === 'hi' || l.startsWith('hindi')) return 'hi-IN';
-  if (l === 'en' || l.startsWith('eng')) return 'en-IN';
-  if (l === 'bn' || l.startsWith('bengali')) return 'bn-IN';
-  if (l === 'mr' || l.startsWith('marathi')) return 'mr-IN';
-  if (l === 'ta' || l.startsWith('tamil')) return 'ta-IN';
-  if (l === 'te' || l.startsWith('telugu')) return 'te-IN';
-  if (l === 'gu' || l.startsWith('gujarati')) return 'gu-IN';
-  if (l === 'kn' || l.startsWith('kannada')) return 'kn-IN';
-  if (l === 'pa' || l.startsWith('punjabi')) return 'pa-IN';
-  return 'en-IN';
-}
-
 export default function VoiceInputButton({
   onTranscript,
   disabled = false,
   detectedLanguage = 'en',
   onListeningStateChange,
 }: VoiceInputButtonProps) {
+  const language = getLanguage(detectedLanguage);
   const [isListening, setIsListening] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const recognitionRef = useRef<any>(null);
@@ -80,6 +66,15 @@ export default function VoiceInputButton({
     setErrorMessage(null);
     finalTranscriptBufferRef.current = '';
 
+    // Say so plainly rather than letting the recognizer fall back to another
+    // language and transcribe the citizen into gibberish they have to delete.
+    if (!language.speechSupported) {
+      setErrorMessage(
+        `Voice input is not yet available in ${language.englishName}. Please type your message instead.`
+      );
+      return;
+    }
+
     // 1. Check browser support for Web Speech API
     if (typeof window === 'undefined') return;
     const SpeechRecognitionClass =
@@ -88,7 +83,7 @@ export default function VoiceInputButton({
 
     if (!SpeechRecognitionClass) {
       setErrorMessage(
-        'Voice input is not supported in this browser. You can type your message instead.\n(इस ब्राउज़र में ध्वनि इनपुट समर्थित नहीं है। कृपया लिखकर बताएं।)'
+        'Voice input is not supported in this browser. You can type your message instead.'
       );
       return;
     }
@@ -98,7 +93,7 @@ export default function VoiceInputButton({
       const recognition = new SpeechRecognitionClass();
       recognition.continuous = false;
       recognition.interimResults = true;
-      recognition.lang = getVoiceLocale(detectedLanguage);
+      recognition.lang = language.voiceLocale;
 
       recognition.onstart = () => {
         setIsListening(true);
@@ -127,7 +122,7 @@ export default function VoiceInputButton({
         const err = event.error;
         if (err === 'not-allowed' || err === 'permission-denied') {
           setErrorMessage(
-            'Microphone access was denied. Please allow microphone permissions or type your message.\n(माइक्रोफ़ोन की अनुमति अस्वीकृत है। कृपया अनुमति दें या टाइप करें।)'
+            'Microphone access was denied. Please allow microphone permissions or type your message.'
           );
         } else if (err === 'no-speech') {
           // No speech detected during timeout - silent reset without intrusive error
@@ -172,7 +167,7 @@ export default function VoiceInputButton({
         'Could not start voice recognition. You can type your message instead.'
       );
     }
-  }, [disabled, isListening, detectedLanguage, onTranscript, onListeningStateChange, stopRecognition]);
+  }, [disabled, isListening, language, onTranscript, onListeningStateChange, stopRecognition]);
 
   return (
     <div className="relative inline-flex items-center shrink-0 z-20">
@@ -183,13 +178,15 @@ export default function VoiceInputButton({
         aria-label={
           isListening
             ? 'Stop voice recording'
-            : 'Use voice input (बोलकर बताएं)'
+            : `Use voice input in ${language.englishName}`
         }
         aria-pressed={isListening}
         title={
           isListening
-            ? 'Listening... Click to stop (सुन रहे हैं...)'
-            : 'Click to speak in your language (बोलकर बताएं)'
+            ? 'Listening... Click to stop'
+            : language.speechSupported
+              ? `Click to speak in ${language.nativeLabel}`
+              : `Voice input is not available in ${language.englishName}`
         }
         className={`w-10 h-10 rounded-full transition-all duration-200 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-[#00472f]/40 shrink-0 cursor-pointer ${
           isListening
@@ -241,7 +238,7 @@ export default function VoiceInputButton({
             onClick={() => setErrorMessage(null)}
             className="mt-2 text-[11px] font-bold text-amber-800 underline hover:text-amber-950 block"
           >
-            Dismiss (बंद करें)
+            Dismiss
           </button>
         </div>
       )}

@@ -4,7 +4,6 @@ import "./globals.css";
 import { AppProvider } from "@/context/AppContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import SuvidhaVoiceCompanion from "@/components/SuvidhaVoiceCompanion";
 import CitizenLoginModal from "@/components/CitizenLoginModal";
 import NotificationToast from "@/components/NotificationToast";
 import GoogleTranslate from "@/components/GoogleTranslate";
@@ -31,7 +30,11 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: "/favicon.ico" },
-      { url: "/images/suvidha-logo.png", sizes: "1024x1024", type: "image/png" },
+      {
+        url: "/images/suvidha-logo.png",
+        sizes: "1024x1024",
+        type: "image/png",
+      },
     ],
     apple: "/images/suvidha-logo.png",
   },
@@ -57,7 +60,6 @@ export default function RootLayout({
               {children}
             </main>
             <Footer />
-            <SuvidhaVoiceCompanion />
             <CitizenLoginModal />
             <NotificationToast />
           </AppProvider>

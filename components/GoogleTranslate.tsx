@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
+import { DEFAULT_LANGUAGE_CODE, SUPPORTED_LANGUAGE_CODES } from '@/lib/languages';
 
 declare global {
   interface Window {
@@ -17,11 +18,8 @@ declare global {
   }
 }
 
-const GT_LANG_MAP: Record<string, string> = {
-  en: 'en', hi: 'hi', bn: 'bn', mr: 'mr',
-  ta: 'ta', te: 'te', gu: 'gu', kn: 'kn',
-};
-const GT_LANGUAGES = new Set(Object.values(GT_LANG_MAP));
+const GT_INCLUDED_LANGUAGES = SUPPORTED_LANGUAGE_CODES.join(',');
+const GT_LANGUAGES = new Set<string>(SUPPORTED_LANGUAGE_CODES);
 
 export default function GoogleTranslate() {
   const { selectedLanguage } = useApp();
@@ -33,7 +31,7 @@ export default function GoogleTranslate() {
     window.googleTranslateElementInit = () => {
       if (!window.google?.translate?.TranslateElement) return;
       new window.google.translate.TranslateElement(
-        { pageLanguage: 'en', includedLanguages: 'en,hi,bn,mr,ta,te,gu,kn', autoDisplay: false },
+        { pageLanguage: 'en', includedLanguages: GT_INCLUDED_LANGUAGES, autoDisplay: false },
         'google_translate_element'
       );
     };
@@ -47,17 +45,21 @@ export default function GoogleTranslate() {
 
   /* Use Google's cookie and a reload so it never mutates React nodes in place. */
   useEffect(() => {
-    const targetLang = GT_LANG_MAP[selectedLanguage] ?? 'en';
+    const targetLang = GT_LANGUAGES.has(selectedLanguage)
+      ? selectedLanguage
+      : DEFAULT_LANGUAGE_CODE;
     const cookieValue = document.cookie
       .split('; ')
       .find((cookie) => cookie.startsWith('googtrans='))
       ?.split('=')[1];
     const cookieLanguage = decodeURIComponent(cookieValue ?? '').split('/').pop() ?? 'en';
-    const currentLang = GT_LANGUAGES.has(cookieLanguage) ? cookieLanguage : 'en';
+    const currentLang = GT_LANGUAGES.has(cookieLanguage)
+      ? cookieLanguage
+      : DEFAULT_LANGUAGE_CODE;
 
     if (currentLang === targetLang) return;
 
-    if (targetLang === 'en') {
+    if (targetLang === DEFAULT_LANGUAGE_CODE) {
       document.cookie = 'googtrans=; Max-Age=0; path=/';
     } else {
       document.cookie = `googtrans=/en/${targetLang}; path=/`;

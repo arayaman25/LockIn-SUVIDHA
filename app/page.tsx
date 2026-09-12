@@ -4,10 +4,23 @@ import React from 'react';
 import Link from 'next/link';
 import Icon from '@/components/Icon';
 import HeroCarousel from '@/components/HeroCarousel';
+import LanguageGate from '@/components/LanguageGate';
+import { useApp } from '@/context/AppContext';
+
+const emptySubscribe = () => () => {};
 
 export default function HomePage() {
+  const { selectedLanguage, setSelectedLanguage, hasChosenLanguage } = useApp();
+  // The choice is read from sessionStorage, so it is unknown while the page is
+  // server-rendered. Gate on this to avoid a hydration mismatch.
+  const mounted = React.useSyncExternalStore(emptySubscribe, () => true, () => false);
+
   return (
     <div className="space-y-0">
+      {mounted && !hasChosenLanguage && (
+        <LanguageGate value={selectedLanguage} onSelect={setSelectedLanguage} />
+      )}
+
       <HeroCarousel />
 
       {/* ========================================================================= */}

@@ -124,6 +124,11 @@ export interface IntakeRequest {
   message: string;
   channelId: string;
   userId?: string;
+  /**
+   * ISO 639-1 code the citizen chose for themselves. Authoritative — the
+   * backend answers in this language instead of guessing from the message.
+   */
+  language?: string;
 }
 
 export type IntakeResponseStatus = 'in_progress' | 'needs_clarification' | 'matched' | 'no_match';

@@ -546,14 +546,3 @@ export const FAQS = [
     a: 'All sanctioned funds and subsequent interest subvention subsidies are credited strictly via Direct Benefit Transfer (DBT) directly into your Aadhaar-seeded Jan Dhan or regular savings bank account.'
   }
 ];
-
-export const INDIAN_LANGUAGES = [
-  { code: 'en', label: 'English (India)' },
-  { code: 'hi', label: 'हिंदी (Hindi)' },
-  { code: 'bn', label: 'বাংলা (Bengali)' },
-  { code: 'mr', label: 'मराठी (Marathi)' },
-  { code: 'ta', label: 'தமிழ் (Tamil)' },
-  { code: 'te', label: 'తెలుగు (Telugu)' },
-  { code: 'gu', label: 'ગુજરાતી (Gujarati)' },
-  { code: 'kn', label: 'ಕನ್ನಡ (Kannada)' }
-];

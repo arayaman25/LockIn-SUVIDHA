@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { CitizenApplication, INITIAL_APPLICATIONS, SUVIDHA_SCHEMES } from '@/lib/data';
+import { DEFAULT_LANGUAGE_CODE, resolveLanguageCode } from '@/lib/languages';
 
 export type UserRole = 'citizen' | 'partner' | 'admin';
 
@@ -86,6 +87,13 @@ interface AppContextType {
   setTrackingQuery: (arn: string) => void;
   selectedLanguage: string;
   setSelectedLanguage: (lang: string) => void;
+  /**
+   * Whether the citizen has picked a language themselves, as opposed to
+   * silently inheriting the English default. `selectedLanguage` alone cannot
+   * answer this, since a deliberate choice of English is indistinguishable
+   * from never having chosen.
+   */
+  hasChosenLanguage: boolean;
   fontSize: 'sm' | 'md' | 'lg';
   setFontSize: (size: 'sm' | 'md' | 'lg') => void;
   screenReaderMode: boolean;
@@ -123,23 +131,38 @@ export function AppProvider({ children }: { children: ReactNode }) {
   });
 
   const [trackingQuery, setTrackingQuery] = useState<string>('ARN-2025-UP-8841');
+  // Language lives in sessionStorage, not localStorage: the choice should
+  // survive refreshes and navigation within a visit, but a citizen returning
+  // later should be asked again rather than silently locked into a language
+  // someone else picked on a shared device.
   const [selectedLanguage, setSelectedLanguageState] = useState<string>(() => {
     if (typeof window !== 'undefined') {
-      const storedLanguage = localStorage.getItem('suvidha_language');
-      if (storedLanguage) return storedLanguage;
+      const storedLanguage = sessionStorage.getItem('suvidha_language');
+      if (storedLanguage) return resolveLanguageCode(storedLanguage);
 
       const cookieValue = document.cookie
         .split('; ')
         .find((cookie) => cookie.startsWith('googtrans='))
         ?.split('=')[1];
       const cookieLanguage = decodeURIComponent(cookieValue ?? '').split('/').pop();
-      if (cookieLanguage) return cookieLanguage;
+      if (cookieLanguage) return resolveLanguageCode(cookieLanguage);
     }
-    return 'en';
+    return DEFAULT_LANGUAGE_CODE;
+  });
+  const [hasChosenLanguage, setHasChosenLanguage] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem('suvidha_language_chosen') === 'true';
+    }
+    return false;
   });
   const setSelectedLanguage = (lang: string) => {
-    setSelectedLanguageState(lang);
-    if (typeof window !== 'undefined') localStorage.setItem('suvidha_language', lang);
+    const code = resolveLanguageCode(lang);
+    setSelectedLanguageState(code);
+    setHasChosenLanguage(true);
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('suvidha_language', code);
+      sessionStorage.setItem('suvidha_language_chosen', 'true');
+    }
   };
   const [fontSize, setFontSizeState] = useState<'sm' | 'md' | 'lg'>('md');
   const [screenReaderMode, setScreenReaderMode] = useState<boolean>(false);
@@ -424,6 +447,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setTrackingQuery,
         selectedLanguage,
         setSelectedLanguage,
+        hasChosenLanguage,
         fontSize,
         setFontSize,
         screenReaderMode,

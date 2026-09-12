@@ -70,9 +70,7 @@ export default function ChatInput({
   const isSendDisabled = !inputText.trim() || disabled || isPending;
 
   const defaultPlaceholder =
-    detectedLanguage === 'hi'
-      ? 'मुझे अपनी जरूरत अपनी भाषा में बताएं... (जैसे: मुझे मिठाई की दुकान खोलने के लिए ₹2 लाख चाहिए)'
-      : 'Tell us what you need in your preferred language... (e.g. I need a loan for business or education)';
+    'Tell us what you need in your own words... (e.g. I need a loan for business or education)';
 
   return (
     <div className="w-full relative">
@@ -83,9 +81,6 @@ export default function ChatInput({
             <span className="w-2.5 h-2.5 bg-red-600 rounded-full animate-ping" />
             <span className="font-semibold">
               Listening... Speak clearly into your microphone
-            </span>
-            <span className="text-red-800 font-normal">
-              (सुन रहे हैं... कृपया बोलें)
             </span>
           </div>
           <span className="text-[11px] text-red-700 font-medium hidden sm:inline">
