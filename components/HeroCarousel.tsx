@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import Link from "next/link";
+import Image from "next/image";
 
 export interface HeroSlide {
   id: string;
@@ -20,60 +20,64 @@ export interface HeroSlide {
 
 export const HERO_SLIDES: HeroSlide[] = [
   {
-    id: 'term-loan',
-    schemeId: 'mudra-kishore',
-    category: '#PRADHAN MANTRI CONCESSIONAL TERM CREDIT',
-    titlePrefix: 'Pradhan Mantri',
-    title: 'MUDRA Term Loan Scheme',
+    id: "term-loan",
+    schemeId: "mudra-kishore",
+    category: "#PRADHAN MANTRI CONCESSIONAL TERM CREDIT",
+    titlePrefix: "Pradhan Mantri",
+    title: "MUDRA Term Loan Scheme",
     description:
-      'Concessional capital credit up to ₹5 Lakh with zero third-party guarantee to procure machinery, expand inventory, and upgrade commercial enterprises.',
-    wizardRoute: '/wizard?purpose=business',
-    image: '/images/hero-real-fast-food.avif',
-    imageAlt: 'Indian small business owner in his electronics and hardware workshop',
-    badge: 'Term Credit up to ₹5 Lakh',
-    highlightTag: 'Zero Collateral Term Loan',
+      "Concessional capital credit up to ₹5 Lakh with zero third-party guarantee to procure machinery, expand inventory, and upgrade commercial enterprises.",
+    wizardRoute: "/wizard?purpose=business",
+    image: "/images/hero-real-fast-food.avif",
+    imageAlt:
+      "Indian small business owner in his electronics and hardware workshop",
+    badge: "Term Credit up to ₹5 Lakh",
+    highlightTag: "Zero Collateral Term Loan",
   },
   {
-    id: 'micro-finance',
-    schemeId: 'pmsvanidhi',
-    category: '#PRADHAN MANTRI CONCESSIONAL CREDIT & WELFARE',
-    titlePrefix: 'PM SVANidhi',
-    title: 'Micro Finance Scheme',
+    id: "micro-finance",
+    schemeId: "pmsvanidhi",
+    category: "#PRADHAN MANTRI CONCESSIONAL CREDIT & WELFARE",
+    titlePrefix: "PM SVANidhi",
+    title: "Micro Finance Scheme",
     description:
-      'Collateral-free working capital loan starting at ₹10,000 up to ₹50,000 with 7% interest subvention and cashback rewards on digital transactions.',
-    wizardRoute: '/wizard?purpose=business',
-    image: '/images/hero-real-students.jpg',
-    imageAlt: 'Indian street vendor merchant at his certified food stall with digital payment',
-    badge: '7% Interest Subvention',
-    highlightTag: 'Fast-Track Working Capital',
+      "Collateral-free working capital loan starting at ₹10,000 up to ₹50,000 with 7% interest subvention and cashback rewards on digital transactions.",
+    wizardRoute: "/wizard?purpose=business",
+    image: "/images/hero-real-students.jpg",
+    imageAlt:
+      "Indian street vendor merchant at his certified food stall with digital payment",
+    badge: "7% Interest Subvention",
+    highlightTag: "Fast-Track Working Capital",
   },
   {
-    id: 'education-loan',
-    schemeId: 'csis',
-    category: '#CENTRAL SECTOR HIGHER EDUCATION WELFARE',
-    titlePrefix: 'Central Sector',
-    title: 'Educational Loan Subsidy',
+    id: "education-loan",
+    schemeId: "csis",
+    category: "#CENTRAL SECTOR HIGHER EDUCATION WELFARE",
+    titlePrefix: "Central Sector",
+    title: "Educational Loan Subsidy",
     description:
-      '100% full government interest subvention during the moratorium and course period for professional and technical higher education in recognized Indian institutions.',
-    wizardRoute: '/wizard?purpose=education',
-    image: '/images/hero-real-handloom.jpg',
-    imageAlt: 'Indian university students holding study materials and laptop on campus',
-    badge: '100% Moratorium Subsidy',
-    highlightTag: 'EWS Higher Education Support',
+      "100% full government interest subvention during the moratorium and course period for professional and technical higher education in recognized Indian institutions.",
+    wizardRoute: "/wizard?purpose=education",
+    image: "/images/hero-real-handloom.jpg",
+    imageAlt:
+      "Indian university students holding study materials and laptop on campus",
+    badge: "100% Moratorium Subsidy",
+    highlightTag: "EWS Higher Education Support",
   },
   {
-    id: 'women-entrepreneur',
-    schemeId: 'standup',
-    category: '#WOMEN ENTREPRENEURSHIP & ENTERPRISE CREDIT',
-    titlePrefix: 'Stand-Up India',
-    title: 'Women Enterprise Scheme',
+    id: "women-entrepreneur",
+    schemeId: "standup",
+    category: "#WOMEN ENTREPRENEURSHIP & ENTERPRISE CREDIT",
+    titlePrefix: "Stand-Up India",
+    title: "Women Enterprise Scheme",
     description:
-      'Composite bank credit between ₹10 Lakh and ₹1 Crore for women entrepreneurs establishing greenfield manufacturing, service, or trading ventures.',
-    wizardRoute: '/wizard?purpose=business',
-    image: '/images/b6.jpg',
-    imageAlt: 'Indian woman artisan and weaver operating a traditional handloom workshop',
-    badge: '₹10 Lakh to ₹1 Crore Credit',
-    highlightTag: 'Greenfield Enterprise Support',
+      "Composite bank credit between ₹10 Lakh and ₹1 Crore for women entrepreneurs establishing greenfield manufacturing, service, or trading ventures.",
+    wizardRoute: "/wizard?purpose=business",
+    image: "/images/b6.jpg",
+    imageAlt:
+      "Indian woman artisan and weaver operating a traditional handloom workshop",
+    badge: "₹10 Lakh to ₹1 Crore Credit",
+    highlightTag: "Greenfield Enterprise Support",
   },
 ];
 
@@ -113,10 +117,10 @@ export default function HeroCarousel() {
 
   // Keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'ArrowLeft') {
+    if (e.key === "ArrowLeft") {
       e.preventDefault();
       goToPrev();
-    } else if (e.key === 'ArrowRight') {
+    } else if (e.key === "ArrowRight") {
       e.preventDefault();
       goToNext();
     }
@@ -190,13 +194,19 @@ export default function HeroCarousel() {
                   {/* Category Pill */}
                   <div className="order-1 mb-4 sm:mb-6">
                     <span className="inline-flex items-center gap-2 rounded-full bg-[#a86d2b]/85 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.12em] text-white shadow-sm ring-1 ring-white/10">
-                      <span className="h-2 w-2 rounded-full bg-[#ffb04f]" aria-hidden="true" />
+                      <span
+                        className="h-2 w-2 rounded-full bg-[#ffb04f]"
+                        aria-hidden="true"
+                      />
                       <span>{slide.category}</span>
                     </span>
                   </div>
 
                   {/* Decorative dot cluster */}
-                  <div className="order-2 mb-4 hidden gap-2.5 pl-1 sm:flex lg:mb-6" aria-hidden="true">
+                  <div
+                    className="order-2 mb-4 hidden gap-2.5 pl-1 sm:flex lg:mb-6"
+                    aria-hidden="true"
+                  >
                     <span className="h-2.5 w-2.5 rounded-full bg-white/45" />
                     <span className="h-2.5 w-2.5 rounded-full bg-white/45" />
                     <span className="h-2.5 w-2.5 rounded-full bg-white/45" />
@@ -224,8 +234,12 @@ export default function HeroCarousel() {
                       />
                       <div className="relative overflow-hidden rounded-[20px] border-[5px] border-[#d8d8d2] bg-white p-1 shadow-xl">
                         <div className="flex h-7 items-center justify-between border-b border-[#e5e7eb] bg-white px-3 text-[9px] text-[#6b7280]">
-                          <span className="truncate">Enter scheme name to search...</span>
-                          <span className="font-semibold text-primary">⌕ Search</span>
+                          <span className="truncate">
+                            Enter scheme name to search...
+                          </span>
+                          <span className="font-semibold text-primary">
+                            ⌕ Search
+                          </span>
                         </div>
                         <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[12px] bg-[#f0f4f1]">
                           <Image
@@ -248,7 +262,9 @@ export default function HeroCarousel() {
                         </div>
                         <div className="flex h-9 items-center justify-between bg-white px-3 text-[9px] font-bold text-[#374151]">
                           <span>#GOVERNMENTSCHEMES / #SCHEMESFORYOU</span>
-                          <span className="text-[#086d46]">Verified Direct ✓</span>
+                          <span className="text-[#086d46]">
+                            Verified Direct ✓
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -260,7 +276,7 @@ export default function HeroCarousel() {
                       href={slide.wizardRoute}
                       className="inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-xs font-bold uppercase tracking-wider text-[#086d46] shadow-md transition-all hover:bg-white/95 hover:shadow-lg focus-visible:ring-2 focus-visible:ring-white sm:text-sm"
                     >
-                      <span>Get Scheme Recommendations</span>
+                      <span>ANSWER A FEW QUESTIONS</span>
                       <span aria-hidden="true">→</span>
                     </Link>
 
@@ -268,7 +284,7 @@ export default function HeroCarousel() {
                       href="/assistant"
                       className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/10 px-7 py-3.5 text-xs font-bold uppercase tracking-wider text-white shadow-md backdrop-blur-sm transition-all hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-white sm:text-sm"
                     >
-                      <span>Chat with Suvidha AI</span>
+                      <span>TELL US IN YOUR WORDS</span>
                       <span aria-hidden="true">→</span>
                     </Link>
                   </div>
@@ -289,9 +305,13 @@ export default function HeroCarousel() {
                       <div className="flex h-8 items-center justify-between border-b border-[#e5e7eb] bg-white px-4 text-[10px] text-[#6b7280]">
                         <span className="flex items-center gap-1.5">
                           <span className="h-1.5 w-1.5 rounded-full bg-[#086d46]" />
-                          <span>Enter scheme name or category to search...</span>
+                          <span>
+                            Enter scheme name or category to search...
+                          </span>
                         </span>
-                        <span className="font-semibold text-primary">⌕ Search</span>
+                        <span className="font-semibold text-primary">
+                          ⌕ Search
+                        </span>
                       </div>
 
                       {/* Editorial Visual Frame */}
@@ -313,7 +333,10 @@ export default function HeroCarousel() {
                           aria-hidden="true"
                         >
                           {Array.from({ length: 9 }).map((_, dotIdx) => (
-                            <span key={dotIdx} className="h-1.5 w-1.5 rounded-full bg-white/90 shadow-sm" />
+                            <span
+                              key={dotIdx}
+                              className="h-1.5 w-1.5 rounded-full bg-white/90 shadow-sm"
+                            />
                           ))}
                         </div>
 
@@ -342,7 +365,9 @@ export default function HeroCarousel() {
 
                       {/* Card Footer Bar */}
                       <div className="flex h-11 items-center justify-between bg-white px-4 text-[10px] font-bold text-[#374151]">
-                        <span className="tracking-wide">#GOVERNMENTSCHEMES / #SCHEMESFORYOU</span>
+                        <span className="tracking-wide">
+                          #GOVERNMENTSCHEMES / #SCHEMESFORYOU
+                        </span>
                         <Link
                           href={slide.wizardRoute}
                           className="inline-flex items-center gap-1 rounded-full bg-[#086d46] px-3 py-1 text-[9px] font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#065335]"
@@ -367,7 +392,10 @@ export default function HeroCarousel() {
         aria-label="Previous scheme slide"
         className="absolute left-2.5 top-1/2 -translate-y-1/2 z-20 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-white/20 hover:bg-white/35 text-white backdrop-blur-sm shadow-md transition-all active:scale-95 focus-visible:ring-2 focus-visible:ring-white sm:left-4"
       >
-        <span className="text-2xl sm:text-3xl font-light leading-none -mt-0.5 select-none" aria-hidden="true">
+        <span
+          className="text-2xl sm:text-3xl font-light leading-none -mt-0.5 select-none"
+          aria-hidden="true"
+        >
           ‹
         </span>
       </button>
@@ -379,7 +407,10 @@ export default function HeroCarousel() {
         aria-label="Next scheme slide"
         className="absolute right-2.5 top-1/2 -translate-y-1/2 z-20 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-white/20 hover:bg-white/35 text-white backdrop-blur-sm shadow-md transition-all active:scale-95 focus-visible:ring-2 focus-visible:ring-white sm:right-4"
       >
-        <span className="text-2xl sm:text-3xl font-light leading-none -mt-0.5 select-none" aria-hidden="true">
+        <span
+          className="text-2xl sm:text-3xl font-light leading-none -mt-0.5 select-none"
+          aria-hidden="true"
+        >
           ›
         </span>
       </button>
@@ -403,8 +434,8 @@ export default function HeroCarousel() {
               onClick={() => goToSlide(index)}
               className={`transition-all duration-300 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${
                 isActive
-                  ? 'h-2.5 w-7 sm:w-8 bg-white shadow-md'
-                  : 'h-2.5 w-2.5 bg-white/45 hover:bg-white/80'
+                  ? "h-2.5 w-7 sm:w-8 bg-white shadow-md"
+                  : "h-2.5 w-2.5 bg-white/45 hover:bg-white/80"
               }`}
             />
           );
