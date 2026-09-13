@@ -48,8 +48,8 @@ export const baseCitizenProfileSchema = z.object({
     ),
   state: z.string().trim().min(1, 'State of domicile is required'),
   district: z.string().trim().min(1, 'District is required'),
-  occupationCategory: z.string().trim().min(1, 'Occupation category is required').optional(),
-  occupationType: z.string().trim().min(1, 'Occupation type is required').optional(),
+  occupationCategory: z.preprocess(sanitizeString, z.string().optional()),
+  occupationType: z.preprocess(sanitizeString, z.string().optional()),
   customOccupation: z.preprocess(sanitizeString, z.string().optional()),
   estimatedProjectCost: z.preprocess(
     sanitizeNumber,
@@ -165,8 +165,10 @@ export const schemeMatchingFormSchema = z
       ),
     state: z.string().trim().min(1, 'State is required'),
     district: z.string().trim().min(1, 'District is required'),
-    occupationCategory: z.string().trim().min(1, 'Occupation category is required').optional(),
-    occupationType: z.string().trim().min(1, 'Occupation type is required').optional(),
+    // Not collected by the form; the engine only uses occupation as a soft
+    // ranking signal. Blank values from form defaults count as absent.
+    occupationCategory: z.preprocess(sanitizeString, z.string().optional()),
+    occupationType: z.preprocess(sanitizeString, z.string().optional()),
     customOccupation: z.preprocess(sanitizeString, z.string().optional()),
     projectType: z.preprocess(sanitizeString, z.string().optional()),
     estimatedProjectCost: z.preprocess(

@@ -1,9 +1,14 @@
+'use client';
+
 import Link from 'next/link';
 import Icon from '@/components/Icon';
 import RecommendedSchemeCard from '@/components/recommendations/RecommendedSchemeCard';
-import { MOCK_RECOMMENDED_SCHEMES } from '@/src/lib/mock-recommended-schemes';
+import RecommendationStatePanel from '@/components/recommendations/RecommendationStatePanel';
+import { useRecommendedSchemes } from '@/components/recommendations/useRecommendedSchemes';
 
 export default function RecommendedSchemesPage() {
+  const recommendations = useRecommendedSchemes();
+
   return (
     <div className="mx-auto max-w-[1240px] px-4 py-8 md:px-8">
       <nav className="mb-8 flex items-center gap-2 border-b border-outline-variant/40 pb-2 text-xs text-on-surface-variant" aria-label="Breadcrumb">
@@ -19,14 +24,23 @@ export default function RecommendedSchemesPage() {
         <p className="text-xs font-bold uppercase tracking-wider text-[#276448]">SUVIDHA scheme assistance</p>
         <h1 className="mt-2 text-3xl font-serif font-bold text-[#00472f] sm:text-4xl">Schemes Recommended for You</h1>
         <p className="mt-2 max-w-2xl text-sm text-stone-600">Here are the schemes SUVIDHA found suitable for your needs.</p>
-        <p className="mt-3 text-xs text-stone-500">These are temporary frontend recommendations while personalized matching is being connected.</p>
       </header>
 
-      <main className="space-y-4">
-        {MOCK_RECOMMENDED_SCHEMES.map((scheme) => (
-          <RecommendedSchemeCard key={scheme.id} scheme={scheme} />
-        ))}
-      </main>
+      {recommendations.status === 'ready' ? (
+        <section className="space-y-4" aria-label="Recommended schemes">
+          {recommendations.overallSummary && (
+            <div className="flex items-start gap-3 rounded-2xl border border-emerald-100 bg-emerald-50/60 p-5">
+              <Icon name="info" size={18} className="mt-0.5 shrink-0 text-[#276448]" />
+              <p className="max-w-3xl text-sm leading-relaxed text-stone-700">{recommendations.overallSummary}</p>
+            </div>
+          )}
+          {recommendations.schemes.map((scheme) => (
+            <RecommendedSchemeCard key={scheme.schemeId} scheme={scheme} />
+          ))}
+        </section>
+      ) : (
+        <RecommendationStatePanel state={recommendations} />
+      )}
     </div>
   );
 }

@@ -3,10 +3,10 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import Icon from "@/components/Icon";
+import { useShowRecommendations } from "@/components/recommendations/useShowRecommendations";
 import { useApp } from "@/context/AppContext";
 import { getLanguage, resolveLanguageCode } from "@/lib/languages";
 import { useIntakeChat } from "@/src/lib/query/intake";
-import { fetchSchemeSummary } from "@/src/lib/api/scheme-matching";
 import { ChatMessageItem } from "./intake.types";
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
@@ -254,6 +254,7 @@ export default function ConversationalIntake({
   const containerRef = useRef<HTMLDivElement>(null);
   const shouldFollowLatestRef = useRef(true);
   const intakeMutation = useIntakeChat();
+  const showRecommendations = useShowRecommendations();
 
   useEffect(() => {
     const restoreChatState = () => {
@@ -348,7 +349,7 @@ export default function ConversationalIntake({
         preferredLanguage: portalLanguage.code,
       },
       {
-        onSuccess: async (rawResponse) => {
+        onSuccess: (rawResponse) => {
           const {
             status,
             language,
@@ -376,29 +377,10 @@ export default function ConversationalIntake({
             );
           }
 
-          // Case A: Matched schemes found
+          // Case A: Matched schemes found — the chat's job is done, so the
+          // citizen goes straight to their recommendations. The message stays
+          // in the history so returning to the chat still offers the link.
           if (status === "matched" && matches.length > 0) {
-            // Summaries are written in the session's language by the backend;
-            // matches still render without them if that call fails.
-            const summaryResponse = responseChannelId
-              ? await fetchSchemeSummary(responseChannelId).catch(() => null)
-              : null;
-            const summaries = new Map(
-              summaryResponse?.data.schemeSummaries.map((summary) => [
-                summary.schemeCode,
-                summary,
-              ]) || [],
-            );
-            const enrichedMatches = matches.map((scheme) => {
-              const summary = summaries.get(scheme.schemeCode);
-              return summary
-                ? {
-                    ...scheme,
-                    summary: summary.headline,
-                    whyItFits: summary.whyItFits,
-                  }
-                : scheme;
-            });
             setMessages((prev) => [
               ...prev,
               {
@@ -407,10 +389,13 @@ export default function ConversationalIntake({
                 content:
                   "Thanks. I have enough information to find schemes that may suit your profile.",
                 timestamp,
-                matchedSchemes: enrichedMatches,
+                matchedSchemes: matches,
               },
             ]);
-            setActiveMobilePanel("chat");
+            showRecommendations({
+              kind: "chat",
+              channelId: responseChannelId ?? channelId,
+            });
             return;
           }
 

@@ -61,7 +61,7 @@ export interface SchemeRecommendationItem {
   schemeId: string;
   schemeCode: string;
   schemeName: string;
-  description?: string;
+  description: string;
   sourceUrl?: string | null;
   eligibilityRules?: Record<string, unknown>;
   matchScore: number;
@@ -75,8 +75,6 @@ export interface SchemeRecommendationItem {
   moratoriumMonthsMax: number;
   requiredDocuments: string[];
   scoreBreakdown: ScoreBreakdown;
-  summary?: string;
-  whyItFits?: string;
 }
 
 export interface SchemeRecommendationResult {
@@ -169,6 +167,18 @@ export interface SchemeSummaryItem {
   nextSteps: string[];
   matchScore: number;
 }
+
+/**
+ * The backend summarises either a stored chat intake session (`channelId`)
+ * or a complete wizard `profile` — exactly one of the two.
+ */
+export type SchemeSummaryRequest = (
+  | { channelId: string; profile?: never }
+  | { profile: CitizenProfile; channelId?: never }
+) & {
+  schemeCodes?: string[];
+  language?: string;
+};
 
 export interface SchemeSummaryResponse {
   success: boolean;

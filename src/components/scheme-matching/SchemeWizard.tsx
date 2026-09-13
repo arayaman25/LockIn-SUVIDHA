@@ -5,17 +5,38 @@ import { useForm, FormProvider, FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { schemeMatchingFormSchema, CitizenProfileFormValues } from '@/src/lib/schemas/scheme-matching';
 import { useSchemeRecommendations } from '@/src/lib/query';
-import { SchemeRecommendationResponse, RecommendationRequest } from '@/src/types';
+import { ApiError } from '@/src/lib/api/axios';
+import { RecommendationRequest } from '@/src/types';
 
 import WizardProgress from './WizardProgress';
 import PurposeStep from './PurposeStep';
 import PersonalDetailsStep from './PersonalDetailsStep';
 import RequirementStep from './RequirementStep';
 import ReviewStep from './ReviewStep';
-import RecommendationResults from './RecommendationResults';
+import RecommendationResults, { RecommendationSubmissionStatus } from './RecommendationResults';
 import ConversationalIntake from '@/components/intake/ConversationalIntake';
+import { useShowRecommendations } from '@/components/recommendations/useShowRecommendations';
 import Icon from '@/components/Icon';
 import { MANUAL_INTAKE_SESSION_KEY, readSessionValue, writeSessionValue } from '@/src/lib/intake-session';
+
+// The engine answers 404 when no scheme passes the hard eligibility filters.
+const NO_MATCH_STATUS_CODE = 404;
+
+type RecommendationMutation = ReturnType<typeof useSchemeRecommendations>;
+
+function toSubmissionStatus(mutation: RecommendationMutation): RecommendationSubmissionStatus {
+  const { error, data } = mutation;
+  if (error) {
+    return error instanceof ApiError && error.statusCode === NO_MATCH_STATUS_CODE
+      ? { status: 'no-match', message: error.message }
+      : { status: 'error', message: error.message };
+  }
+  if (data && data.data.matches.length === 0) {
+    return { status: 'no-match', message: data.data.reason };
+  }
+  // Pending, or matched and on its way to the recommendations page.
+  return { status: 'searching' };
+}
 
 interface SchemeWizardProps {
   initialIntent?: 'business_loan' | 'education_loan' | 'skill_training';
@@ -28,7 +49,6 @@ export default function SchemeWizard({
 }: SchemeWizardProps) {
   const [entryMode, setEntryMode] = useState<'conversational' | 'form'>(defaultMode);
   const [currentStep, setCurrentStep] = useState<number>(1);
-  const [resultsData, setResultsData] = useState<SchemeRecommendationResponse | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const manualStateHydrated = useRef(false);
 
@@ -60,6 +80,7 @@ export default function SchemeWizard({
 
   const { trigger, getValues, handleSubmit, setValue, reset, watch } = methods;
   const recommendationMutation = useSchemeRecommendations();
+  const showRecommendations = useShowRecommendations();
 
   useEffect(() => {
     const savedForm = readSessionValue<Partial<CitizenProfileFormValues>>(MANUAL_INTAKE_SESSION_KEY);
@@ -215,12 +236,14 @@ export default function SchemeWizard({
     }
 
     recommendationMutation.mutate(payload, {
-      onSuccess: (data) => {
-        setResultsData(data);
+      onSuccess: (response) => {
+        // An empty result stays on this step, which renders the no-match state.
+        if (response.data.matches.length > 0) {
+          showRecommendations({ kind: 'wizard', profile: payload });
+        }
       },
       onError: (err) => {
         console.error('[SchemeWizard] Recommendation mutation error:', err);
-        setResultsData(null);
       },
     });
   };
@@ -271,9 +294,7 @@ export default function SchemeWizard({
     return (
       <div className="max-w-4xl mx-auto px-4 py-8">
         <RecommendationResults
-          isLoading={recommendationMutation.isPending}
-          error={recommendationMutation.error}
-          data={resultsData}
+          submission={toSubmissionStatus(recommendationMutation)}
           onRetry={handleRetry}
           onReviewProfile={() => {
             setEntryMode('form');

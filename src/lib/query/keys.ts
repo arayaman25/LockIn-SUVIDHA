@@ -1,3 +1,5 @@
+import type { SchemeSummaryRequest } from '@/src/types/scheme-matching';
+
 /**
  * Centralized TanStack Query keys factory.
  * Ensures predictable cache invalidation and scoping across all server-state hooks.
@@ -6,6 +8,8 @@ export const queryKeys = {
   schemeMatching: {
     all: ['scheme-matching'] as const,
     recommendations: () => [...queryKeys.schemeMatching.all, 'recommendations'] as const,
+    summary: (request: SchemeSummaryRequest) =>
+      [...queryKeys.schemeMatching.all, 'summary', request] as const,
   },
   intake: {
     all: ['intake'] as const,
