@@ -111,6 +111,7 @@ export default function PartnerLocator() {
   });
 
   const rawPartners: ScoredPartner[] = partnersResponse?.data?.partners ?? [];
+  const nearestOutsideRadius = partnersResponse?.data?.nearestOutsideRadius ?? false;
   const mapPartners = rawPartners
     .filter(
       (p) => typeof p.latitude === "number" && typeof p.longitude === "number",
@@ -393,8 +394,14 @@ export default function PartnerLocator() {
                 </div>
               )}
 
+            {!isLoadingPartners && !isPartnersError && nearestOutsideRadius && mapPartners.length > 0 && (
+              <p className="px-3 py-2 rounded-xl bg-surface-container text-xs text-on-surface-variant">
+                No authorized partner within 50 km — showing the nearest options, ranked by distance and loan-book health.
+              </p>
+            )}
+
             {!isLoadingPartners &&
-              mapPartners.map((partner) => {
+              mapPartners.map((partner, index) => {
                 const isSelected = activeMapPartner?.id === partner.id;
                 const directionsUrl =
                   partner.latitude && partner.longitude
@@ -417,6 +424,9 @@ export default function PartnerLocator() {
                     <div className="flex justify-between items-start gap-2">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5 mb-1.5">
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary text-white">
+                            #{index + 1}
+                          </span>
                           <span
                             className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full inline-block ${
                               partner.type === "PSU Bank"

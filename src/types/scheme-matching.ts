@@ -95,12 +95,12 @@ export interface ScoredPartner {
   partnerType: string;
   address: string;
   distanceKm: number;
+  /** 0-1 weighted mean of the known signals below. */
   compositeScore: number;
   scoreBreakdown: {
-    quotaScore: number;
-    healthScore: number;
     proximityScore: number;
-    confidenceScore: number;
+    /** null when the partner's NPA ratio is unknown. */
+    healthScore: number | null;
   };
   quotaSource: 'partner_reported' | 'admin_entered';
   latitude?: number;
@@ -110,6 +110,8 @@ export interface ScoredPartner {
 export interface PartnerLocatorResult {
   partners: ScoredPartner[];
   hasEligiblePartners: boolean;
+  /** No eligible partner within 50 km; the list holds the nearest ones further away. */
+  nearestOutsideRadius?: boolean;
 }
 
 export interface PartnerLocatorResponse {

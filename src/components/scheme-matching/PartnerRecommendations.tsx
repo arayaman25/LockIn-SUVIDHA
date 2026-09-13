@@ -196,7 +196,7 @@ export default function PartnerRecommendations({
                           {partner.partnerType}
                         </span>
                         <span className="text-[10px] font-semibold text-primary bg-primary/10 px-1.5 py-0.5 rounded">
-                          Score: {partner.compositeScore}%
+                          Score: {Math.round(partner.compositeScore * 100)}%
                         </span>
                       </div>
                       <h6 className="font-bold text-primary text-xs">
