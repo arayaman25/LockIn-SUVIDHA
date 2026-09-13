@@ -195,12 +195,22 @@ interface ConversationalIntakeProps {
   onSwitchToForm?: () => void;
   onFindSchemes?: (profile: Partial<CitizenProfileFormValues>) => void;
   isMatchingSchemes?: boolean;
+  /** Called after the citizen starts over, so a parent can clear details it mirrored from the chat. */
+  onReset?: () => void;
 }
+
+const createWelcomeMessage = (): ChatMessageItem => ({
+  id: WELCOME_MESSAGE_ID,
+  role: "assistant",
+  content: getWelcomeMessage("en"),
+  timestamp: INITIAL_MESSAGE_TIMESTAMP,
+});
 
 export default function ConversationalIntake({
   initialProfile = {},
   onProfileUpdate,
   onSwitchToForm,
+  onReset,
 }: ConversationalIntakeProps) {
   // Stable channel ID: created once on component mount, reused for every turn
   const [channelId, setChannelId] = useState<string>(() => createStableChannelId());
@@ -235,19 +245,15 @@ export default function ConversationalIntake({
   const renderPortalLanguage = mounted ? portalLanguage.code : "en";
   const chatLanguage = conversationLanguage ?? renderPortalLanguage;
 
-  const [messages, setMessages] = useState<ChatMessageItem[]>([
-    {
-      id: WELCOME_MESSAGE_ID,
-      role: "assistant",
-      content: getWelcomeMessage("en"),
-      timestamp: INITIAL_MESSAGE_TIMESTAMP,
-    },
+  const [messages, setMessages] = useState<ChatMessageItem[]>(() => [
+    createWelcomeMessage(),
   ]);
 
   const [lastUserMessage, setLastUserMessage] = useState<string>("");
   const [activeMobilePanel, setActiveMobilePanel] = useState<
     "chat" | "details"
   >("chat");
+  const [isConfirmingReset, setIsConfirmingReset] = useState(false);
   const chatStateHydrated = useRef(false);
   // Ref to the scrollable messages container — used for internal-only scroll.
   // We never call scrollIntoView (which leaks to the page viewport).
@@ -479,6 +485,29 @@ export default function ConversationalIntake({
     }
   };
 
+  const hasConversation =
+    messages.length > 1 || Object.keys(accumulatedProfile).length > 0;
+
+  /**
+   * Starts a brand-new conversation. A fresh channel id makes the backend open
+   * a new intake session instead of continuing the old profile; the old one is
+   * simply left unfinished. Disabled while a reply is in flight so a late
+   * response cannot land in the new chat.
+   */
+  const handleResetChat = () => {
+    if (intakeMutation.isPending) return;
+    intakeMutation.reset();
+    setChannelId(createStableChannelId());
+    setMessages([createWelcomeMessage()]);
+    setAccumulatedProfile({});
+    setLastUserMessage("");
+    setConversationLanguage(null);
+    setActiveMobilePanel("chat");
+    setIsConfirmingReset(false);
+    shouldFollowLatestRef.current = true;
+    onReset?.();
+  };
+
   return (
     <div className="relative mx-auto flex h-[min(720px,calc(100vh-220px))] w-full max-w-[1200px] flex-col overflow-hidden bg-transparent md:w-[92%] sm:rounded-3xl">
       <div className="flex shrink-0 border-b border-stone-200 bg-stone-50 md:hidden">
@@ -504,11 +533,14 @@ export default function ConversationalIntake({
                 <Icon name="record_voice_over" size={20} />
               </div>
               <div className="min-w-0 flex-1">
-                <div className="flex min-w-0 items-center gap-2 whitespace-nowrap">
-                  <h2 className="shrink-0 whitespace-nowrap text-base font-serif font-bold leading-tight text-stone-900 sm:text-lg">
+                {/* Wraps rather than overflowing: the header actions beside it
+                    take a variable width, so the badge drops to its own line
+                    when there is not room for everything on one. */}
+                <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+                  <h2 className="text-base font-serif font-bold leading-tight text-stone-900 sm:text-lg">
                     Tell us what you need
                   </h2>
-                  <span className="hidden shrink-0 whitespace-nowrap rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-semibold text-emerald-800 sm:inline-block">
+                  <span className="hidden whitespace-nowrap rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-semibold text-emerald-800 sm:inline-block">
                     AI Guided Intake
                   </span>
                 </div>
@@ -519,9 +551,23 @@ export default function ConversationalIntake({
               </div>
             </div>
 
-            {/* Step-by-Step Form Fallback */}
-            {onSwitchToForm && (
-              <div className="flex shrink-0 items-center gap-2 pt-0.5 text-right">
+            <div className="flex shrink-0 items-center gap-2 pt-0.5 text-right">
+              {hasConversation && (
+                <button
+                  type="button"
+                  onClick={() => setIsConfirmingReset(true)}
+                  disabled={intakeMutation.isPending}
+                  aria-label="Start a new conversation"
+                  title="Start over"
+                  className="inline-flex h-8 items-center gap-1.5 whitespace-nowrap rounded-lg border border-stone-300 bg-white px-3 text-xs font-semibold text-stone-700 shadow-xs transition-colors hover:border-[#00472f] hover:text-[#00472f] disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <Icon name="restart_alt" size={14} />
+                  <span className="hidden sm:inline">Start over</span>
+                </button>
+              )}
+
+              {/* Step-by-Step Form Fallback */}
+              {onSwitchToForm && (
                 <button
                   type="button"
                   onClick={onSwitchToForm}
@@ -531,9 +577,39 @@ export default function ConversationalIntake({
                   <span className="hidden sm:inline">Step-by-step</span>
                   <Icon name="arrow_forward" size={14} />
                 </button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
+
+          {isConfirmingReset && (
+            <div
+              role="alertdialog"
+              aria-labelledby="reset-chat-title"
+              className="flex shrink-0 flex-col gap-2 border-b border-amber-200 bg-amber-50 px-5 py-3 sm:flex-row sm:items-center sm:justify-between"
+            >
+              <p id="reset-chat-title" className="text-xs text-amber-900">
+                <strong>Start over?</strong> This clears the conversation and the details collected so far.
+              </p>
+              <div className="flex shrink-0 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsConfirmingReset(false)}
+                  className="h-8 rounded-lg border border-stone-300 bg-white px-3 text-xs font-semibold text-stone-700 hover:border-stone-400"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleResetChat}
+                  disabled={intakeMutation.isPending}
+                  autoFocus
+                  className="h-8 rounded-lg bg-[#00472f] px-3 text-xs font-semibold text-white hover:bg-[#003824] disabled:opacity-50"
+                >
+                  Yes, start over
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Scrollable Conversation Message History */}
           <div

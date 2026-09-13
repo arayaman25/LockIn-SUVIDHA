@@ -50,7 +50,10 @@ import {
   Info,
   AlertCircle,
   Badge,
-  Heart
+  Heart,
+  ArrowLeft,
+  RotateCcw,
+  ChevronRight
 } from 'lucide-react';
 
 const iconMap: Record<string, React.ComponentType<{ className?: string; size?: number }>> = {
@@ -113,7 +116,11 @@ const iconMap: Record<string, React.ComponentType<{ className?: string; size?: n
   event_available: Calendar,
   call: Phone,
   info: Info,
-  error: AlertCircle
+  error: AlertCircle,
+  arrow_back: ArrowLeft,
+  chevron_right: ChevronRight,
+  refresh: RefreshCw,
+  restart_alt: RotateCcw
 };
 
 interface IconProps {

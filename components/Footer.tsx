@@ -1,13 +1,16 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import Icon from '@/components/Icon';
+import React from "react";
+import Link from "next/link";
+import Image from "next/image";
+import Icon from "@/components/Icon";
 
 export default function Footer() {
   return (
-    <footer className="bg-surface-container-high text-on-surface border-t border-outline-variant mt-auto" id="contact">
+    <footer
+      className="bg-surface-container-high text-on-surface border-t border-outline-variant mt-auto"
+      id="contact"
+    >
       <div className="max-w-[1240px] mx-auto px-4 md:px-8 py-12">
         {/* Top row: Organized columns */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pb-10 border-b border-outline-variant/40">
@@ -22,22 +25,27 @@ export default function Footer() {
                 className="w-14 h-14 object-contain shrink-0"
               />
               <div>
-                <div className="text-base font-bold text-primary font-serif">SUVIDHA Portal</div>
+                <div className="text-base font-bold text-primary font-serif">
+                  SUVIDHA Portal
+                </div>
                 <p className="text-xs text-on-surface-variant">
                   Concessional Assistance Platform
                 </p>
               </div>
             </div>
             <p className="text-xs text-on-surface-variant max-w-sm leading-relaxed">
-              An inclusive single-window digital gateway facilitating direct access to Central and State concessional credit, interest subventions, and welfare schemes.
+              An inclusive single-window digital gateway facilitating direct
+              access to Central and State concessional credit, interest
+              subventions, and welfare schemes.
             </p>
             <div className="text-xs text-secondary font-semibold pt-1">
-              Government of India · Ministry of Social Justice &amp; Empowerment · Ministry of Finance
+              Government of India · Ministry of Social Justice &amp; Empowerment
+              · Ministry of Finance
             </div>
           </div>
 
           {/* Col 2: Schemes */}
-          <div className="space-y-3">
+          {/*           <div className="space-y-3">
             <h4 className="text-sm font-bold text-primary">Schemes</h4>
             <ul className="space-y-2 text-xs text-on-surface-variant">
               <li>
@@ -71,37 +79,52 @@ export default function Footer() {
                 </Link>
               </li>
             </ul>
-          </div>
+          </div> */}
 
           {/* Col 3: Services */}
           <div className="space-y-3">
             <h4 className="text-sm font-bold text-primary">Services</h4>
             <ul className="space-y-2 text-xs text-on-surface-variant">
               <li>
-                <Link href="/wizard" className="hover:text-primary hover:underline">
+                <Link
+                  href="/wizard"
+                  className="hover:text-primary hover:underline"
+                >
                   Find My Scheme Wizard
                 </Link>
               </li>
               <li>
-                <Link href="/calculator" className="hover:text-primary hover:underline">
+                <Link
+                  href="/calculator"
+                  className="hover:text-primary hover:underline"
+                >
                   EMI &amp; Repayment Calculator
                 </Link>
               </li>
               <li>
-                <Link href="/locator" className="hover:text-primary hover:underline">
+                <Link
+                  href="/locator"
+                  className="hover:text-primary hover:underline"
+                >
                   Find a Partner Bank
                 </Link>
               </li>
-              <li>
-                <Link href="/tracking" className="hover:text-primary hover:underline">
+              {/*             <li>
+                <Link
+                  href="/tracking"
+                  className="hover:text-primary hover:underline"
+                >
                   Track Application Status
                 </Link>
               </li>
               <li>
-                <Link href="/partner-desk" className="hover:text-primary hover:underline">
+                <Link
+                  href="/partner-desk"
+                  className="hover:text-primary hover:underline"
+                >
                   Partner Portal Login
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </div>
         </div>
@@ -109,32 +132,50 @@ export default function Footer() {
         {/* Bottom row: Standard legal & accessibility links */}
         <div className="pt-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-on-surface-variant">
           <p>
-            © 2024–2025 Government of India. SUVIDHA Citizen Scheme Portal. Built for inclusive digital governance.
+            © 2024–2025 Government of India. SUVIDHA Citizen Scheme Portal.
+            Built for inclusive digital governance.
           </p>
-          <nav aria-label="Legal Links" className="flex flex-wrap items-center gap-x-4 gap-y-1">
+          <nav
+            aria-label="Legal Links"
+            className="flex flex-wrap items-center gap-x-4 gap-y-1"
+          >
             <button
-              onClick={() => alert('SUVIDHA Portal adheres to Web Content Accessibility Guidelines (WCAG) 2.1 Level AA.')}
+              onClick={() =>
+                alert(
+                  "SUVIDHA Portal adheres to Web Content Accessibility Guidelines (WCAG) 2.1 Level AA.",
+                )
+              }
               className="hover:text-primary hover:underline text-left cursor-pointer"
             >
               Accessibility Statement
             </button>
             <span>•</span>
             <button
-              onClick={() => alert('Citizen data is encrypted at rest using AES-256.')}
+              onClick={() =>
+                alert("Citizen data is encrypted at rest using AES-256.")
+              }
               className="hover:text-primary hover:underline text-left cursor-pointer"
             >
               Privacy Policy
             </button>
             <span>•</span>
             <button
-              onClick={() => alert('Zero commission policy: Any commission demand is strictly prohibited.')}
+              onClick={() =>
+                alert(
+                  "Zero commission policy: Any commission demand is strictly prohibited.",
+                )
+              }
               className="hover:text-primary hover:underline text-left cursor-pointer"
             >
               Terms of Service
             </button>
             <span>•</span>
             <button
-              onClick={() => alert('Right to Information (RTI) Cell: Contact Central Public Information Officer (CPIO), New Delhi.')}
+              onClick={() =>
+                alert(
+                  "Right to Information (RTI) Cell: Contact Central Public Information Officer (CPIO), New Delhi.",
+                )
+              }
               className="hover:text-primary hover:underline text-left cursor-pointer"
             >
               Right to Information (RTI)

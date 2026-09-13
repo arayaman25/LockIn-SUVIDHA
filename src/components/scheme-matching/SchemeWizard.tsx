@@ -13,7 +13,6 @@ import PurposeStep from './PurposeStep';
 import PersonalDetailsStep from './PersonalDetailsStep';
 import RequirementStep from './RequirementStep';
 import ReviewStep from './ReviewStep';
-import RecommendationResults, { RecommendationSubmissionStatus } from './RecommendationResults';
 import ConversationalIntake from '@/components/intake/ConversationalIntake';
 import { useShowRecommendations } from '@/components/recommendations/useShowRecommendations';
 import Icon from '@/components/Icon';
@@ -21,22 +20,55 @@ import { MANUAL_INTAKE_SESSION_KEY, readSessionValue, writeSessionValue } from '
 
 // The engine answers 404 when no scheme passes the hard eligibility filters.
 const NO_MATCH_STATUS_CODE = 404;
+const REVIEW_STEP = 4;
 
 type RecommendationMutation = ReturnType<typeof useSchemeRecommendations>;
 
-function toSubmissionStatus(mutation: RecommendationMutation): RecommendationSubmissionStatus {
+const NO_MATCH_MESSAGE =
+  'No suitable schemes were found for the details provided. Check your loan amount, income and eligibility details and try again.';
+
+/**
+ * What the Review step should tell the citizen after a submission that did
+ * not lead to the recommendations page. Null while idle, searching, or
+ * redirecting with matches.
+ */
+function submissionMessage(mutation: RecommendationMutation): string | null {
   const { error, data } = mutation;
   if (error) {
     return error instanceof ApiError && error.statusCode === NO_MATCH_STATUS_CODE
-      ? { status: 'no-match', message: error.message }
-      : { status: 'error', message: error.message };
+      ? error.message || NO_MATCH_MESSAGE
+      : error.message;
   }
   if (data && data.data.matches.length === 0) {
-    return { status: 'no-match', message: data.data.reason };
+    return data.data.reason || NO_MATCH_MESSAGE;
   }
-  // Pending, or matched and on its way to the recommendations page.
-  return { status: 'searching' };
+  return null;
 }
+
+// All fields except the intent start empty — populated by AI intake or user
+// form input. Never seed with demo data; stale values break the
+// fresh-conversation experience.
+const emptyFormValues = (
+  intent: CitizenProfileFormValues['intent'],
+): Partial<CitizenProfileFormValues> => ({
+  intent,
+  isScheduledCaste: undefined,
+  age: undefined,
+  gender: undefined,
+  annualFamilyIncome: undefined,
+  state: '',
+  district: '',
+  occupationCategory: '',
+  occupationType: '',
+  projectType: '',
+  estimatedProjectCost: undefined,
+  requiredLoanAmount: undefined,
+  educationStatus: undefined,
+  course: '',
+  institution: '',
+  skillCategory: '',
+  preferredDuration: '',
+});
 
 interface SchemeWizardProps {
   initialIntent?: 'business_loan' | 'education_loan' | 'skill_training';
@@ -54,27 +86,7 @@ export default function SchemeWizard({
 
   const methods = useForm<CitizenProfileFormValues>({
     resolver: zodResolver(schemeMatchingFormSchema) as any,
-    defaultValues: {
-      intent: initialIntent,
-      // All other fields start empty — populated by AI intake or user form input.
-      // Never seed with demo data; stale values break the fresh-conversation experience.
-      isScheduledCaste: undefined,
-      age: undefined,
-      gender: undefined,
-      annualFamilyIncome: undefined,
-      state: '',
-      district: '',
-      occupationCategory: '',
-      occupationType: '',
-      projectType: '',
-      estimatedProjectCost: undefined,
-      requiredLoanAmount: undefined,
-      educationStatus: undefined,
-      course: '',
-      institution: '',
-      skillCategory: '',
-      preferredDuration: '',
-    },
+    defaultValues: emptyFormValues(initialIntent),
     mode: 'onTouched',
   });
 
@@ -101,7 +113,7 @@ export default function SchemeWizard({
     return () => subscription.unsubscribe();
   }, [watch]);
 
-  // Step navigation gate: cannot access steps 3-5 if isScheduledCaste is false
+  // Step navigation gate: cannot access steps 3-4 if isScheduledCaste is false
   const canNavigateToStep = (targetStep: number): boolean => {
     const isSC = getValues('isScheduledCaste');
     if (!isSC && targetStep > 2) {
@@ -142,13 +154,14 @@ export default function SchemeWizard({
     }
 
     if (isValid) {
-      setCurrentStep((prev) => Math.min(prev + 1, 5));
+      setCurrentStep((prev) => Math.min(prev + 1, REVIEW_STEP));
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
   const handleBack = () => {
     setSubmitError(null);
+    recommendationMutation.reset();
     setCurrentStep((prev) => Math.max(prev - 1, 1));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -159,11 +172,14 @@ export default function SchemeWizard({
       return;
     }
     setSubmitError(null);
+    // A previous "no match" no longer applies once the citizen edits details.
+    recommendationMutation.reset();
     setCurrentStep(step);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Submission from Review -> Call Backend API & Advance to Results
+  // Submission from Review -> call the engine; matches open the recommendations
+  // page, while no-match and errors are shown on the Review step itself.
   const onSubmitReview = async (formData: Partial<CitizenProfileFormValues>) => {
     // Gate check: do not submit if not SC
     if (formData.isScheduledCaste === false) {
@@ -176,8 +192,6 @@ export default function SchemeWizard({
     }
 
     setSubmitError(null);
-    setCurrentStep(5);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
 
     let payload: RecommendationRequest;
 
@@ -237,13 +251,16 @@ export default function SchemeWizard({
 
     recommendationMutation.mutate(payload, {
       onSuccess: (response) => {
-        // An empty result stays on this step, which renders the no-match state.
         if (response.data.matches.length > 0) {
           showRecommendations({ kind: 'wizard', profile: payload });
+        } else {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       },
       onError: (err) => {
         console.error('[SchemeWizard] Recommendation mutation error:', err);
+        // The notice sits at the top of the Review step.
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       },
     });
   };
@@ -255,11 +272,6 @@ export default function SchemeWizard({
       .map(([key, val]) => `${key}: ${val?.message || 'invalid'}`)
       .join(', ');
     setSubmitError(`Please check required fields: ${errorMessages || errorKeys.join(', ')}`);
-  };
-
-  const handleRetry = () => {
-    const values = getValues();
-    onSubmitReview(values);
   };
 
   /**
@@ -289,22 +301,6 @@ export default function SchemeWizard({
     [getValues, setValue]
   );
 
-  // Results View (Step 5)
-  if (currentStep === 5) {
-    return (
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <RecommendationResults
-          submission={toSubmissionStatus(recommendationMutation)}
-          onRetry={handleRetry}
-          onReviewProfile={() => {
-            setEntryMode('form');
-            handleJumpToStep(4);
-          }}
-        />
-      </div>
-    );
-  }
-
   // Primary Conversational Intake View
   if (entryMode === 'conversational') {
     return (
@@ -318,6 +314,17 @@ export default function SchemeWizard({
           }}
           onFindSchemes={() => {
             setEntryMode('form');
+            setCurrentStep(1);
+          }}
+          onReset={() => {
+            // The chat mirrors every extracted field into this form, so starting
+            // the chat over must clear those too, including the saved copy that
+            // would otherwise be restored on the next visit.
+            const cleared = emptyFormValues(initialIntent);
+            reset(cleared);
+            writeSessionValue(MANUAL_INTAKE_SESSION_KEY, cleared);
+            recommendationMutation.reset();
+            setSubmitError(null);
             setCurrentStep(1);
           }}
           isMatchingSchemes={recommendationMutation.isPending}
@@ -361,12 +368,17 @@ export default function SchemeWizard({
             <RequirementStep onContinue={handleNext} onPrevious={handleBack} />
           )}
 
-          {currentStep === 4 && (
+          {currentStep === REVIEW_STEP && (
             <ReviewStep
               onGoToStep={handleJumpToStep}
               onSubmit={handleSubmit((data) => onSubmitReview(data), onInvalidSubmit)}
-              isLoading={recommendationMutation.isPending}
-              errorMessage={submitError || recommendationMutation.error?.message}
+              // Stay busy while redirecting to the recommendations page, so the
+              // button does not flash back to clickable in between.
+              isLoading={
+                recommendationMutation.isPending ||
+                (recommendationMutation.data?.data.matches.length ?? 0) > 0
+              }
+              errorMessage={submitError || submissionMessage(recommendationMutation)}
             />
           )}
         </div>

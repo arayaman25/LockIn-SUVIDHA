@@ -10,12 +10,13 @@ interface WizardProgressProps {
   canNavigateToStep?: (step: number) => boolean;
 }
 
+// Results are not a step: submitting Review goes straight to the
+// recommended-schemes page.
 const STEP_LABELS = [
   'Purpose',
   'Personal',
   'Requirement',
   'Review',
-  'Results',
 ];
 
 export default function WizardProgress({
@@ -42,7 +43,7 @@ export default function WizardProgress({
       </div>
 
       {/* Desktop step indicators */}
-      <div className="hidden sm:grid grid-cols-5 gap-2 text-center text-xs">
+      <div className="hidden sm:grid grid-cols-4 gap-2 text-center text-xs">
         {STEP_LABELS.map((label, index) => {
           const stepNumber = index + 1;
           const isCompleted = currentStep > stepNumber;

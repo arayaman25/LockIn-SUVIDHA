@@ -1,33 +1,21 @@
 'use client';
 
 import React, { Suspense } from 'react';
-import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import SchemeWizard from '@/src/components/scheme-matching/SchemeWizard';
-import Icon from '@/components/Icon';
+import PageNav from '@/components/PageNav';
 
 function FindSchemeContent() {
   const searchParams = useSearchParams();
   const rawPurpose = searchParams.get('purpose') || searchParams.get('intent');
   
-  let initialIntent: 'business_loan' | 'education_loan' | 'skill_training' = 'business_loan';
-  if (rawPurpose === 'education' || rawPurpose === 'education_loan') {
-    initialIntent = 'education_loan';
-  } else if (rawPurpose === 'skill' || rawPurpose === 'skill_training') {
-    initialIntent = 'skill_training';
-  }
+  // Skill training is not offered in the wizard, so ?purpose=skill falls back to business.
+  const initialIntent: 'business_loan' | 'education_loan' =
+    rawPurpose === 'education' || rawPurpose === 'education_loan' ? 'education_loan' : 'business_loan';
 
   return (
     <div className="mx-auto max-w-[1240px] px-4 py-8 md:px-8">
-      {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-xs text-on-surface-variant mb-6 pb-2 border-b border-outline-variant/40">
-        <Link href="/" className="hover:text-primary flex items-center gap-1">
-          <Icon name="home" className="w-3.5 h-3.5" />
-          <span>Home</span>
-        </Link>
-        <span>/</span>
-        <span className="font-bold text-primary">Find My Scheme</span>
-      </nav>
+      <PageNav current="Find My Scheme" />
 
       {/* Hero Intro Header */}
       <div className="mb-6 text-center max-w-2xl mx-auto">

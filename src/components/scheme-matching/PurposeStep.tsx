@@ -11,7 +11,7 @@ interface PurposeStepProps {
 
 export default function PurposeStep({ onContinue }: PurposeStepProps) {
   const { watch, setValue } = useFormContext<CitizenProfileFormValues>();
-  const currentIntent = watch('intent');
+  const watchedIntent = watch('intent');
 
   const options = [
     {
@@ -28,16 +28,14 @@ export default function PurposeStep({ onContinue }: PurposeStepProps) {
       icon: 'school',
       badge: 'Interest Subvention',
     },
-    {
-      id: 'skill_training' as const,
-      title: 'Skill Training',
-      desc: 'Vocational training programs, toolkit allowances, and certified artisan support.',
-      icon: 'handyman',
-      badge: 'Skill Development',
-    },
   ];
 
-  const handleSelect = (intent: 'business_loan' | 'education_loan' | 'skill_training') => {
+  // An intent set elsewhere (e.g. skill_training from the chat assistant)
+  // that has no card here counts as "nothing selected", so Continue stays
+  // disabled until the citizen picks a visible option.
+  const currentIntent = options.some((opt) => opt.id === watchedIntent) ? watchedIntent : undefined;
+
+  const handleSelect = (intent: 'business_loan' | 'education_loan') => {
     setValue('intent', intent, { shouldValidate: true, shouldDirty: true });
   };
 
@@ -52,7 +50,7 @@ export default function PurposeStep({ onContinue }: PurposeStepProps) {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {options.map((opt) => {
           const isSelected = currentIntent === opt.id;
           return (

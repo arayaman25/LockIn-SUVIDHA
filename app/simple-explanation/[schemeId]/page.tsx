@@ -3,6 +3,7 @@
 import { use } from 'react';
 import Link from 'next/link';
 import Icon from '@/components/Icon';
+import PageNav, { RECOMMENDED_SCHEMES_CRUMB } from '@/components/PageNav';
 import RecommendationStatePanel from '@/components/recommendations/RecommendationStatePanel';
 import { useRecommendedSchemes } from '@/components/recommendations/useRecommendedSchemes';
 import {
@@ -91,16 +92,7 @@ export default function SimpleExplanationPage({
 
   return (
     <div className="mx-auto max-w-[1000px] px-4 py-8 md:px-8">
-      <nav className="mb-8 flex items-center gap-2 border-b border-outline-variant/40 pb-2 text-xs text-on-surface-variant" aria-label="Breadcrumb">
-        <Link href="/" className="flex items-center gap-1 hover:text-primary">
-          <Icon name="home" className="h-3.5 w-3.5" />
-          <span>Home</span>
-        </Link>
-        <span>/</span>
-        <Link href={RECOMMENDED_SCHEMES_HREF} className="hover:text-primary">Recommended Schemes</Link>
-        <span>/</span>
-        <span className="font-bold text-primary">Simple Explanation</span>
-      </nav>
+      <PageNav current="Simple Explanation" parents={[RECOMMENDED_SCHEMES_CRUMB]} />
 
       <header className="mb-8">
         <h1 className="text-3xl font-serif font-bold text-[#00472f] sm:text-4xl">Understand This Scheme</h1>

@@ -34,7 +34,7 @@ const subscribeToNothing = () => () => {};
  * `undefined` until hydration — distinct from `null`, which means no intake
  * has matched yet.
  */
-function useRecommendationSource(): RecommendationSource | null | undefined {
+export function useRecommendationSource(): RecommendationSource | null | undefined {
   const raw = useSyncExternalStore(
     subscribeToNothing,
     readStoredRecommendationSource,

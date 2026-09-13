@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
-import Link from 'next/link';
-import { SUVIDHA_SCHEMES, Scheme } from '@/lib/data';
-import Icon from '@/components/Icon';
+import React, { useState, useMemo } from "react";
+import Link from "next/link";
+import { SUVIDHA_SCHEMES, Scheme } from "@/lib/data";
+import Icon from "@/components/Icon";
 
 export interface SubCategory {
   id: string;
@@ -20,266 +20,503 @@ export interface OccupationCategory {
 
 export const OCCUPATION_CATEGORIES: OccupationCategory[] = [
   {
-    id: 'agriculture_farming',
-    name: 'Agriculture & Crop Farming',
-    icon: 'agriculture',
-    keywords: ['farming', 'kisan', 'kheti', 'crop', 'farmer', 'agriculture', 'horticulture', 'krishi', 'soil', 'harvest'],
+    id: "agriculture_farming",
+    name: "Agriculture & Crop Farming",
+    icon: "agriculture",
+    keywords: [
+      "farming",
+      "kisan",
+      "kheti",
+      "crop",
+      "farmer",
+      "agriculture",
+      "horticulture",
+      "krishi",
+      "soil",
+      "harvest",
+    ],
     subCategories: [
-      { id: 'crop_farmer', name: 'Crop Farmer' },
-      { id: 'small_marginal_farmer', name: 'Small / Marginal Farmer' },
-      { id: 'agricultural_worker', name: 'Agricultural Worker' },
-      { id: 'horticulture', name: 'Horticulture & Floriculture' },
-      { id: 'organic_farming', name: 'Organic Farming' },
-      { id: 'other_agri', name: 'Other Agricultural Activity' },
+      { id: "crop_farmer", name: "Crop Farmer" },
+      { id: "small_marginal_farmer", name: "Small / Marginal Farmer" },
+      { id: "agricultural_worker", name: "Agricultural Worker" },
+      { id: "horticulture", name: "Horticulture & Floriculture" },
+      { id: "organic_farming", name: "Organic Farming" },
+      { id: "other_agri", name: "Other Agricultural Activity" },
     ],
   },
   {
-    id: 'dairy_livestock',
-    name: 'Dairy & Livestock',
-    icon: 'pets',
-    keywords: ['dairy', 'milk', 'cow', 'buffalo', 'cattle', 'goat', 'sheep', 'poultry', 'chicken', 'egg', 'livestock', 'doodh', 'pashupalan'],
+    id: "dairy_livestock",
+    name: "Dairy & Livestock",
+    icon: "pets",
+    keywords: [
+      "dairy",
+      "milk",
+      "cow",
+      "buffalo",
+      "cattle",
+      "goat",
+      "sheep",
+      "poultry",
+      "chicken",
+      "egg",
+      "livestock",
+      "doodh",
+      "pashupalan",
+    ],
     subCategories: [
-      { id: 'dairy_farming', name: 'Dairy Farming' },
-      { id: 'cattle_rearing', name: 'Cattle Rearing' },
-      { id: 'goat_rearing', name: 'Goat / Sheep Rearing' },
-      { id: 'poultry', name: 'Poultry Farming' },
-      { id: 'other_livestock', name: 'Other Livestock Activity' },
+      { id: "dairy_farming", name: "Dairy Farming" },
+      { id: "cattle_rearing", name: "Cattle Rearing" },
+      { id: "goat_rearing", name: "Goat / Sheep Rearing" },
+      { id: "poultry", name: "Poultry Farming" },
+      { id: "other_livestock", name: "Other Livestock Activity" },
     ],
   },
   {
-    id: 'fisheries_aquaculture',
-    name: 'Fisheries & Aquaculture',
-    icon: 'travel_explore',
-    keywords: ['fish', 'fisher', 'macchli', 'aquaculture', 'matsya', 'pond', 'marine', 'trawler', 'hatchery'],
+    id: "fisheries_aquaculture",
+    name: "Fisheries & Aquaculture",
+    icon: "travel_explore",
+    keywords: [
+      "fish",
+      "fisher",
+      "macchli",
+      "aquaculture",
+      "matsya",
+      "pond",
+      "marine",
+      "trawler",
+      "hatchery",
+    ],
     subCategories: [
-      { id: 'marine_fisher', name: 'Marine / Coastal Fisher' },
-      { id: 'fish_farming', name: 'Inland Fish Farming' },
-      { id: 'aquaculture', name: 'Aquaculture & Hatchery' },
-      { id: 'fish_vending', name: 'Fish Processing & Vending' },
-      { id: 'other_fisheries', name: 'Other Fisheries Activity' },
+      { id: "marine_fisher", name: "Marine / Coastal Fisher" },
+      { id: "fish_farming", name: "Inland Fish Farming" },
+      { id: "aquaculture", name: "Aquaculture & Hatchery" },
+      { id: "fish_vending", name: "Fish Processing & Vending" },
+      { id: "other_fisheries", name: "Other Fisheries Activity" },
     ],
   },
   {
-    id: 'food_catering',
-    name: 'Food & Catering',
-    icon: 'storefront',
-    keywords: ['food', 'tiffin', 'catering', 'bakery', 'tea', 'stall', 'dhaba', 'restaurant', 'snack', 'canteen', 'sweets', 'chaat'],
+    id: "food_catering",
+    name: "Food & Catering",
+    icon: "storefront",
+    keywords: [
+      "food",
+      "tiffin",
+      "catering",
+      "bakery",
+      "tea",
+      "stall",
+      "dhaba",
+      "restaurant",
+      "snack",
+      "canteen",
+      "sweets",
+      "chaat",
+    ],
     subCategories: [
-      { id: 'food_stall', name: 'Food Stall / Dhaba' },
-      { id: 'tiffin_service', name: 'Tiffin / Meal Service' },
-      { id: 'catering', name: 'Catering Services' },
-      { id: 'bakery', name: 'Bakery & Confectionery' },
-      { id: 'small_food_processing', name: 'Food Processing Unit' },
-      { id: 'other_food', name: 'Other Food Business' },
+      { id: "food_stall", name: "Food Stall / Dhaba" },
+      { id: "tiffin_service", name: "Tiffin / Meal Service" },
+      { id: "catering", name: "Catering Services" },
+      { id: "bakery", name: "Bakery & Confectionery" },
+      { id: "small_food_processing", name: "Food Processing Unit" },
+      { id: "other_food", name: "Other Food Business" },
     ],
   },
   {
-    id: 'retail_shops',
-    name: 'Retail & Small Shop',
-    icon: 'store',
-    keywords: ['kirana', 'grocery', 'dukan', 'shop', 'store', 'retail', 'general store', 'stationery', 'footwear', 'clothes'],
+    id: "retail_shops",
+    name: "Retail & Small Shop",
+    icon: "store",
+    keywords: [
+      "kirana",
+      "grocery",
+      "dukan",
+      "shop",
+      "store",
+      "retail",
+      "general store",
+      "stationery",
+      "footwear",
+      "clothes",
+    ],
     subCategories: [
-      { id: 'kirana_grocery', name: 'Kirana / Grocery Store' },
-      { id: 'general_store', name: 'General Store / Stationery' },
-      { id: 'mobile_accessories', name: 'Mobile & Accessories Shop' },
-      { id: 'apparel_footwear', name: 'Clothing & Footwear Retail' },
-      { id: 'other_retail', name: 'Other Retail Business' },
+      { id: "kirana_grocery", name: "Kirana / Grocery Store" },
+      { id: "general_store", name: "General Store / Stationery" },
+      { id: "mobile_accessories", name: "Mobile & Accessories Shop" },
+      { id: "apparel_footwear", name: "Clothing & Footwear Retail" },
+      { id: "other_retail", name: "Other Retail Business" },
     ],
   },
   {
-    id: 'street_vendor',
-    name: 'Street Vendor / Hawker',
-    icon: 'track_changes',
-    keywords: ['vendor', 'hawker', 'thela', 'cart', 'stall', 'vegetable', 'sabzi', 'fruit', 'fal', 'street', 'roadside', 'haat', 'feriwala'],
+    id: "street_vendor",
+    name: "Street Vendor / Hawker",
+    icon: "track_changes",
+    keywords: [
+      "vendor",
+      "hawker",
+      "thela",
+      "cart",
+      "stall",
+      "vegetable",
+      "sabzi",
+      "fruit",
+      "fal",
+      "street",
+      "roadside",
+      "haat",
+      "feriwala",
+    ],
     subCategories: [
-      { id: 'vegetable_vendor', name: 'Vegetable Vendor' },
-      { id: 'fruit_seller', name: 'Fruit Seller' },
-      { id: 'roadside_eatery', name: 'Roadside Cart / Stall' },
-      { id: 'mobile_vendor', name: 'Mobile Goods Vendor / Hawker' },
-      { id: 'weekly_market_vendor', name: 'Weekly Haat / Market Trader' },
-      { id: 'other_vendor', name: 'Other Street Vending' },
+      { id: "vegetable_vendor", name: "Vegetable Vendor" },
+      { id: "fruit_seller", name: "Fruit Seller" },
+      { id: "roadside_eatery", name: "Roadside Cart / Stall" },
+      { id: "mobile_vendor", name: "Mobile Goods Vendor / Hawker" },
+      { id: "weekly_market_vendor", name: "Weekly Haat / Market Trader" },
+      { id: "other_vendor", name: "Other Street Vending" },
     ],
   },
   {
-    id: 'handicrafts_artisan',
-    name: 'Handicrafts & Artisan Work',
-    icon: 'handyman',
-    keywords: ['artisan', 'handicraft', 'pottery', 'clay', 'woodwork', 'bamboo', 'blacksmith', 'lohar', 'kumhar', 'sculptor', 'craft'],
+    id: "handicrafts_artisan",
+    name: "Handicrafts & Artisan Work",
+    icon: "handyman",
+    keywords: [
+      "artisan",
+      "handicraft",
+      "pottery",
+      "clay",
+      "woodwork",
+      "bamboo",
+      "blacksmith",
+      "lohar",
+      "kumhar",
+      "sculptor",
+      "craft",
+    ],
     subCategories: [
-      { id: 'pottery', name: 'Pottery & Clay Artisan' },
-      { id: 'wood_craft', name: 'Woodwork & Carving' },
-      { id: 'bamboo_cane', name: 'Bamboo & Cane Craft' },
-      { id: 'metal_craft', name: 'Metalwork & Blacksmith' },
-      { id: 'traditional_artisan', name: 'Traditional Folk Artisan' },
-      { id: 'other_handicrafts', name: 'Other Craft & Artisan Work' },
+      { id: "pottery", name: "Pottery & Clay Artisan" },
+      { id: "wood_craft", name: "Woodwork & Carving" },
+      { id: "bamboo_cane", name: "Bamboo & Cane Craft" },
+      { id: "metal_craft", name: "Metalwork & Blacksmith" },
+      { id: "traditional_artisan", name: "Traditional Folk Artisan" },
+      { id: "other_handicrafts", name: "Other Craft & Artisan Work" },
     ],
   },
   {
-    id: 'handloom_textile',
-    name: 'Handloom & Textile',
-    icon: 'brush',
-    keywords: ['weaver', 'handloom', 'bunkar', 'textile', 'chikan', 'zari', 'embroidery', 'fabric', 'loom', 'carpet', 'spinning'],
+    id: "handloom_textile",
+    name: "Handloom & Textile",
+    icon: "brush",
+    keywords: [
+      "weaver",
+      "handloom",
+      "bunkar",
+      "textile",
+      "chikan",
+      "zari",
+      "embroidery",
+      "fabric",
+      "loom",
+      "carpet",
+      "spinning",
+    ],
     subCategories: [
-      { id: 'handloom_weaver', name: 'Handloom Weaver' },
-      { id: 'powerloom_operator', name: 'Powerloom Operator' },
-      { id: 'embroidery_zari', name: 'Embroidery / Zari / Chikan Work' },
-      { id: 'block_printing_dyeing', name: 'Block Printing & Fabric Dyeing' },
-      { id: 'other_textile', name: 'Other Textile Work' },
+      { id: "handloom_weaver", name: "Handloom Weaver" },
+      { id: "powerloom_operator", name: "Powerloom Operator" },
+      { id: "embroidery_zari", name: "Embroidery / Zari / Chikan Work" },
+      { id: "block_printing_dyeing", name: "Block Printing & Fabric Dyeing" },
+      { id: "other_textile", name: "Other Textile Work" },
     ],
   },
   {
-    id: 'tailoring_garments',
-    name: 'Tailoring & Garments',
-    icon: 'edit_document',
-    keywords: ['tailor', 'stitching', 'clothes', 'dress', 'boutique', 'sewing', 'garment', 'silai', 'darzi', 'fashion'],
+    id: "tailoring_garments",
+    name: "Tailoring & Garments",
+    icon: "edit_document",
+    keywords: [
+      "tailor",
+      "stitching",
+      "clothes",
+      "dress",
+      "boutique",
+      "sewing",
+      "garment",
+      "silai",
+      "darzi",
+      "fashion",
+    ],
     subCategories: [
-      { id: 'tailor', name: 'Custom Tailor' },
-      { id: 'boutique', name: 'Boutique / Dressmaking' },
-      { id: 'stitching_unit', name: 'Small Stitching Unit' },
-      { id: 'garment_making', name: 'Readymade Garments' },
-      { id: 'other_tailoring', name: 'Other Tailoring / Garment Work' },
+      { id: "tailor", name: "Custom Tailor" },
+      { id: "boutique", name: "Boutique / Dressmaking" },
+      { id: "stitching_unit", name: "Small Stitching Unit" },
+      { id: "garment_making", name: "Readymade Garments" },
+      { id: "other_tailoring", name: "Other Tailoring / Garment Work" },
     ],
   },
   {
-    id: 'beauty_personal_care',
-    name: 'Beauty & Personal Care',
-    icon: 'accessibility_new',
-    keywords: ['beauty', 'parlour', 'salon', 'barber', 'hair', 'makeup', 'naai', 'grooming', 'mehendi', 'spa'],
+    id: "beauty_personal_care",
+    name: "Beauty & Personal Care",
+    icon: "accessibility_new",
+    keywords: [
+      "beauty",
+      "parlour",
+      "salon",
+      "barber",
+      "hair",
+      "makeup",
+      "naai",
+      "grooming",
+      "mehendi",
+      "spa",
+    ],
     subCategories: [
-      { id: 'beauty_parlour', name: 'Beauty Parlour' },
-      { id: 'barber_salon', name: "Barber / Men's Salon" },
-      { id: 'hair_styling', name: 'Hair Stylist / Makeup Artist' },
-      { id: 'wellness_grooming', name: 'Personal Grooming & Wellness' },
-      { id: 'other_beauty', name: 'Other Personal Care Services' },
+      { id: "beauty_parlour", name: "Beauty Parlour" },
+      { id: "barber_salon", name: "Barber / Men's Salon" },
+      { id: "hair_styling", name: "Hair Stylist / Makeup Artist" },
+      { id: "wellness_grooming", name: "Personal Grooming & Wellness" },
+      { id: "other_beauty", name: "Other Personal Care Services" },
     ],
   },
   {
-    id: 'transport_mobility',
-    name: 'Transport & Mobility',
-    icon: 'map',
-    keywords: ['auto', 'rickshaw', 'e-rickshaw', 'taxi', 'cab', 'driver', 'tempo', 'truck', 'transport', 'goods carrier'],
+    id: "transport_mobility",
+    name: "Transport & Mobility",
+    icon: "map",
+    keywords: [
+      "auto",
+      "rickshaw",
+      "e-rickshaw",
+      "taxi",
+      "cab",
+      "driver",
+      "tempo",
+      "truck",
+      "transport",
+      "goods carrier",
+    ],
     subCategories: [
-      { id: 'auto_rickshaw', name: 'Auto-Rickshaw Driver / Owner' },
-      { id: 'e_rickshaw', name: 'E-Rickshaw Operator' },
-      { id: 'taxi_cab', name: 'Taxi / Cab Driver' },
-      { id: 'goods_vehicle', name: 'Small Goods Carrier / Pickup' },
-      { id: 'other_transport', name: 'Other Transport Operator' },
+      { id: "auto_rickshaw", name: "Auto-Rickshaw Driver / Owner" },
+      { id: "e_rickshaw", name: "E-Rickshaw Operator" },
+      { id: "taxi_cab", name: "Taxi / Cab Driver" },
+      { id: "goods_vehicle", name: "Small Goods Carrier / Pickup" },
+      { id: "other_transport", name: "Other Transport Operator" },
     ],
   },
   {
-    id: 'repair_maintenance',
-    name: 'Repair & Maintenance',
-    icon: 'handyman',
-    keywords: ['mobile repair', 'phone repair', 'electronics', 'tv', 'ac', 'fridge', 'mechanic', 'bike', 'bicycle', 'appliance', 'motorcycle'],
+    id: "repair_maintenance",
+    name: "Repair & Maintenance",
+    icon: "handyman",
+    keywords: [
+      "mobile repair",
+      "phone repair",
+      "electronics",
+      "tv",
+      "ac",
+      "fridge",
+      "mechanic",
+      "bike",
+      "bicycle",
+      "appliance",
+      "motorcycle",
+    ],
     subCategories: [
-      { id: 'mobile_repair', name: 'Mobile & Smartphone Repair' },
-      { id: 'electronics_repair', name: 'TV & Electronics Repair' },
-      { id: 'appliance_repair', name: 'Home Appliance Repair (AC/Fridge)' },
-      { id: 'vehicle_repair', name: 'Two-Wheeler / Auto Mechanic' },
-      { id: 'bicycle_repair', name: 'Bicycle Repair' },
-      { id: 'other_repair', name: 'Other Repair Services' },
+      { id: "mobile_repair", name: "Mobile & Smartphone Repair" },
+      { id: "electronics_repair", name: "TV & Electronics Repair" },
+      { id: "appliance_repair", name: "Home Appliance Repair (AC/Fridge)" },
+      { id: "vehicle_repair", name: "Two-Wheeler / Auto Mechanic" },
+      { id: "bicycle_repair", name: "Bicycle Repair" },
+      { id: "other_repair", name: "Other Repair Services" },
     ],
   },
   {
-    id: 'construction_trades',
-    name: 'Construction & Skilled Trades',
-    icon: 'handyman',
-    keywords: ['mason', 'carpenter', 'plumber', 'electrician', 'welder', 'painter', 'construction', 'electric', 'mistri', 'badhai', 'rajmistri'],
+    id: "construction_trades",
+    name: "Construction & Skilled Trades",
+    icon: "handyman",
+    keywords: [
+      "mason",
+      "carpenter",
+      "plumber",
+      "electrician",
+      "welder",
+      "painter",
+      "construction",
+      "electric",
+      "mistri",
+      "badhai",
+      "rajmistri",
+    ],
     subCategories: [
-      { id: 'mason', name: 'Mason (Rajmistri)' },
-      { id: 'carpenter', name: 'Carpenter (Badhai)' },
-      { id: 'electrician', name: 'Electrician' },
-      { id: 'plumber', name: 'Plumber' },
-      { id: 'welder_fabricator', name: 'Welder / Metal Fabricator' },
-      { id: 'painter', name: 'House / Commercial Painter' },
-      { id: 'other_construction', name: 'Other Skilled Trade' },
+      { id: "mason", name: "Mason (Rajmistri)" },
+      { id: "carpenter", name: "Carpenter (Badhai)" },
+      { id: "electrician", name: "Electrician" },
+      { id: "plumber", name: "Plumber" },
+      { id: "welder_fabricator", name: "Welder / Metal Fabricator" },
+      { id: "painter", name: "House / Commercial Painter" },
+      { id: "other_construction", name: "Other Skilled Trade" },
     ],
   },
   {
-    id: 'manufacturing_production',
-    name: 'Manufacturing & Small Production',
-    icon: 'storefront',
-    keywords: ['manufacturing', 'factory', 'karkhana', 'production', 'fabrication', 'packaging', 'unit', 'furniture', 'boxes', 'plastic'],
+    id: "manufacturing_production",
+    name: "Manufacturing & Small Production",
+    icon: "storefront",
+    keywords: [
+      "manufacturing",
+      "factory",
+      "karkhana",
+      "production",
+      "fabrication",
+      "packaging",
+      "unit",
+      "furniture",
+      "boxes",
+      "plastic",
+    ],
     subCategories: [
-      { id: 'light_engineering', name: 'Light Engineering & Lathe' },
-      { id: 'furniture_making', name: 'Furniture Manufacturing' },
-      { id: 'packaging_boxes', name: 'Packaging & Box Making' },
-      { id: 'plastic_paper_products', name: 'Paper & Eco Products' },
-      { id: 'other_manufacturing', name: 'Other Small Manufacturing' },
+      { id: "light_engineering", name: "Light Engineering & Lathe" },
+      { id: "furniture_making", name: "Furniture Manufacturing" },
+      { id: "packaging_boxes", name: "Packaging & Box Making" },
+      { id: "plastic_paper_products", name: "Paper & Eco Products" },
+      { id: "other_manufacturing", name: "Other Small Manufacturing" },
     ],
   },
   {
-    id: 'service_business',
-    name: 'Service Business',
-    icon: 'support_agent',
-    keywords: ['cleaning', 'laundry', 'photography', 'printing', 'tent', 'event', 'service', 'dry cleaning', 'photocopy', 'xerox'],
+    id: "service_business",
+    name: "Service Business",
+    icon: "support_agent",
+    keywords: [
+      "cleaning",
+      "laundry",
+      "photography",
+      "printing",
+      "tent",
+      "event",
+      "service",
+      "dry cleaning",
+      "photocopy",
+      "xerox",
+    ],
     subCategories: [
-      { id: 'cleaning_sanitation', name: 'Commercial / Home Cleaning' },
-      { id: 'laundry_drycleaning', name: 'Laundry / Dhobi / Dry Cleaning' },
-      { id: 'photography_videography', name: 'Photography & Videography' },
-      { id: 'printing_photocopy', name: 'Printing, DTP & Photocopy' },
-      { id: 'event_tent_house', name: 'Tent House & Event Supplies' },
-      { id: 'other_services', name: 'Other Local Services' },
+      { id: "cleaning_sanitation", name: "Commercial / Home Cleaning" },
+      { id: "laundry_drycleaning", name: "Laundry / Dhobi / Dry Cleaning" },
+      { id: "photography_videography", name: "Photography & Videography" },
+      { id: "printing_photocopy", name: "Printing, DTP & Photocopy" },
+      { id: "event_tent_house", name: "Tent House & Event Supplies" },
+      { id: "other_services", name: "Other Local Services" },
     ],
   },
   {
-    id: 'education_professional',
-    name: 'Education & Professional Services',
-    icon: 'library_books',
-    keywords: ['tuition', 'coaching', 'school', 'teacher', 'consultancy', 'ca', 'advocate', 'classes', 'preschool', 'daycare'],
+    id: "education_professional",
+    name: "Education & Professional Services",
+    icon: "library_books",
+    keywords: [
+      "tuition",
+      "coaching",
+      "school",
+      "teacher",
+      "consultancy",
+      "ca",
+      "advocate",
+      "classes",
+      "preschool",
+      "daycare",
+    ],
     subCategories: [
-      { id: 'tuition_coaching', name: 'Tuition & Coaching Centre' },
-      { id: 'pre_school_daycare', name: 'Daycare & Early Learning' },
-      { id: 'consulting_advisory', name: 'Consultancy & Bookkeeping' },
-      { id: 'legal_tax_services', name: 'Tax & Document Facilitation' },
-      { id: 'other_education_professional', name: 'Other Professional Practice' },
+      { id: "tuition_coaching", name: "Tuition & Coaching Centre" },
+      { id: "pre_school_daycare", name: "Daycare & Early Learning" },
+      { id: "consulting_advisory", name: "Consultancy & Bookkeeping" },
+      { id: "legal_tax_services", name: "Tax & Document Facilitation" },
+      {
+        id: "other_education_professional",
+        name: "Other Professional Practice",
+      },
     ],
   },
   {
-    id: 'digital_technology',
-    name: 'Digital & Technology Services',
-    icon: 'document_scanner',
-    keywords: ['computer', 'csc', 'kiosk', 'online', 'cyber', 'internet', 'digital', 'freelance', 'data entry', 'seva kendra'],
+    id: "digital_technology",
+    name: "Digital & Technology Services",
+    icon: "document_scanner",
+    keywords: [
+      "computer",
+      "csc",
+      "kiosk",
+      "online",
+      "cyber",
+      "internet",
+      "digital",
+      "freelance",
+      "data entry",
+      "seva kendra",
+    ],
     subCategories: [
-      { id: 'csc_kiosk', name: 'CSC / Digital Seva Kendra Operator' },
-      { id: 'cyber_cafe_computer', name: 'Computer Centre / Cyber Café' },
-      { id: 'digital_services_freelance', name: 'Freelance Tech / Web / Graphic Work' },
-      { id: 'data_entry_bpo', name: 'Data Entry & Office Support' },
-      { id: 'other_digital', name: 'Other Tech & Digital Services' },
+      { id: "csc_kiosk", name: "CSC / Digital Seva Kendra Operator" },
+      { id: "cyber_cafe_computer", name: "Computer Centre / Cyber Café" },
+      {
+        id: "digital_services_freelance",
+        name: "Freelance Tech / Web / Graphic Work",
+      },
+      { id: "data_entry_bpo", name: "Data Entry & Office Support" },
+      { id: "other_digital", name: "Other Tech & Digital Services" },
     ],
   },
   {
-    id: 'waste_sanitation',
-    name: 'Waste Management & Sanitation',
-    icon: 'sync',
-    keywords: ['waste', 'scrap', 'kabadi', 'recycling', 'sanitation', 'safai', 'garbage', 'kabadiwala', 'scrap dealer'],
+    id: "waste_sanitation",
+    name: "Waste Management & Sanitation",
+    icon: "sync",
+    keywords: [
+      "waste",
+      "scrap",
+      "kabadi",
+      "recycling",
+      "sanitation",
+      "safai",
+      "garbage",
+      "kabadiwala",
+      "scrap dealer",
+    ],
     subCategories: [
-      { id: 'scrap_recycling', name: 'Scrap Dealer (Kabadiwala) & Recycling' },
-      { id: 'waste_collection', name: 'Waste Segregation & Collection' },
-      { id: 'sanitation_worker', name: 'Sanitation & Septic Services' },
-      { id: 'other_sanitation', name: 'Other Waste & Environmental Services' },
+      { id: "scrap_recycling", name: "Scrap Dealer (Kabadiwala) & Recycling" },
+      { id: "waste_collection", name: "Waste Segregation & Collection" },
+      { id: "sanitation_worker", name: "Sanitation & Septic Services" },
+      { id: "other_sanitation", name: "Other Waste & Environmental Services" },
     ],
   },
   {
-    id: 'student_education',
-    name: 'Student / Higher Education',
-    icon: 'school',
-    keywords: ['student', 'study', 'college', 'degree', 'engineering', 'medical', 'mba', 'education', 'school', 'polytechnic', 'btech', 'mbbs'],
+    id: "student_education",
+    name: "Student / Higher Education",
+    icon: "school",
+    keywords: [
+      "student",
+      "study",
+      "college",
+      "degree",
+      "engineering",
+      "medical",
+      "mba",
+      "education",
+      "school",
+      "polytechnic",
+      "btech",
+      "mbbs",
+    ],
     subCategories: [
-      { id: 'technical_degree', name: 'Engineering / Technology Degree' },
-      { id: 'medical_nursing', name: 'Medical / Nursing / Allied Health' },
-      { id: 'management_law', name: 'Management / MBA / Law Course' },
-      { id: 'diploma_polytechnic', name: 'Polytechnic / Vocational Diploma' },
-      { id: 'other_student', name: 'Other Approved Higher Education Course' },
+      { id: "technical_degree", name: "Engineering / Technology Degree" },
+      { id: "medical_nursing", name: "Medical / Nursing / Allied Health" },
+      { id: "management_law", name: "Management / MBA / Law Course" },
+      { id: "diploma_polytechnic", name: "Polytechnic / Vocational Diploma" },
+      { id: "other_student", name: "Other Approved Higher Education Course" },
     ],
   },
   {
-    id: 'other_livelihood',
-    name: 'Other Self-Employment / Business',
-    icon: 'diversity_3',
-    keywords: ['other', 'business', 'work', 'trade', 'self-employed', 'freelance', 'unlisted', 'art', 'miscellaneous'],
+    id: "other_livelihood",
+    name: "Other Self-Employment / Business",
+    icon: "diversity_3",
+    keywords: [
+      "other",
+      "business",
+      "work",
+      "trade",
+      "self-employed",
+      "freelance",
+      "unlisted",
+      "art",
+      "miscellaneous",
+    ],
     subCategories: [
-      { id: 'other_business', name: 'Other Small Business / Livelihood' },
+      { id: "other_business", name: "Other Small Business / Livelihood" },
     ],
   },
 ];
@@ -292,20 +529,22 @@ export interface OccupationSelection {
 
 export default function SchemeWizard() {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
-  const [purpose, setPurpose] = useState<'business' | 'education' | 'agriculture' | 'artisans'>('business');
-  
+  const [purpose, setPurpose] = useState<
+    "business" | "education" | "agriculture" | "artisans"
+  >("business");
+
   // Structured occupation state
   const [occupation, setOccupation] = useState<OccupationSelection>({
-    occupationCategory: 'street_vendor',
-    occupationType: 'vegetable_vendor',
-    customOccupation: '',
+    occupationCategory: "street_vendor",
+    occupationType: "vegetable_vendor",
+    customOccupation: "",
   });
 
   // Search state for Step 2
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   const [income, setIncome] = useState<number>(250000);
-  const [state, setState] = useState<string>('Uttar Pradesh');
+  const [state, setState] = useState<string>("Uttar Pradesh");
 
   // Filtered categories based on search
   const filteredCategories = useMemo(() => {
@@ -314,35 +553,46 @@ export default function SchemeWizard() {
 
     return OCCUPATION_CATEGORIES.filter((cat) => {
       const matchName = cat.name.toLowerCase().includes(q);
-      const matchKeywords = cat.keywords.some((k) => k.toLowerCase().includes(q));
-      const matchSub = cat.subCategories.some((sub) => sub.name.toLowerCase().includes(q));
+      const matchKeywords = cat.keywords.some((k) =>
+        k.toLowerCase().includes(q),
+      );
+      const matchSub = cat.subCategories.some((sub) =>
+        sub.name.toLowerCase().includes(q),
+      );
       return matchName || matchKeywords || matchSub;
     });
   }, [searchQuery]);
 
   // Current active category
   const activeCategory = useMemo(() => {
-    return OCCUPATION_CATEGORIES.find((c) => c.id === occupation.occupationCategory) || OCCUPATION_CATEGORIES[0];
+    return (
+      OCCUPATION_CATEGORIES.find(
+        (c) => c.id === occupation.occupationCategory,
+      ) || OCCUPATION_CATEGORIES[0]
+    );
   }, [occupation.occupationCategory]);
 
   // Current active subcategory name
   const activeSubCategoryName = useMemo(() => {
-    if (!activeCategory) return '';
-    const sub = activeCategory.subCategories.find((s) => s.id === occupation.occupationType);
-    return sub ? sub.name : '';
+    if (!activeCategory) return "";
+    const sub = activeCategory.subCategories.find(
+      (s) => s.id === occupation.occupationType,
+    );
+    return sub ? sub.name : "";
   }, [activeCategory, occupation.occupationType]);
 
   // Check if current selection requires custom input
   const isCustomRequired = useMemo(() => {
     return (
-      occupation.occupationCategory === 'other_livelihood' ||
-      occupation.occupationType.startsWith('other_')
+      occupation.occupationCategory === "other_livelihood" ||
+      occupation.occupationType.startsWith("other_")
     );
   }, [occupation.occupationCategory, occupation.occupationType]);
 
   // Step 2 validation
   const isStep2Valid = useMemo(() => {
-    if (!occupation.occupationCategory || !occupation.occupationType) return false;
+    if (!occupation.occupationCategory || !occupation.occupationType)
+      return false;
     if (isCustomRequired) {
       return occupation.customOccupation.trim().length > 0;
     }
@@ -352,36 +602,51 @@ export default function SchemeWizard() {
   // Recommendation engine matching function
   // Evaluates combination of occupation, purpose, and financial parameters
   const getMatchedSchemes = (): Scheme[] => {
-    const cat = OCCUPATION_CATEGORIES.find((c) => c.id === occupation.occupationCategory);
+    const cat = OCCUPATION_CATEGORIES.find(
+      (c) => c.id === occupation.occupationCategory,
+    );
     const candidateTypes: string[] = [];
 
     if (cat) {
-      if (cat.id === 'agriculture_farming' || cat.id === 'dairy_livestock' || cat.id === 'fisheries_aquaculture') {
-        candidateTypes.push('farmer', 'rural', 'micro');
-      } else if (cat.id === 'street_vendor') {
-        candidateTypes.push('vendor', 'micro');
-      } else if (cat.id === 'handicrafts_artisan' || cat.id === 'handloom_textile') {
-        candidateTypes.push('artisan', 'micro');
-      } else if (cat.id === 'student_education') {
-        candidateTypes.push('student');
-      } else if (cat.id === 'construction_trades') {
-        if (['carpenter', 'mason', 'welder_fabricator', 'plumber'].includes(occupation.occupationType)) {
-          candidateTypes.push('artisan', 'micro');
+      if (
+        cat.id === "agriculture_farming" ||
+        cat.id === "dairy_livestock" ||
+        cat.id === "fisheries_aquaculture"
+      ) {
+        candidateTypes.push("farmer", "rural", "micro");
+      } else if (cat.id === "street_vendor") {
+        candidateTypes.push("vendor", "micro");
+      } else if (
+        cat.id === "handicrafts_artisan" ||
+        cat.id === "handloom_textile"
+      ) {
+        candidateTypes.push("artisan", "micro");
+      } else if (cat.id === "student_education") {
+        candidateTypes.push("student");
+      } else if (cat.id === "construction_trades") {
+        if (
+          ["carpenter", "mason", "welder_fabricator", "plumber"].includes(
+            occupation.occupationType,
+          )
+        ) {
+          candidateTypes.push("artisan", "micro");
         } else {
-          candidateTypes.push('micro');
+          candidateTypes.push("micro");
         }
       } else {
-        candidateTypes.push('micro', 'vendor');
+        candidateTypes.push("micro", "vendor");
       }
     }
 
     return SUVIDHA_SCHEMES.filter((s) => {
       const catMatch =
         s.category === purpose ||
-        (purpose === 'business' && s.category === 'artisans') ||
-        (purpose === 'agriculture' && s.category === 'business');
+        (purpose === "business" && s.category === "artisans") ||
+        (purpose === "agriculture" && s.category === "business");
 
-      const typeMatch = s.eligibility.types.some((t) => candidateTypes.includes(t));
+      const typeMatch = s.eligibility.types.some((t) =>
+        candidateTypes.includes(t),
+      );
       const incomeMatch = income <= s.eligibility.maxIncome;
 
       return (catMatch || typeMatch) && incomeMatch;
@@ -402,7 +667,8 @@ export default function SchemeWizard() {
             Citizen Scheme Discovery Wizard
           </h2>
           <p className="text-xs text-on-surface-variant mt-0.5">
-            Answer 3 quick questions to discover schemes matching your trade, income, and aspirations.
+            Answer 3 quick questions to discover schemes matching your trade,
+            income, and aspirations.
           </p>
         </div>
         <div className="text-xs font-bold text-secondary bg-surface-container px-3 py-1 rounded-full">
@@ -425,21 +691,25 @@ export default function SchemeWizard() {
             What is your primary requirement?
           </h3>
           <p className="text-xs text-on-surface-variant">
-            Select the focus area where you seek government financial or educational assistance:
+            Select the focus area where you seek government financial or
+            educational assistance:
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <button
               type="button"
-              onClick={() => setPurpose('business')}
+              onClick={() => setPurpose("business")}
               className={`p-4 rounded-xl border-2 text-left transition-all ${
-                purpose === 'business'
-                  ? 'border-primary bg-secondary-container/20 shadow-xs'
-                  : 'border-outline-variant/60 bg-surface hover:border-primary/50'
+                purpose === "business"
+                  ? "border-primary bg-secondary-container/20 shadow-xs"
+                  : "border-outline-variant/60 bg-surface hover:border-primary/50"
               }`}
             >
               <div className="flex items-start gap-3">
-                <Icon name="storefront" className="w-7 h-7 text-secondary shrink-0" />
+                <Icon
+                  name="storefront"
+                  className="w-7 h-7 text-secondary shrink-0"
+                />
                 <div>
                   <p className="font-bold text-primary text-sm">
                     Micro-Business &amp; Vendor
@@ -453,15 +723,18 @@ export default function SchemeWizard() {
 
             <button
               type="button"
-              onClick={() => setPurpose('education')}
+              onClick={() => setPurpose("education")}
               className={`p-4 rounded-xl border-2 text-left transition-all ${
-                purpose === 'education'
-                  ? 'border-primary bg-secondary-container/20 shadow-xs'
-                  : 'border-outline-variant/60 bg-surface hover:border-primary/50'
+                purpose === "education"
+                  ? "border-primary bg-secondary-container/20 shadow-xs"
+                  : "border-outline-variant/60 bg-surface hover:border-primary/50"
               }`}
             >
               <div className="flex items-start gap-3">
-                <Icon name="school" className="w-7 h-7 text-secondary shrink-0" />
+                <Icon
+                  name="school"
+                  className="w-7 h-7 text-secondary shrink-0"
+                />
                 <div>
                   <p className="font-bold text-primary text-sm">
                     Higher Education Loan Subsidy
@@ -475,21 +748,25 @@ export default function SchemeWizard() {
 
             <button
               type="button"
-              onClick={() => setPurpose('artisans')}
+              onClick={() => setPurpose("artisans")}
               className={`p-4 rounded-xl border-2 text-left transition-all ${
-                purpose === 'artisans'
-                  ? 'border-primary bg-secondary-container/20 shadow-xs'
-                  : 'border-outline-variant/60 bg-surface hover:border-primary/50'
+                purpose === "artisans"
+                  ? "border-primary bg-secondary-container/20 shadow-xs"
+                  : "border-outline-variant/60 bg-surface hover:border-primary/50"
               }`}
             >
               <div className="flex items-start gap-3">
-                <Icon name="handyman" className="w-7 h-7 text-secondary shrink-0" />
+                <Icon
+                  name="handyman"
+                  className="w-7 h-7 text-secondary shrink-0"
+                />
                 <div>
                   <p className="font-bold text-primary text-sm">
                     Traditional Artisan / Vishwakarma
                   </p>
                   <p className="text-xs text-on-surface-variant mt-0.5">
-                    Handloom weaver, carpenter, potter, toolkit voucher &amp; 5% credit
+                    Handloom weaver, carpenter, potter, toolkit voucher &amp; 5%
+                    credit
                   </p>
                 </div>
               </div>
@@ -497,15 +774,18 @@ export default function SchemeWizard() {
 
             <button
               type="button"
-              onClick={() => setPurpose('agriculture')}
+              onClick={() => setPurpose("agriculture")}
               className={`p-4 rounded-xl border-2 text-left transition-all ${
-                purpose === 'agriculture'
-                  ? 'border-primary bg-secondary-container/20 shadow-xs'
-                  : 'border-outline-variant/60 bg-surface hover:border-primary/50'
+                purpose === "agriculture"
+                  ? "border-primary bg-secondary-container/20 shadow-xs"
+                  : "border-outline-variant/60 bg-surface hover:border-primary/50"
               }`}
             >
               <div className="flex items-start gap-3">
-                <Icon name="agriculture" className="w-7 h-7 text-secondary shrink-0" />
+                <Icon
+                  name="agriculture"
+                  className="w-7 h-7 text-secondary shrink-0"
+                />
                 <div>
                   <p className="font-bold text-primary text-sm">
                     Agri-Allied &amp; Dairy Farming
@@ -528,7 +808,8 @@ export default function SchemeWizard() {
               Select your occupation or livelihood
             </h3>
             <p className="text-xs text-on-surface-variant mt-0.5">
-              Choose the option that best describes your current work, business or livelihood.
+              Choose the option that best describes your current work, business
+              or livelihood.
             </p>
           </div>
 
@@ -548,7 +829,7 @@ export default function SchemeWizard() {
             {searchQuery && (
               <button
                 type="button"
-                onClick={() => setSearchQuery('')}
+                onClick={() => setSearchQuery("")}
                 className="absolute inset-y-0 right-0 pr-3 flex items-center text-on-surface-variant hover:text-primary transition-colors"
                 aria-label="Clear search"
               >
@@ -561,13 +842,16 @@ export default function SchemeWizard() {
           {occupation.occupationCategory && occupation.occupationType && (
             <div className="flex flex-wrap items-center justify-between gap-2 px-3.5 py-2 bg-primary/10 border border-primary/25 rounded-xl text-xs">
               <div className="flex items-center gap-2">
-                <Icon name="check_circle" className="w-4 h-4 text-primary shrink-0" />
+                <Icon
+                  name="check_circle"
+                  className="w-4 h-4 text-primary shrink-0"
+                />
                 <span className="text-on-surface">
-                  Selected:{' '}
+                  Selected:{" "}
                   <strong className="text-primary font-bold">
                     {activeCategory?.name}
                   </strong>
-                  {' → '}
+                  {" → "}
                   <span className="text-secondary font-semibold">
                     {isCustomRequired && occupation.customOccupation
                       ? occupation.customOccupation
@@ -584,11 +868,13 @@ export default function SchemeWizard() {
           {/* Categories Grid */}
           <div className="space-y-2">
             <div className="flex justify-between items-center text-xs font-semibold text-on-surface-variant">
-              <span>Broad Occupation Category ({filteredCategories.length})</span>
+              <span>
+                Broad Occupation Category ({filteredCategories.length})
+              </span>
               {searchQuery && (
                 <button
                   type="button"
-                  onClick={() => setSearchQuery('')}
+                  onClick={() => setSearchQuery("")}
                   className="text-[11px] text-primary hover:underline"
                 >
                   Show All Categories
@@ -605,15 +891,18 @@ export default function SchemeWizard() {
                   type="button"
                   onClick={() => {
                     setOccupation({
-                      occupationCategory: 'other_livelihood',
-                      occupationType: 'other_business',
+                      occupationCategory: "other_livelihood",
+                      occupationType: "other_business",
                       customOccupation: searchQuery,
                     });
-                    setSearchQuery('');
+                    setSearchQuery("");
                   }}
                   className="px-4 py-2 bg-primary text-white rounded-lg text-xs font-bold hover:bg-primary-container transition-colors inline-flex items-center gap-1.5"
                 >
-                  <span>Select &ldquo;Other / Not Listed&rdquo; with &ldquo;{searchQuery}&rdquo;</span>
+                  <span>
+                    Select &ldquo;Other / Not Listed&rdquo; with &ldquo;
+                    {searchQuery}&rdquo;
+                  </span>
                 </button>
               </div>
             ) : (
@@ -636,19 +925,22 @@ export default function SchemeWizard() {
                       }}
                       className={`p-3 rounded-xl border text-left transition-all flex items-center justify-between gap-2 text-xs ${
                         isSelected
-                          ? 'border-primary bg-primary/10 text-primary font-bold shadow-xs'
-                          : 'border-outline-variant/60 bg-surface hover:border-primary/50 text-on-surface'
+                          ? "border-primary bg-primary/10 text-primary font-bold shadow-xs"
+                          : "border-outline-variant/60 bg-surface hover:border-primary/50 text-on-surface"
                       }`}
                     >
                       <div className="flex items-center gap-2 truncate">
                         <Icon
                           name={cat.icon}
-                          className={`w-4 h-4 shrink-0 ${isSelected ? 'text-primary' : 'text-secondary'}`}
+                          className={`w-4 h-4 shrink-0 ${isSelected ? "text-primary" : "text-secondary"}`}
                         />
                         <span className="truncate">{cat.name}</span>
                       </div>
                       {isSelected && (
-                        <Icon name="check" className="w-3.5 h-3.5 text-primary shrink-0" />
+                        <Icon
+                          name="check"
+                          className="w-3.5 h-3.5 text-primary shrink-0"
+                        />
                       )}
                     </button>
                   );
@@ -662,8 +954,13 @@ export default function SchemeWizard() {
             <div className="p-4 rounded-xl border border-outline-variant/60 bg-surface-container-low space-y-3">
               <div className="flex items-center justify-between gap-2 border-b border-outline-variant/30 pb-2">
                 <div className="text-xs font-bold text-primary flex items-center gap-1.5">
-                  <Icon name={activeCategory.icon} className="w-4 h-4 text-secondary" />
-                  <span>Specific Trade / Activity in {activeCategory.name}</span>
+                  <Icon
+                    name={activeCategory.icon}
+                    className="w-4 h-4 text-secondary"
+                  />
+                  <span>
+                    Specific Trade / Activity in {activeCategory.name}
+                  </span>
                 </div>
                 <span className="text-[11px] text-on-surface-variant">
                   Select your exact trade
@@ -686,13 +983,16 @@ export default function SchemeWizard() {
                       }}
                       className={`px-3 py-2 rounded-lg border text-left transition-all text-xs flex items-center justify-between gap-2 ${
                         isSubSelected
-                          ? 'border-primary bg-primary text-white font-bold shadow-xs'
-                          : 'border-outline-variant/60 bg-surface-container-lowest text-on-surface hover:border-primary/40'
+                          ? "border-primary bg-primary text-white font-bold shadow-xs"
+                          : "border-outline-variant/60 bg-surface-container-lowest text-on-surface hover:border-primary/40"
                       }`}
                     >
                       <span className="truncate">{sub.name}</span>
                       {isSubSelected && (
-                        <Icon name="check" className="w-3.5 h-3.5 text-white shrink-0" />
+                        <Icon
+                          name="check"
+                          className="w-3.5 h-3.5 text-white shrink-0"
+                        />
                       )}
                     </button>
                   );
@@ -722,7 +1022,8 @@ export default function SchemeWizard() {
                     className="w-full px-3.5 py-2 rounded-lg border border-outline-variant bg-surface text-xs text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:ring-1 focus:ring-primary shadow-xs"
                   />
                   <p className="text-[11px] text-on-surface-variant">
-                    Enter your specific trade to help match targeted local credit and training schemes.
+                    Enter your specific trade to help match targeted local
+                    credit and training schemes.
                   </p>
                 </div>
               )}
@@ -731,7 +1032,9 @@ export default function SchemeWizard() {
 
           {/* Helpful note */}
           <p className="text-[11px] text-on-surface-variant leading-relaxed">
-            Note: Occupation is combined with income, state domicile, and social category in the next steps to determine specific program eligibility.
+            Note: Occupation is combined with income, state domicile, and social
+            category in the next steps to determine specific program
+            eligibility.
           </p>
         </div>
       )}
@@ -743,12 +1046,16 @@ export default function SchemeWizard() {
             Financial &amp; State Information
           </h3>
           <p className="text-xs text-on-surface-variant">
-            Used strictly to confirm economic subvention eligibility and authorized nodal branches:
+            Used strictly to confirm economic subvention eligibility and
+            authorized nodal branches:
           </p>
 
           <div className="space-y-4">
             <div>
-              <label htmlFor="wizard-income-select" className="text-xs font-bold text-on-surface-variant block mb-1">
+              <label
+                htmlFor="wizard-income-select"
+                className="text-xs font-bold text-on-surface-variant block mb-1"
+              >
                 Annual Household Family Income
               </label>
               <select
@@ -757,15 +1064,28 @@ export default function SchemeWizard() {
                 onChange={(e) => setIncome(Number(e.target.value))}
                 className="w-full p-2.5 rounded-xl border border-outline-variant bg-surface text-xs focus:outline-none focus:ring-1 focus:ring-primary"
               >
-                <option value={150000}>Below ₹1.5 Lakhs / year (Highest priority welfare tier)</option>
-                <option value={250000}>₹1.5 Lakhs - ₹3.0 Lakhs / year (Eligible for all central subsidies)</option>
-                <option value={450000}>₹3.0 Lakhs - ₹4.5 Lakhs / year (CSIS Higher Education ceiling)</option>
-                <option value={800000}>Above ₹4.5 Lakhs / year (Eligible for Mudra &amp; Stand-Up India)</option>
+                <option value={150000}>
+                  Below ₹1.5 Lakhs / year (Highest priority welfare tier)
+                </option>
+                <option value={250000}>
+                  ₹1.5 Lakhs - ₹3.0 Lakhs / year (Eligible for all central
+                  subsidies)
+                </option>
+                <option value={450000}>
+                  ₹3.0 Lakhs - ₹4.5 Lakhs / year (CSIS Higher Education ceiling)
+                </option>
+                <option value={800000}>
+                  Above ₹4.5 Lakhs / year (Eligible for Mudra &amp; Stand-Up
+                  India)
+                </option>
               </select>
             </div>
 
             <div>
-              <label htmlFor="wizard-state-select" className="text-xs font-bold text-on-surface-variant block mb-1">
+              <label
+                htmlFor="wizard-state-select"
+                className="text-xs font-bold text-on-surface-variant block mb-1"
+              >
                 State of Residence / Domicile
               </label>
               <select
@@ -774,7 +1094,9 @@ export default function SchemeWizard() {
                 onChange={(e) => setState(e.target.value)}
                 className="w-full p-2.5 rounded-xl border border-outline-variant bg-surface text-xs focus:outline-none focus:ring-1 focus:ring-primary"
               >
-                <option value="Uttar Pradesh">Uttar Pradesh (Active pilot district: Varanasi)</option>
+                <option value="Uttar Pradesh">
+                  Uttar Pradesh (Active pilot district: Varanasi)
+                </option>
                 <option value="Bihar">Bihar</option>
                 <option value="Maharashtra">Maharashtra</option>
                 <option value="West Bengal">West Bengal</option>
@@ -791,7 +1113,9 @@ export default function SchemeWizard() {
                 <span>Civic Data Protection</span>
               </div>
               <p className="text-[11px] leading-relaxed">
-                Self-declarations are authenticated against state beneficiary records through secure Aadhaar e-KYC with zero intermediary charges.
+                Self-declarations are authenticated against state beneficiary
+                records through secure Aadhaar e-KYC with zero intermediary
+                charges.
               </p>
             </div>
           </div>
@@ -810,7 +1134,11 @@ export default function SchemeWizard() {
                 Match Verified: Found {matches.length} Suitable Schemes
               </h4>
               <p className="text-xs text-on-surface-variant mt-0.5">
-                Evaluated for {state} domicile, {activeCategory?.name} ({isCustomRequired && occupation.customOccupation ? occupation.customOccupation : activeSubCategoryName}), and annual income up to ₹{income.toLocaleString('en-IN')}.
+                Evaluated for {state} domicile, {activeCategory?.name} (
+                {isCustomRequired && occupation.customOccupation
+                  ? occupation.customOccupation
+                  : activeSubCategoryName}
+                ), and annual income up to ₹{income.toLocaleString("en-IN")}.
               </p>
             </div>
           </div>
@@ -834,8 +1162,8 @@ export default function SchemeWizard() {
                     {scheme.name}
                   </h5>
                   <p className="text-xs text-on-surface-variant">
-                    Assistance up to ₹{scheme.maxAmount.toLocaleString('en-IN')} · Moratorium:{' '}
-                    {scheme.moratorium} mo.
+                    Assistance up to ₹{scheme.maxAmount.toLocaleString("en-IN")}{" "}
+                    · Moratorium: {scheme.moratorium} mo.
                   </p>
                 </div>
 
@@ -864,7 +1192,9 @@ export default function SchemeWizard() {
         {step > 1 ? (
           <button
             type="button"
-            onClick={() => setStep((prev) => (prev > 1 ? ((prev - 1) as 1 | 2 | 3 | 4) : 1))}
+            onClick={() =>
+              setStep((prev) => (prev > 1 ? ((prev - 1) as 1 | 2 | 3 | 4) : 1))
+            }
             className="px-5 py-2 border border-outline-variant rounded-xl text-xs font-bold text-primary hover:bg-surface-container transition-colors"
           >
             Previous
@@ -877,11 +1207,13 @@ export default function SchemeWizard() {
           <button
             type="button"
             disabled={step === 2 && !isStep2Valid}
-            onClick={() => setStep((prev) => (prev < 4 ? ((prev + 1) as 1 | 2 | 3 | 4) : 4))}
+            onClick={() =>
+              setStep((prev) => (prev < 4 ? ((prev + 1) as 1 | 2 | 3 | 4) : 4))
+            }
             className={`px-6 py-2 rounded-xl text-xs font-bold transition-colors ${
               step === 2 && !isStep2Valid
-                ? 'bg-outline-variant/50 text-on-surface-variant/50 cursor-not-allowed'
-                : 'bg-primary text-white hover:bg-primary-container cursor-pointer'
+                ? "bg-outline-variant/50 text-on-surface-variant/50 cursor-not-allowed"
+                : "bg-primary text-white hover:bg-primary-container cursor-pointer"
             }`}
           >
             Continue
