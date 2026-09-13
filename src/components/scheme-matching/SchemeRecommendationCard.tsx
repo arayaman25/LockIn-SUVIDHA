@@ -227,7 +227,8 @@ export default function SchemeRecommendationCard({
           </Link>
         </div>
 
-        {/* Primary Apply Action */}
+        {/* Primary Apply Action - Redirect to official PM SURAJ portal */}
+        {/* Commented out internal /apply UI redirection:
         <Link
           href={`/apply?scheme=${scheme.schemeCode || scheme.schemeId}&from=wizard&schemeName=${encodeURIComponent(scheme.schemeName)}`}
           className="px-5 py-2.5 rounded-xl bg-primary text-white text-xs sm:text-sm font-bold hover:opacity-95 transition-all shadow-sm flex items-center gap-2 active:scale-[0.99]"
@@ -235,6 +236,16 @@ export default function SchemeRecommendationCard({
           <span>Apply Now</span>
           <Icon name="arrow_forward" className="w-4 h-4" />
         </Link>
+        */}
+        <a
+          href="https://pmsuraj.dosje.gov.in/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="px-5 py-2.5 rounded-xl bg-primary text-white text-xs sm:text-sm font-bold hover:opacity-95 transition-all shadow-sm flex items-center gap-2 active:scale-[0.99]"
+        >
+          <span>Apply Now</span>
+          <Icon name="open_in_new" className="w-4 h-4" />
+        </a>
       </div>
 
       {/* Embedded Partner Finder when requested */}

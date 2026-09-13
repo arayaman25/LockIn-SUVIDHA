@@ -57,12 +57,23 @@ export default function SchemeCard({ scheme }: { scheme: Scheme }) {
           <span>View Details</span>
           <Icon name="arrow_forward" className="w-3.5 h-3.5" />
         </Link>
+        {/* Commented out internal /apply UI redirection:
         <Link
           href={`/apply?scheme=${scheme.id}`}
           className="px-3.5 py-1.5 bg-primary text-surface hover:bg-primary-container rounded-lg font-bold text-xs transition-colors"
         >
           Apply Now
         </Link>
+        */}
+        <a
+          href="https://pmsuraj.dosje.gov.in/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="px-3.5 py-1.5 bg-primary text-surface hover:bg-primary-container rounded-lg font-bold text-xs transition-colors inline-flex items-center gap-1"
+        >
+          <span>Apply Now</span>
+          <Icon name="open_in_new" className="w-3 h-3" />
+        </a>
       </div>
     </div>
   );

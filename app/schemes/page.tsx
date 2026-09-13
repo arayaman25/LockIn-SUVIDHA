@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { SUVIDHA_SCHEMES } from '@/lib/data';
+import { Scheme } from '@/lib/data';
 import SchemeCard from '@/components/SchemeCard';
 import Icon from '@/components/Icon';
 
@@ -13,11 +13,40 @@ function SchemesContent() {
   const [userQuery, setUserQuery] = useState<string | null>(null);
   const search = userQuery ?? initialQuery;
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [schemes, setSchemes] = useState<Scheme[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [dataSource, setDataSource] = useState<'backend' | 'local' | null>(null);
 
-  const filteredSchemes = SUVIDHA_SCHEMES.filter((scheme) => {
+  // Fetch schemes from the API (which tries backend first, then local fallback)
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+
+    fetch('/api/schemes')
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled) {
+          setSchemes(data.schemes || []);
+          setDataSource(data.source || 'local');
+          setLoading(false);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          // If our own Next.js API fails, also set empty and stop loading
+          setSchemes([]);
+          setLoading(false);
+        }
+      });
+
+    return () => { cancelled = true; };
+  }, []);
+
+  const filteredSchemes = schemes.filter((scheme) => {
     const matchesCategory =
       selectedCategory === 'all' || scheme.category === selectedCategory;
     const matchesSearch =
+      search === '' ||
       scheme.name.toLowerCase().includes(search.toLowerCase()) ||
       scheme.desc.toLowerCase().includes(search.toLowerCase()) ||
       scheme.ministry.toLowerCase().includes(search.toLowerCase()) ||
@@ -46,6 +75,9 @@ function SchemesContent() {
           </h1>
           <p className="text-xs md:text-sm text-on-surface-variant mt-1">
             Central &amp; State verified welfare loans with direct interest subventions
+            {dataSource === 'backend' && (
+              <span className="ml-2 text-secondary font-semibold">• Live from database</span>
+            )}
           </p>
         </div>
 
@@ -98,8 +130,36 @@ function SchemesContent() {
         ))}
       </div>
 
-      {/* Schemes Grid */}
-      {filteredSchemes.length === 0 ? (
+      {/* Loading Skeleton */}
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div
+              key={i}
+              className="bg-surface-container-lowest rounded-2xl border border-outline-variant/50 p-6 space-y-4 animate-pulse"
+            >
+              <div className="flex justify-between items-center">
+                <div className="h-5 w-24 bg-outline-variant/30 rounded-full" />
+                <div className="h-4 w-20 bg-outline-variant/20 rounded" />
+              </div>
+              <div className="h-6 w-3/4 bg-outline-variant/30 rounded" />
+              <div className="space-y-2">
+                <div className="h-3 w-full bg-outline-variant/20 rounded" />
+                <div className="h-3 w-5/6 bg-outline-variant/20 rounded" />
+                <div className="h-3 w-4/6 bg-outline-variant/20 rounded" />
+              </div>
+              <div className="pt-3 border-t border-outline-variant/20 space-y-2">
+                <div className="h-3 w-2/3 bg-outline-variant/20 rounded" />
+                <div className="h-3 w-1/2 bg-outline-variant/20 rounded" />
+              </div>
+              <div className="flex justify-between items-center pt-2">
+                <div className="h-4 w-20 bg-outline-variant/20 rounded" />
+                <div className="h-7 w-24 bg-primary/20 rounded-lg" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : filteredSchemes.length === 0 ? (
         <div className="p-12 text-center bg-surface-container-lowest rounded-2xl border border-outline-variant/50 max-w-md mx-auto">
           <Icon name="location_off" className="w-8 h-8 text-outline mb-2 mx-auto" />
           <h3 className="font-bold text-primary text-sm font-serif">No schemes found</h3>

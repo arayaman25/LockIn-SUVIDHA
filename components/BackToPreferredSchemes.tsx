@@ -40,8 +40,8 @@ export default function BackToPreferredSchemes({
     }
   }, []);
 
-  // Show banner if navigated from wizard OR if saved preferred schemes exist
-  if (!fromWizard && !hasSavedSchemes) {
+  // Only show when explicitly navigated from the scheme matchmaking wizard (from=wizard)
+  if (!fromWizard) {
     return null;
   }
 

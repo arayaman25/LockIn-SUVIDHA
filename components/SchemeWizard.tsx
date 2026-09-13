@@ -846,12 +846,23 @@ export default function SchemeWizard() {
                   >
                     Details
                   </Link>
+                  {/* Commented out internal /apply UI redirection:
                   <Link
                     href={`/apply?scheme=${scheme.id}`}
                     className="px-3.5 py-1.5 bg-primary text-white rounded-lg text-xs font-bold hover:bg-primary-container"
                   >
                     Apply Now
                   </Link>
+                  */}
+                  <a
+                    href="https://pmsuraj.dosje.gov.in/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3.5 py-1.5 bg-primary text-white rounded-lg text-xs font-bold hover:bg-primary-container inline-flex items-center gap-1"
+                  >
+                    <span>Apply Now</span>
+                    <Icon name="open_in_new" className="w-3 h-3" />
+                  </a>
                 </div>
               </div>
             ))}

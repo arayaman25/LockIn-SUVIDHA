@@ -72,6 +72,7 @@ export default async function SchemeDetailPage({
               <Icon name="calculate" className="w-4 h-4" />
               <span>Calculate EMI</span>
             </Link>
+            {/* Commented out internal /apply UI redirection:
             <Link
               href={`/apply?scheme=${scheme.id}`}
               className="px-5 py-2 bg-primary text-white rounded-xl font-bold text-xs hover:bg-primary-container flex items-center gap-1.5 transition-all shadow-sm"
@@ -79,6 +80,16 @@ export default async function SchemeDetailPage({
               <Icon name="edit_document" className="w-4 h-4" />
               <span>Apply For Scheme</span>
             </Link>
+            */}
+            <a
+              href="https://pmsuraj.dosje.gov.in/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-5 py-2 bg-primary text-white rounded-xl font-bold text-xs hover:bg-primary-container flex items-center gap-1.5 transition-all shadow-sm"
+            >
+              <Icon name="open_in_new" className="w-4 h-4" />
+              <span>Apply For Scheme</span>
+            </a>
           </div>
         </div>
 
