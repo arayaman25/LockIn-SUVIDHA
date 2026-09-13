@@ -1,19 +1,23 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { usePathname, useRouter } from 'next/navigation';
-import { useApp } from '@/context/AppContext';
-import { SUPPORTED_LANGUAGES } from '@/lib/languages';
-import Icon from '@/components/Icon';
+import React, { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
+import { useApp } from "@/context/AppContext";
+import { SUPPORTED_LANGUAGES } from "@/lib/languages";
+import Icon from "@/components/Icon";
 
 const emptySubscribe = () => () => {};
 
 export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
-  const mounted = React.useSyncExternalStore(emptySubscribe, () => true, () => false);
+  const mounted = React.useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
   const {
     selectedLanguage,
     setSelectedLanguage,
@@ -22,12 +26,12 @@ export default function Header() {
     setIsLoginModalOpen,
     user,
     authUser,
-    logout
+    logout,
   } = useApp();
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,8 +42,8 @@ export default function Header() {
   };
 
   const isNavActive = (href: string) => {
-    if (href === '/' && pathname === '/') return true;
-    if (href !== '/' && pathname.startsWith(href)) return true;
+    if (href === "/" && pathname === "/") return true;
+    if (href !== "/" && pathname.startsWith(href)) return true;
     return false;
   };
 
@@ -65,15 +69,18 @@ export default function Header() {
 
           {/* Language Controls */}
           <div className="flex items-center gap-3">
-
             {/* Font Size Adjusters */}
-            <div className="flex items-center gap-1" role="group" aria-label="Text Size Controls">
+            <div
+              className="flex items-center gap-1"
+              role="group"
+              aria-label="Text Size Controls"
+            >
               <button
-                onClick={() => setFontSize('sm')}
+                onClick={() => setFontSize("sm")}
                 className={`px-1.5 py-0.5 rounded text-[11px] font-bold border transition-colors ${
-                  fontSize === 'sm'
-                    ? 'bg-primary text-white border-primary'
-                    : 'bg-surface hover:bg-surface-container border-outline-variant/50'
+                  fontSize === "sm"
+                    ? "bg-primary text-white border-primary"
+                    : "bg-surface hover:bg-surface-container border-outline-variant/50"
                 }`}
                 title="Decrease font size"
                 aria-label="Decrease font size"
@@ -81,11 +88,11 @@ export default function Header() {
                 A-
               </button>
               <button
-                onClick={() => setFontSize('md')}
+                onClick={() => setFontSize("md")}
                 className={`px-1.5 py-0.5 rounded text-[11px] font-bold border transition-colors ${
-                  fontSize === 'md'
-                    ? 'bg-primary text-white border-primary'
-                    : 'bg-surface hover:bg-surface-container border-outline-variant/50'
+                  fontSize === "md"
+                    ? "bg-primary text-white border-primary"
+                    : "bg-surface hover:bg-surface-container border-outline-variant/50"
                 }`}
                 title="Normal font size"
                 aria-label="Normal font size"
@@ -93,11 +100,11 @@ export default function Header() {
                 A
               </button>
               <button
-                onClick={() => setFontSize('lg')}
+                onClick={() => setFontSize("lg")}
                 className={`px-1.5 py-0.5 rounded text-[11px] font-bold border transition-colors ${
-                  fontSize === 'lg'
-                    ? 'bg-primary text-white border-primary'
-                    : 'bg-surface hover:bg-surface-container border-outline-variant/50'
+                  fontSize === "lg"
+                    ? "bg-primary text-white border-primary"
+                    : "bg-surface hover:bg-surface-container border-outline-variant/50"
                 }`}
                 title="Increase font size"
                 aria-label="Increase font size"
@@ -109,7 +116,10 @@ export default function Header() {
 
             {/* Regional Language Select */}
             <div className="flex items-center gap-1">
-              <Icon name="translate" className="w-3.5 h-3.5 text-on-surface-variant" />
+              <Icon
+                name="translate"
+                className="w-3.5 h-3.5 text-on-surface-variant"
+              />
               <select
                 value={selectedLanguage}
                 onChange={(e) => setSelectedLanguage(e.target.value)}
@@ -130,7 +140,10 @@ export default function Header() {
       <header className="bg-surface border-b border-outline-variant/60 shadow-sm sticky top-0 z-40">
         <div className="max-w-[1240px] mx-auto px-4 md:px-8 w-full flex justify-between items-center py-3">
           {/* Brand Logo */}
-          <Link href="/" className="flex items-center gap-3 text-left group shrink-0">
+          <Link
+            href="/"
+            className="flex items-center gap-3 text-left group shrink-0"
+          >
             <Image
               src="/images/suvidha-logo.png"
               alt="SUVIDHA – Concessional Loan & Scheme Assistance Portal"
@@ -153,13 +166,16 @@ export default function Header() {
           </Link>
 
           {/* Desktop Navigation Links */}
-          <nav aria-label="Main Navigation" className="hidden lg:flex items-center gap-6">
+          <nav
+            aria-label="Main Navigation"
+            className="hidden lg:flex items-center gap-6"
+          >
             <Link
               href="/"
               className={`transition-colors pb-1 text-sm font-semibold ${
-                isNavActive('/')
-                  ? 'border-b-2 border-primary text-primary'
-                  : 'text-on-surface-variant hover:text-primary'
+                isNavActive("/")
+                  ? "border-b-2 border-primary text-primary"
+                  : "text-on-surface-variant hover:text-primary"
               }`}
             >
               Home
@@ -167,9 +183,9 @@ export default function Header() {
             <Link
               href="/find-scheme"
               className={`transition-colors pb-1 text-sm font-semibold ${
-                isNavActive('/find-scheme')
-                  ? 'border-b-2 border-primary text-primary'
-                  : 'text-on-surface-variant hover:text-primary'
+                isNavActive("/find-scheme")
+                  ? "border-b-2 border-primary text-primary"
+                  : "text-on-surface-variant hover:text-primary"
               }`}
             >
               Find My Scheme
@@ -177,9 +193,9 @@ export default function Header() {
             <Link
               href="/calculator"
               className={`transition-colors pb-1 text-sm font-semibold ${
-                isNavActive('/calculator')
-                  ? 'border-b-2 border-primary text-primary'
-                  : 'text-on-surface-variant hover:text-primary'
+                isNavActive("/calculator")
+                  ? "border-b-2 border-primary text-primary"
+                  : "text-on-surface-variant hover:text-primary"
               }`}
             >
               EMI Calculator
@@ -187,9 +203,9 @@ export default function Header() {
             <Link
               href="/locator"
               className={`transition-colors pb-1 text-sm font-semibold ${
-                isNavActive('/locator')
-                  ? 'border-b-2 border-primary text-primary'
-                  : 'text-on-surface-variant hover:text-primary'
+                isNavActive("/locator")
+                  ? "border-b-2 border-primary text-primary"
+                  : "text-on-surface-variant hover:text-primary"
               }`}
             >
               Find Partner Center
@@ -199,19 +215,19 @@ export default function Header() {
           {/* Trailing Actions */}
           <div className="flex items-center gap-2.5 shrink-0">
             {/* Quick Search Button */}
-            <button
+            {/*    <button
               onClick={() => setIsSearchOpen((prev) => !prev)}
               aria-label="Search Schemes"
               className="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-lg transition-colors"
               title="Search Schemes"
             >
               <Icon name="search" className="w-5 h-5" />
-            </button>
+            </button> */}
 
             {/* Authentication Actions */}
             {mounted && authUser ? (
               <div className="flex items-center gap-2">
-                {authUser.role === 'admin' ? (
+                {authUser.role === "admin" ? (
                   <Link
                     href="/admin/dashboard"
                     className="px-3 py-1.5 bg-primary text-white rounded-lg text-xs hover:bg-primary-container transition-colors flex items-center gap-2 shadow-xs"
@@ -219,14 +235,17 @@ export default function Header() {
                   >
                     <span className="w-2 h-2 rounded-full bg-[#c1ecd4]" />
                     <div className="text-left leading-tight hidden sm:block">
-                      <span className="block font-bold text-[11px]">Administrator</span>
+                      <span className="block font-bold text-[11px]">
+                        Administrator
+                      </span>
                       <span className="block text-[9px] text-white/80 truncate max-w-[130px]">
-                        {authUser.organization?.split('(')[0] || 'SUVIDHA Admin'}
+                        {authUser.organization?.split("(")[0] ||
+                          "SUVIDHA Admin"}
                       </span>
                     </div>
                     <span className="sm:hidden font-bold">Admin Console</span>
                   </Link>
-                ) : authUser.role === 'partner' ? (
+                ) : authUser.role === "partner" ? (
                   <Link
                     href="/partner/dashboard"
                     className="px-3 py-1.5 bg-secondary text-white rounded-lg text-xs hover:bg-secondary/90 transition-colors flex items-center gap-2 shadow-xs"
@@ -234,9 +253,11 @@ export default function Header() {
                   >
                     <span className="w-2 h-2 rounded-full bg-[#bee8dc]" />
                     <div className="text-left leading-tight hidden sm:block">
-                      <span className="block font-bold text-[11px]">Channel Partner</span>
+                      <span className="block font-bold text-[11px]">
+                        Channel Partner
+                      </span>
                       <span className="block text-[9px] text-white/80 truncate max-w-[130px]">
-                        {authUser.organization?.split('-')[0] || 'Bank Desk'}
+                        {authUser.organization?.split("-")[0] || "Bank Desk"}
                       </span>
                     </div>
                     <span className="sm:hidden font-bold">Partner Desk</span>
@@ -312,7 +333,10 @@ export default function Header() {
               className="lg:hidden p-2 text-on-surface-variant hover:bg-surface-container rounded-lg"
               onClick={() => setIsMobileMenuOpen((prev) => !prev)}
             >
-              <Icon name={isMobileMenuOpen ? 'close' : 'menu'} className="w-6 h-6" />
+              <Icon
+                name={isMobileMenuOpen ? "close" : "menu"}
+                className="w-6 h-6"
+              />
             </button>
           </div>
         </div>
@@ -397,14 +421,22 @@ export default function Header() {
                     <span className="text-[10px] uppercase font-bold text-secondary block">
                       Signed in as {authUser.role}
                     </span>
-                    <strong className="text-primary text-sm block">{authUser.name}</strong>
+                    <strong className="text-primary text-sm block">
+                      {authUser.name}
+                    </strong>
                     <span className="text-on-surface-variant text-[11px] block truncate">
                       {authUser.organization}
                     </span>
                   </div>
 
                   <Link
-                    href={authUser.role === 'admin' ? '/admin/dashboard' : authUser.role === 'partner' ? '/partner/dashboard' : '/dashboard'}
+                    href={
+                      authUser.role === "admin"
+                        ? "/admin/dashboard"
+                        : authUser.role === "partner"
+                          ? "/partner/dashboard"
+                          : "/dashboard"
+                    }
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="block w-full py-2 bg-primary text-white rounded-xl text-xs font-bold text-center"
                   >
