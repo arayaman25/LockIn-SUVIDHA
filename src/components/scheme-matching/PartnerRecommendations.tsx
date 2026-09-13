@@ -240,7 +240,6 @@ export default function PartnerRecommendations({
                 const found = partners.find((item) => item.partnerId === p.id);
                 if (found) setSelectedPartner(found);
               }}
-              onViewDetails={() => {}}
               userLocation={coords}
               onUseMyLocation={handleUseMyLocation}
             />

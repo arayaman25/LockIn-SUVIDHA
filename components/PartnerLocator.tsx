@@ -4,8 +4,10 @@ import React, { useState, useRef, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Icon from "@/components/Icon";
+import RecommendedBadge from "@/components/RecommendedBadge";
 import { useApp } from "@/context/AppContext";
 import { useNearbyPartners } from "@/src/lib/query";
+import { googleMapsDirectionsUrl } from "@/src/lib/directions";
 import {
   ScoredPartner,
   NearbyPartnersRequest,
@@ -40,12 +42,28 @@ const SCHEME_OPTIONS = [
   { id: "UNY", label: "Udyam Nidhi Yojana" },
 ];
 
+const PARTNER_TYPE_LABELS: Record<string, string> = {
+  sca: "State Channelising Agency",
+  psb: "Public Sector Bank",
+  rrb: "Regional Rural Bank",
+  nbfc_mfi: "NBFC-MFI",
+  cooperative_bank: "Cooperative Bank",
+  small_finance_bank: "Small Finance Bank",
+};
+
+const PARTNER_TYPE_CHIP_CLASSES: Record<string, string> = {
+  sca: "bg-secondary-container text-on-secondary-container",
+  psb: "bg-primary-fixed text-on-primary-fixed",
+  rrb: "bg-primary-fixed text-on-primary-fixed",
+};
+const DEFAULT_TYPE_CHIP_CLASS = "bg-tertiary-fixed text-on-tertiary-fixed";
+
 function toMapPartner(p: ScoredPartner) {
   return {
     ...p,
     id: p.partnerId,
     name: p.partnerName,
-    type: p.partnerType,
+    type: PARTNER_TYPE_LABELS[p.partnerType] ?? p.partnerType,
     distance: formatDistance(p.distanceKm),
     latitude: p.latitude ?? 0,
     longitude: p.longitude ?? 0,
@@ -70,6 +88,9 @@ export default function PartnerLocator() {
   const [selectedPartnerId, setSelectedPartnerId] = useState<string | null>(
     null,
   );
+  // Bumped on every card click so the map re-centres even if that partner
+  // was already selected and the user has since panned away.
+  const [focusRequestId, setFocusRequestId] = useState(0);
   const [mobileTab, setMobileTab] = useState<"both" | "map" | "list">("both");
 
   const listContainerRef = useRef<HTMLDivElement>(null);
@@ -112,6 +133,10 @@ export default function PartnerLocator() {
 
   const rawPartners: ScoredPartner[] = partnersResponse?.data?.partners ?? [];
   const nearestOutsideRadius = partnersResponse?.data?.nearestOutsideRadius ?? false;
+  // The backend already ranks; this only lets the top card say *why* it is first.
+  const nearestKm = rawPartners.length
+    ? Math.min(...rawPartners.map((p) => p.distanceKm))
+    : null;
   const mapPartners = rawPartners
     .filter(
       (p) => typeof p.latitude === "number" && typeof p.longitude === "number",
@@ -394,18 +419,31 @@ export default function PartnerLocator() {
                 </div>
               )}
 
-            {!isLoadingPartners && !isPartnersError && nearestOutsideRadius && mapPartners.length > 0 && (
-              <p className="px-3 py-2 rounded-xl bg-surface-container text-xs text-on-surface-variant">
-                No authorized partner within 50 km — showing the nearest options, ranked by distance and loan-book health.
-              </p>
+            {!isLoadingPartners && !isPartnersError && mapPartners.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-xs text-on-surface-variant leading-relaxed">
+                  Sorted by distance and the partner&apos;s lending record. Only partners accepting
+                  applications with funds available are shown.
+                </p>
+                {nearestOutsideRadius && (
+                  <p className="px-3 py-2 rounded-xl bg-surface-container text-xs text-on-surface-variant">
+                    No authorized partner within 50 km — showing the nearest options.
+                  </p>
+                )}
+              </div>
             )}
 
             {!isLoadingPartners &&
               mapPartners.map((partner, index) => {
                 const isSelected = activeMapPartner?.id === partner.id;
+                const isRecommended = index === 0;
+                const recommendationReason =
+                  nearestKm !== null && partner.distanceKm <= nearestKm
+                    ? "Nearest partner with funds available"
+                    : "Better lending record than closer options";
                 const directionsUrl =
                   partner.latitude && partner.longitude
-                    ? `https://www.google.com/maps/dir/?api=1&destination=${partner.latitude},${partner.longitude}`
+                    ? googleMapsDirectionsUrl(partner.latitude, partner.longitude)
                     : "#";
 
                 return (
@@ -414,6 +452,7 @@ export default function PartnerLocator() {
                     id={`partner-card-${partner.id}`}
                     onClick={() => {
                       setSelectedPartnerId(partner.id);
+                      setFocusRequestId((n) => n + 1);
                     }}
                     className={`p-4 rounded-xl border transition-all cursor-pointer ${
                       isSelected
@@ -423,17 +462,22 @@ export default function PartnerLocator() {
                   >
                     <div className="flex justify-between items-start gap-2">
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-1.5 mb-1.5">
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary text-white">
-                            #{index + 1}
-                          </span>
+                        <div className="flex flex-wrap items-center gap-1.5 mb-1.5">
+                          {isRecommended ? (
+                            <RecommendedBadge
+                              ariaLabel={`Recommended, rank 1 of ${mapPartners.length}`}
+                            />
+                          ) : (
+                            <span
+                              className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant"
+                              aria-label={`Rank ${index + 1} of ${mapPartners.length}`}
+                            >
+                              #{index + 1}
+                            </span>
+                          )}
                           <span
                             className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full inline-block ${
-                              partner.type === "PSU Bank"
-                                ? "bg-primary-fixed text-on-primary-fixed"
-                                : partner.type === "Rural Gramin Bank"
-                                  ? "bg-secondary-container text-on-secondary-container"
-                                  : "bg-tertiary-fixed text-on-tertiary-fixed"
+                              PARTNER_TYPE_CHIP_CLASSES[partner.partnerType] ?? DEFAULT_TYPE_CHIP_CLASS
                             }`}
                           >
                             {partner.type || "Partner"}
@@ -447,6 +491,11 @@ export default function PartnerLocator() {
                         <h4 className="font-bold text-primary text-sm leading-snug">
                           {partner.name}
                         </h4>
+                        {isRecommended && (
+                          <p className="text-[11px] font-semibold text-secondary mt-0.5">
+                            {recommendationReason}
+                          </p>
+                        )}
                         {partner.address && (
                           <p className="text-xs text-on-surface-variant mt-1 flex items-start gap-1">
                             <Icon
@@ -491,7 +540,7 @@ export default function PartnerLocator() {
               partners={mapPartners as any}
               selectedPartner={activeMapPartner as any}
               onSelectPartner={handleSelectFromMap as any}
-              onViewDetails={() => {}}
+              focusRequestId={focusRequestId}
               userLocation={userCoords}
               onUseMyLocation={handleUseMyLocation}
             />

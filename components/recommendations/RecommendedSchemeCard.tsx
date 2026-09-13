@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Icon from '@/components/Icon';
+import RecommendedBadge from '@/components/RecommendedBadge';
 import {
   emiCalculatorHref,
   partnerLocatorHref,
@@ -7,11 +8,35 @@ import {
   type RecommendedScheme,
 } from './recommended-schemes';
 
-export default function RecommendedSchemeCard({ scheme }: { scheme: RecommendedScheme }) {
+interface RecommendedSchemeCardProps {
+  scheme: RecommendedScheme;
+  /** The best match: schemes arrive in the backend's ranking order, so this is the first card. */
+  isTopMatch?: boolean;
+  totalSchemes?: number;
+}
+
+export default function RecommendedSchemeCard({
+  scheme,
+  isTopMatch = false,
+  totalSchemes,
+}: RecommendedSchemeCardProps) {
   return (
-    <article className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm sm:p-6">
+    <article
+      className={`rounded-2xl border bg-white p-5 shadow-sm sm:p-6 ${
+        isTopMatch ? 'border-[#00472f] ring-1 ring-[#00472f]/25' : 'border-stone-200'
+      }`}
+    >
       <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
         <div className="min-w-0 flex-1">
+          {isTopMatch && (
+            <div className="mb-2">
+              <RecommendedBadge
+                ariaLabel={
+                  totalSchemes ? `Recommended, best match of ${totalSchemes} schemes` : 'Recommended, best match'
+                }
+              />
+            </div>
+          )}
           <p className="text-[10px] font-bold uppercase tracking-wider text-[#276448]">About this scheme</p>
           <h2 className="mt-2 text-xl font-serif font-bold text-[#00472f]">{scheme.schemeName}</h2>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-stone-600">{scheme.description}</p>

@@ -34,8 +34,13 @@ export default function RecommendedSchemesPage() {
               <p className="max-w-3xl text-sm leading-relaxed text-stone-700">{recommendations.overallSummary}</p>
             </div>
           )}
-          {recommendations.schemes.map((scheme) => (
-            <RecommendedSchemeCard key={scheme.schemeId} scheme={scheme} />
+          {recommendations.schemes.map((scheme, index) => (
+            <RecommendedSchemeCard
+              key={scheme.schemeId}
+              scheme={scheme}
+              isTopMatch={index === 0}
+              totalSchemes={recommendations.schemes.length}
+            />
           ))}
         </section>
       ) : (
