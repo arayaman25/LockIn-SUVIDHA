@@ -6,6 +6,11 @@ import {
   DEFAULT_LANGUAGE_CODE,
   SUPPORTED_LANGUAGE_CODES,
 } from "@/lib/languages";
+import { installTranslationDomGuard } from "@/src/lib/translation-dom-guard";
+
+// At module load, before React commits any client update: translated text
+// nodes would otherwise crash React the first time it touches one.
+installTranslationDomGuard();
 
 declare global {
   interface Window {
@@ -55,7 +60,9 @@ export default function GoogleTranslate() {
     document.body.appendChild(script);
   }, []);
 
-  /* Use Google's cookie and a reload so it never mutates React nodes in place. */
+  /* Switch languages through Google's cookie and a reload rather than live.
+     Translation still rewrites React's text nodes after load, which is what
+     installTranslationDomGuard makes safe. */
   useEffect(() => {
     const targetLang = GT_LANGUAGES.has(selectedLanguage)
       ? selectedLanguage
